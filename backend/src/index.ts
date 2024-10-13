@@ -1,6 +1,14 @@
 import express from 'express';
 import { authenticateJWT, authorizeRole } from './middleware';
 import { login } from './login';
+import { client } from './db/db.connect';
+
+import dotenv from "dotenv"
+
+dotenv.config({
+  path: '../.env'
+})
+
 
 import { Request, Response } from 'express';
 
@@ -25,7 +33,7 @@ app.get('/profile', authenticateJWT as any, (req: CustomRequest, res: Response) 
 });
 
 // Admin-only route
-app.get('/admin', (req:CustomRequest,res,next)=>{ authenticateJWT(req,res,next)}, (req,res,next)=>{authorizeRole(req,res,next,'admin')}, (req, res) => {
+app.get('/admin', (req: CustomRequest, res, next) => { authenticateJWT(req, res, next) }, (req, res, next) => { authorizeRole(req, res, next, 'admin') }, (req, res) => {
   res.send('This route is only accessible by admin users.');
 });
 
@@ -33,4 +41,15 @@ app.get('/admin', (req:CustomRequest,res,next)=>{ authenticateJWT(req,res,next)}
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+
+client.connect(function (err: any) {
+  if (err) {
+    throw err;
+  }
+  else {
+    console.log("postgress connected !!");
+
+  }
 });
