@@ -1,14 +1,25 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser'
 
-// Create an Express application
 const app = express();
 
-console.log(process.env.TEST);
+app.use(cors({
+  origin: process.env.CORS_ORIGIN,
+  credentials: true
+}))
+
+app.use(express.json({limit: "16kb"}));
+app.use(express.urlencoded({extended:true, limit: "16kb"}))
+app.use(express.static("public"))
+app.use(cookieParser())
+
+//routes import
+
+import userRouter from './routes/user.routes'
 
 
-// Basic route
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello, TypeScript with Express!');
-});
+//routes declaration
+app.use("/api/v1/users",userRouter)
 
 export default app
