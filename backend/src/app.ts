@@ -22,4 +22,9 @@ import userRouter from './routes/user.routes'
 //routes declaration
 app.use("/api/v1/users",userRouter)
 
+
+import otpRouter from './routes/otp.routes'
+
+app.use("/api/v1/otp",otpRouter)
+
 export default app
