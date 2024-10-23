@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/apiResponse";
 import { asyncHandler } from "../utils/asyncHandler";
 import otpGenerator from "otp-generator";
 import bcrypt from "bcryptjs";
+import jwt from 'jsonwebtoken';
 
 const gernerateRegisterOtp = asyncHandler(async (req, res) => {
   const { phone_number } = req.body;
@@ -86,6 +87,7 @@ const gernerateRegisterOtp = asyncHandler(async (req, res) => {
 
   // send otp to user phone_number
   console.log("this mimics sending otp to user | OTP is ", otp);
+  console.log(hashOtp);
 
 
   // send some date back to user
@@ -102,15 +104,11 @@ const gernerateRegisterOtp = asyncHandler(async (req, res) => {
 })
 
 const verifyRegisterOtp = asyncHandler(async (req, res) => {
-  const { phone_number, otp }: { phone_number: string, otp: string } = req.body;
+  const { phone_number, verification_otp }: { phone_number: string, verification_otp: string } = req.body;
 
   let userIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  console.log(userIp);
 
   const phoneRegex = /^\+91\d{10}$/;
-
-  console.log(req.body);
-
 
   if (!phone_number || !phoneRegex.test(phone_number.trim())) {
     throw new ApiError(400, "Invalid phone number.");
@@ -118,7 +116,7 @@ const verifyRegisterOtp = asyncHandler(async (req, res) => {
 
   const otpRegex = /^\d{6}$/;
 
-  if (!otp || !otpRegex.test(otp.trim())) {
+  if (!verification_otp || !otpRegex.test(verification_otp.trim())) {
     throw new ApiError(400, "Invalid otp.");
   }
 
@@ -135,30 +133,75 @@ const verifyRegisterOtp = asyncHandler(async (req, res) => {
     throw new ApiError(500, "No record for the given number was found.")
   }
 
-  console.log(getOtpDataResult);
-
-  const { hashOtp = otp, last_request_time, ip_address }: { hashOtp: string, last_request_time: Date, ip_address: string } = getOtpDataResult.rows[0];
+  const { otp, last_request_time, ip_address }: { otp: string, last_request_time: Date, ip_address: string } = getOtpDataResult.rows[0];
 
   const timeNow = new Date().getTime()
   const lastRequestTime = new Date(last_request_time).getTime();
 
-  const isOtpCorrect = await bcrypt.compare(otp.trim(), hashOtp);
+  let isOtpCorrect = false;
+
+  try {
+    isOtpCorrect = await bcrypt.compare(verification_otp.trim(), otp);
+  } catch (error) {
+    throw new ApiError(502, "Something went wrong while compairing otp");
+  }
+
   const isWithingFiveMin = (timeNow - lastRequestTime) < 300000;
+
+  const isIpMatching = (userIp === ip_address);
 
   console.log(isOtpCorrect);
   console.log(isWithingFiveMin);
-  
-  
+  console.log(isIpMatching);
 
   if (!isOtpCorrect) {
-    throw new ApiError(400, "Wrong Otp try again.")
+    throw new ApiError(400, "Wrong Otp try again.");
   }
   if (!isWithingFiveMin) {
-    throw new ApiError(400, "OTP has expired try again.")
+    throw new ApiError(400, "OTP has expired try again.");
+  }
+  if (!isIpMatching) {
+    throw new ApiError(403, "Network was changed.");
   }
 
+  // if otp and ip matches in 5 min send a token in db
+
+  const jwt_secret = process.env.JWT_SECRET
+  if (!jwt_secret) {
+    throw new ApiError(504, "Critical Error : Secret key missing.");
+  }
+
+  const otpToken = jwt.sign({ ip: userIp }, jwt_secret, { expiresIn: '10min' });
+
+  if (!otpToken) {
+    throw new ApiError(500, "Could not create token.")
+  }
+
+  const updateTokenQuery = 'UPDATE "phone_login_otp" SET token = $2 WHERE phone_number = $1;'
+
+  // update token on db
+  await client.query(updateTokenQuery, [phone_number, otpToken])
+
+  console.log(otpToken);
 
 
+  // jwt.verify(otpToken,
+  //   jwt_secret,
+  //   (err, authorizedData) => {
+  //     if (err) {
+  //       if (err.name === 'TokenExpiredError') {
+  //         console.log('ERROR: Token has expired');
+  //       } else {
+  //         // Other errors, such as invalid signature
+  //         console.log('ERROR: Could not connect to the protected route');
+  //         res.sendStatus(403);
+  //       }
+  //     } else {
+  //       // Token is valid and not expired
+  //       console.log('SUCCESS: ', authorizedData);
+  //       // Proceed with your logic here
+  //     }
+  //   });
 
 })
 
