@@ -9,7 +9,6 @@ import jwt from 'jsonwebtoken';
 const gernerateRegisterOtp = asyncHandler(async (req, res) => {
   const { phone_number } = req.body;
   let userIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  console.log(userIp);
 
   const phoneRegex = /^\+91\d{10}$/;
 
@@ -39,7 +38,6 @@ const gernerateRegisterOtp = asyncHandler(async (req, res) => {
   if (phoneExistsResult.rowCount !== null && phoneExistsResult.rowCount > 0) {
     const { attempt_count, last_request_time } = phoneExistsResult.rows[0];
 
-    numberOfAttempts = attempt_count;
     lastRegisterRequestTime = last_request_time;
 
     // Convert last_request_time to a JavaScript Date object
@@ -59,6 +57,7 @@ const gernerateRegisterOtp = asyncHandler(async (req, res) => {
 
           const updateInOtpTableResult = await client.query(updateOtpQuery, values);
 
+          numberOfAttempts = 1;
         } else {
           throw new ApiError(402, "Only 3 request can be sent every 24 hours");
         }
@@ -68,6 +67,7 @@ const gernerateRegisterOtp = asyncHandler(async (req, res) => {
 
         const updateInOtpTableResult = await client.query(updateOtpQuery, values);
 
+        numberOfAttempts = attempt_count + 1;
       }
     } else {
       throw new ApiError(400, "Otp limit reache. Only one otp every 5 min");
@@ -87,7 +87,6 @@ const gernerateRegisterOtp = asyncHandler(async (req, res) => {
 
   // send otp to user phone_number
   console.log("this mimics sending otp to user | OTP is ", otp);
-  console.log(hashOtp);
 
 
   // send some date back to user
@@ -150,10 +149,6 @@ const verifyRegisterOtp = asyncHandler(async (req, res) => {
 
   const isIpMatching = (userIp === ip_address);
 
-  console.log(isOtpCorrect);
-  console.log(isWithingFiveMin);
-  console.log(isIpMatching);
-
   if (!isOtpCorrect) {
     throw new ApiError(400, "Wrong Otp try again.");
   }
@@ -180,29 +175,19 @@ const verifyRegisterOtp = asyncHandler(async (req, res) => {
   const updateTokenQuery = 'UPDATE "phone_login_otp" SET token = $2 WHERE phone_number = $1;'
 
   // update token on db
-  await client.query(updateTokenQuery, [phone_number, otpToken])
+  const updateTokenResult = await client.query(updateTokenQuery, [phone_number, otpToken])
 
-  console.log(otpToken);
+  if(updateTokenResult){res.status(200).json(
+    new ApiResponse(
+      200,
+      null,
+      "verified successfully"
+    )
+  )}else{
+    throw new ApiError(504,"Database error could not store token.")
+  }
 
-
-  // jwt.verify(otpToken,
-  //   jwt_secret,
-  //   (err, authorizedData) => {
-  //     if (err) {
-  //       if (err.name === 'TokenExpiredError') {
-  //         console.log('ERROR: Token has expired');
-  //       } else {
-  //         // Other errors, such as invalid signature
-  //         console.log('ERROR: Could not connect to the protected route');
-  //         res.sendStatus(403);
-  //       }
-  //     } else {
-  //       // Token is valid and not expired
-  //       console.log('SUCCESS: ', authorizedData);
-  //       // Proceed with your logic here
-  //     }
-  //   });
-
+  
 })
 
 export { gernerateRegisterOtp, verifyRegisterOtp }

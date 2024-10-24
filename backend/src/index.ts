@@ -12,12 +12,13 @@ app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-client.connect(function (err: any) {
+client.connect(function (err: Error) {
   if (err) {
+    console.log("db not connected.");
     throw err;
   }
   else {
     console.log("postgress connected !!");
-
   }
+
 });
