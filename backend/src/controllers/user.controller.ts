@@ -5,7 +5,34 @@ import jwt from "jsonwebtoken"
 import { ApiResponse } from "../utils/apiResponse";
 import bcrypt from "bcryptjs";
 
+const generateAccessAndRefreshToken = async ({_id, phoneNumber, status}: {_id:number, phoneNumber: string, status: string}) => {
 
+  try {
+    const jwtSecret = process.env.JWT_SECRET;
+
+    if (!jwtSecret) {
+      throw new ApiError(500, "Something went wrong while generating access and refresh token.")
+    }
+
+    const accessToken = jwt.sign(
+      { _id, phoneNumber, status },
+      jwtSecret,
+      { expiresIn: process.env.ACCESS_TOKEN_EXPIRY || '1d' }
+    );
+
+    const refreshToken = jwt.sign(
+      { _id },
+      jwtSecret,
+      { expiresIn: process.env.REFRESH_TOKEN_EXPIRY || '30d' }
+    );
+
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(500, "Something went wrong while generating access and refresh token.")
+  }
+}
+
+// TODO: insted of using .trim() every where use once like in loginUser
 const registerUser = asyncHandler(async (req, res) => {
 
   const { username, phone_number, password } = req.body;
@@ -13,6 +40,9 @@ const registerUser = asyncHandler(async (req, res) => {
   let userIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
   // Validate input fields
+  if ([username, phone_number, password].some((field) => !field)) {
+    throw new ApiError(400, "All fields are required");
+  }
   if ([username, phone_number, password].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "All fields are required");
   }
@@ -68,7 +98,7 @@ const registerUser = asyncHandler(async (req, res) => {
       } else {
         // match the ip adress and save user in db
         const { ip, type } = token;
-        
+
         if (ip.trim() !== userIp && type !== "register") {
           throw new ApiError(505, "Network change detected registeration aborted.")
         }
@@ -76,7 +106,7 @@ const registerUser = asyncHandler(async (req, res) => {
       }
     });
 
-    const saltRounds = process.env.BCRYPT_SALT_ROUNDS
+  const saltRounds = process.env.BCRYPT_SALT_ROUNDS
 
   let hashPassword = ""
   if (saltRounds) {
@@ -87,20 +117,109 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const registerUserQuery = 'INSERT INTO "user" (username, phone_number, password, status, role, refresh_token, last_login_time, login_attempt) VALUES ($1, $2, $3, $4, \'customer\', NULL, NULL, 0);'
 
-  const userValues = [username.trim(), phone_number.trim(), hashPassword , "active"]
+  const userValues = [username.trim(), phone_number.trim(), hashPassword, "active"]
 
   const registerUserResult = await client.query(registerUserQuery, userValues)
 
   if (!registerUserResult) {
-    throw new ApiError(505,"Failed to register user.")
+    throw new ApiError(505, "Failed to register user.")
   }
 
   //delete record from otp db
   const delteQuery = 'DELETE FROM "phone_login_otp" WHERE phone_number = $1;'
 
-  await client.query(delteQuery,[phone_number.trim()]);
+  await client.query(delteQuery, [phone_number.trim()]);
 
-  res.status(200).json(new ApiResponse(200,null,"User registerd successfully."))
+  res.status(200).json(new ApiResponse(200, null, "User registerd successfully."))
 });
 
-export { registerUser };
+const loginUser = asyncHandler(async (req, res) => {
+  let { phone_number, userPassword } = req.body;
+
+  // Validate input fields
+  if ([phone_number, userPassword].some((field) => !field)) {
+    throw new ApiError(400, "All fields are required");
+  }
+  if ([phone_number, userPassword].some((field) => field?.trim() === "")) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  phone_number = phone_number.trim();
+  userPassword = userPassword.trim();
+
+  const phoneRegex = /^\+91\d{10}$/;
+  if (!phoneRegex.test(phone_number)) {
+    throw new ApiError(400, "Invalid phone number.");
+  }
+
+  const findUserQuery = 'SELECT _id , username , password , status , role , last_login_time , login_attempt FROM "user" WHERE phone_number = $1;'
+
+  const findUserResult = await client.query(findUserQuery, [phone_number]);
+
+  if (!(findUserResult && findUserResult.rowCount && findUserResult.rowCount > 0)) {
+    throw new ApiError(401, "User doesnot exist.")
+  }
+
+  let { _id, username, password, status, role, last_login_time, login_attempt } = findUserResult.rows[0];
+
+  // Handle first login or reset attempts if last login was more than 12 hours ago
+  const currentTime = new Date().getTime();
+  const twelveHoursInMs = 12 * 60 * 60 * 1000;
+
+  if (!last_login_time || !login_attempt) {
+    last_login_time = currentTime;
+    login_attempt = 0;
+  } else {
+    const lastLoginDate = new Date(last_login_time).getTime();
+    const timeDifference = currentTime - lastLoginDate;
+
+    if (timeDifference > twelveHoursInMs) {
+      login_attempt = 0;
+    }
+  }
+
+  // If login_attempt reaches 3, block login attempts for the next 12 hours
+  if (login_attempt >= 3) {
+    throw new ApiError(429, "Too many failed attempts. Please try again after 12 hours."+" @"+last_login_time);
+  }
+
+  const isPasswordCorrect = await bcrypt.compare(userPassword, password);
+
+  if (!isPasswordCorrect) {
+    login_attempt += 1; // Increment login attempts on a wrong password
+
+    await client.query(
+      'UPDATE "user" SET login_attempt = $1, last_login_time = $2 WHERE _id = $3;',
+      [login_attempt, new Date(), _id]
+    );
+
+    throw new ApiError(402, "Wrong Password.");
+  }
+
+  const { accessToken , refreshToken } = await generateAccessAndRefreshToken({_id,phoneNumber: phone_number,status})
+
+  const options = {
+    httpOnly: true,
+    secure: true
+  }
+
+  res.status(200)
+  .cookie("accessToken",accessToken,options)
+  .cookie("refreshToken",refreshToken,options)
+  .json(new ApiResponse(
+    200,
+    {
+      user: {
+        _id,
+        username,
+        phone_number,
+        status,
+        role
+      }
+    },
+    "User logged In Successfully"
+  ));
+
+})
+
+export { registerUser, loginUser };
