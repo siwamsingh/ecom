@@ -3,6 +3,8 @@ import { ApiError } from "../utils/apiError";
 import { client } from "../db/db.connect";
 import jwt from "jsonwebtoken"
 import { ApiResponse } from "../utils/apiResponse";
+import bcrypt from "bcryptjs";
+
 
 const registerUser = asyncHandler(async (req, res) => {
 
@@ -27,18 +29,18 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const userExistsResult = await client.query(userExistsQuery, values);
 
-  if (userExistsResult.rowCount != null && userExistsResult.rowCount > 0) {
+  if (userExistsResult.rowCount !== null && userExistsResult.rowCount > 0) {
     throw new ApiError(409, "Username or phone number already exists");
   }
 
-  // if user doesnot exist bring bring otpToken for that user
-  const getOtpTokenQuery = 'SELECT token from "phone_login_otp" WHERE phone_number = $1'
+  // if user doesnot exist bring otpToken for that user
+  const getOtpTokenQuery = 'SELECT token from "phone_login_otp" WHERE phone_number = $1;'
 
   const getOtpTokenResult = await client.query(getOtpTokenQuery, [phone_number.trim()]);
 
 
   if (!(getOtpTokenResult && getOtpTokenResult.rowCount && getOtpTokenResult.rowCount > 0)) {
-    throw new ApiError(505, "Could not get token from data base");
+    throw new ApiError(505, "Phone number verification required.");
   }
 
   const { token } = getOtpTokenResult.rows[0];
@@ -59,27 +61,46 @@ const registerUser = asyncHandler(async (req, res) => {
     (err: any, token: any) => {
       if (err) {
         if (err.name === 'TokenExpiredError') {
-          console.log('ERROR: Token has expired');
           throw new ApiError(505, "Session has ended.")
         } else {
           throw new ApiError(505, "Something went wrong while verifying otp token.")
         }
       } else {
         // match the ip adress and save user in db
-        const { ip } = token;
-
-        if(ip.trim() !== userIp){
-          throw new ApiError(505,"Network change detected registeration aborted.")
+        const { ip, type } = token;
+        
+        if (ip.trim() !== userIp && type !== "register") {
+          throw new ApiError(505, "Network change detected registeration aborted.")
         }
 
-        // insert the user in db
-        // const registerUserQuery = 
-
-        // const registerUserResult = await client.query(registerUserQuery,[])
       }
     });
 
+    const saltRounds = process.env.BCRYPT_SALT_ROUNDS
 
+  let hashPassword = ""
+  if (saltRounds) {
+    hashPassword = await bcrypt.hash(password, Number(saltRounds))
+  } else {
+    throw new ApiError(501, "Salt Rounds not found")
+  }
+
+  const registerUserQuery = 'INSERT INTO "user" (username, phone_number, password, status, role, refresh_token, last_login_time, login_attempt) VALUES ($1, $2, $3, $4, \'customer\', NULL, NULL, 0);'
+
+  const userValues = [username.trim(), phone_number.trim(), hashPassword , "active"]
+
+  const registerUserResult = await client.query(registerUserQuery, userValues)
+
+  if (!registerUserResult) {
+    throw new ApiError(505,"Failed to register user.")
+  }
+
+  //delete record from otp db
+  const delteQuery = 'DELETE FROM "phone_login_otp" WHERE phone_number = $1;'
+
+  await client.query(delteQuery,[phone_number.trim()]);
+
+  res.status(200).json(new ApiResponse(200,null,"User registerd successfully."))
 });
 
 export { registerUser };

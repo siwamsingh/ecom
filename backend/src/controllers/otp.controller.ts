@@ -16,6 +16,14 @@ const gernerateRegisterOtp = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid phone number.")
   }
 
+  const userExistsQuery = 'SELECT 1 FROM "user" WHERE phone_number = $1; ';
+
+  const userExistsResult = await client.query(userExistsQuery, [phone_number.trim()]);
+
+  if (userExistsResult.rowCount !== null && userExistsResult.rowCount > 0) {
+    throw new ApiError(408, "Phone number is already verified.");
+  }
+
   const otp = otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
 
   const saltRounds = process.env.BCRYPT_SALT_ROUNDS
@@ -70,7 +78,7 @@ const gernerateRegisterOtp = asyncHandler(async (req, res) => {
         numberOfAttempts = attempt_count + 1;
       }
     } else {
-      throw new ApiError(400, "Otp limit reache. Only one otp every 5 min");
+      throw new ApiError(400, "Otp limit reached. Only one otp every 5 min");
     }
   } else {
     // if phone not exist add new record in db
@@ -166,7 +174,7 @@ const verifyRegisterOtp = asyncHandler(async (req, res) => {
     throw new ApiError(504, "Critical Error : Secret key missing.");
   }
 
-  const otpToken = jwt.sign({ ip: userIp }, jwt_secret, { expiresIn: '10min' });
+  const otpToken = jwt.sign({ ip: userIp, type: "register"}, jwt_secret, { expiresIn: '10min' });
 
   if (!otpToken) {
     throw new ApiError(500, "Could not create token.")
