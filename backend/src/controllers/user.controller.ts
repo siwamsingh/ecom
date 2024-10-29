@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken"
 import { ApiResponse } from "../utils/apiResponse";
 import bcrypt from "bcryptjs";
 
-const generateAccessAndRefreshToken = async ({_id, phoneNumber, status}: {_id:number, phoneNumber: string, status: string}) => {
+const generateAccessAndRefreshToken = async ({ _id, status, role }: { _id: number, status: string, role: string }) => {
 
   try {
     const jwtSecret = process.env.JWT_SECRET;
@@ -15,7 +15,7 @@ const generateAccessAndRefreshToken = async ({_id, phoneNumber, status}: {_id:nu
     }
 
     const accessToken = jwt.sign(
-      { _id, phoneNumber, status },
+      { _id, status, role },
       jwtSecret,
       { expiresIn: process.env.ACCESS_TOKEN_EXPIRY || '1d' }
     );
@@ -180,7 +180,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   // If login_attempt reaches 3, block login attempts for the next 12 hours
   if (login_attempt >= 3) {
-    throw new ApiError(429, "Too many failed attempts. Please try again after 12 hours."+" @"+last_login_time);
+    throw new ApiError(429, "Too many failed attempts. Please try again after 12 hours." + " @" + last_login_time);
   }
 
   const isPasswordCorrect = await bcrypt.compare(userPassword, password);
@@ -196,7 +196,7 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(402, "Wrong Password.");
   }
 
-  const { accessToken , refreshToken } = await generateAccessAndRefreshToken({_id,phoneNumber: phone_number,status})
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken({ _id, status, role })
 
   const options = {
     httpOnly: true,
@@ -204,22 +204,58 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   res.status(200)
-  .cookie("accessToken",accessToken,options)
-  .cookie("refreshToken",refreshToken,options)
-  .json(new ApiResponse(
-    200,
-    {
-      user: {
-        _id,
-        username,
-        phone_number,
-        status,
-        role
-      }
-    },
-    "User logged In Successfully"
-  ));
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(new ApiResponse(
+      200,
+      {
+        user: {
+          _id,
+          username,
+          phone_number,
+          status,
+          role
+        }
+      },
+      "User logged In Successfully"
+    ));
 
 })
 
-export { registerUser, loginUser };
+const logoutUser = asyncHandler(async (req, res) => {
+  const { _id } = req.body.user;
+
+  if (!_id) {
+    throw new ApiError(400, "User ID is missing from request.");
+  }
+
+  try {
+    const updateTokenQuery = `
+      UPDATE "user"
+      SET refresh_token = $1
+      WHERE _id = $2;
+    `;
+    
+    const result = await client.query(updateTokenQuery, ["", _id]);
+
+    if (result.rowCount === 0) {
+      throw new ApiError(404, "User not found.");
+    }
+
+    const options = {
+      httpOnly: true,
+      secure: true
+    }
+
+    res
+    .status(200)
+    .clearCookie("accessToken",options)
+    .clearCookie("refreshToken",options)
+    .json(new ApiResponse(200,null,"User logged out."));
+  } catch (error) {
+    throw new ApiError(500, "Failed to log out user.");
+  }
+});
+
+
+export { registerUser, loginUser, logoutUser};
