@@ -1,6 +1,6 @@
 CREATE TABLE "user" (
   _id SERIAL PRIMARY KEY,  -- Auto-incrementing ID
-  username VARCHAR(50) UNIQUE NOT NULL,  -- Usernames must be unique
+  username VARCHAR(50) NOT NULL,  -- Usernames can be anything
   phone_number VARCHAR(15) NOT NULL,  -- Phone number is required
   password VARCHAR(255) NOT NULL,  -- Password (hashed, typically)
   status VARCHAR(10) CHECK (status IN ('active', 'inactive', 'blocked')) NOT NULL,  -- Enum-like constraint

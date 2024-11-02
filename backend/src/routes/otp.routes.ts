@@ -3,7 +3,7 @@ import { gernerateRegisterOtp , verifyRegisterOtp} from "../controllers/otp.cont
 
 const router = Router()
 
-router.route('/generate_register_otp').post(gernerateRegisterOtp)
-router.route('/verify_register_otp').post(verifyRegisterOtp)
+router.route('/generate-register-otp').post(gernerateRegisterOtp)
+router.route('/verify-register-otp').post(verifyRegisterOtp)
 
 export default router;

@@ -53,14 +53,12 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   // Check if the username already exists
-  const userExistsQuery = 'SELECT 1 FROM "user" WHERE username = $1 OR phone_number = $2; ';
-  const values = [username, phone_number];
+  const userExistsQuery = 'SELECT 1 FROM "user" WHERE phone_number = $2; ';
 
-
-  const userExistsResult = await client.query(userExistsQuery, values);
+  const userExistsResult = await client.query(userExistsQuery, [phone_number.trim()]);
 
   if (userExistsResult.rowCount !== null && userExistsResult.rowCount > 0) {
-    throw new ApiError(409, "Username or phone number already exists");
+    throw new ApiError(409, "Phone number already in use.");
   }
 
   // if user doesnot exist bring otpToken for that user
@@ -235,7 +233,7 @@ const logoutUser = asyncHandler(async (req, res) => {
       SET refresh_token = $1
       WHERE _id = $2;
     `;
-    
+
     const result = await client.query(updateTokenQuery, ["", _id]);
 
     if (result.rowCount === 0) {
@@ -248,14 +246,67 @@ const logoutUser = asyncHandler(async (req, res) => {
     }
 
     res
-    .status(200)
-    .clearCookie("accessToken",options)
-    .clearCookie("refreshToken",options)
-    .json(new ApiResponse(200,null,"User logged out."));
+      .status(200)
+      .clearCookie("accessToken", options)
+      .clearCookie("refreshToken", options)
+      .json(new ApiResponse(200, null, "User logged out."));
   } catch (error) {
     throw new ApiError(500, "Failed to log out user.");
   }
 });
 
+const refreshAccessToken = asyncHandler(async (req, res) => {
 
-export { registerUser, loginUser, logoutUser};
+  const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
+
+  if (!incomingRefreshToken) {
+    throw new ApiError(401, "Unauthorized request.")
+  }
+
+  const jwt_secret = process.env.JWT_SECRET
+  if (!jwt_secret) {
+    throw new ApiError(504, "Critical Error : Secret key missing.");
+  }
+
+  interface JwtPayload {
+    _id: string
+  }
+
+  const decodedToken = jwt.verify(incomingRefreshToken, jwt_secret) as JwtPayload;
+
+  const userId = decodedToken?._id;
+
+  const findUserQuery = 'SELECT _id , username , password , status , role , refresh_token FROM "user" WHERE _id = $1;'
+
+  const findUserResult = await client.query(findUserQuery, [userId]);
+
+  if (!(findUserResult && findUserResult.rowCount && findUserResult.rowCount > 0)) {
+    throw new ApiError(401, "Invalid Request Token.")
+  }
+
+  let { _id , status, role, refresh_token } = findUserResult.rows[0];
+
+  if (incomingRefreshToken !== refresh_token) {
+    throw new ApiError(401, "Refresh Token Expired or used.")
+  }
+
+  const options = {
+    httpOnly: true,
+    secure: true
+  }
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken({_id , status ,role});
+
+  return res
+  .status(200)
+  .cookie("accessToken",accessToken)
+  .cookie("refreshToken",refreshToken)
+  .json(new ApiResponse(
+    200,
+    null,
+    "Tokens Refreshed Successfully."
+  ))
+
+})
+
+export { registerUser, loginUser, logoutUser , refreshAccessToken};
