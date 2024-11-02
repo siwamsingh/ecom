@@ -17,14 +17,12 @@ app.use(cookieParser())
 //routes import
 
 import userRouter from './routes/user.routes'
-
-
-//routes declaration
 app.use("/api/v1/users",userRouter)
 
-
 import otpRouter from './routes/otp.routes'
-
 app.use("/api/v1/otp",otpRouter)
+
+import categoryRoutes from './routes/categories.routes'
+app.use("/api/v1/category",categoryRoutes)
 
 export default app
