@@ -26,6 +26,11 @@ const generateAccessAndRefreshToken = async ({ _id, status, role }: { _id: numbe
       { expiresIn: process.env.REFRESH_TOKEN_EXPIRY || '30d' }
     );
 
+    await client.query(
+      'UPDATE "user" SET refresh_token = $1 ;',
+      [ refreshToken ]
+    );
+
     return { accessToken, refreshToken };
   } catch (error) {
     throw new ApiError(500, "Something went wrong while generating access and refresh token.")
@@ -53,7 +58,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   // Check if the username already exists
-  const userExistsQuery = 'SELECT 1 FROM "user" WHERE phone_number = $2; ';
+  const userExistsQuery = 'SELECT 1 FROM "user" WHERE phone_number = $1; ';
 
   const userExistsResult = await client.query(userExistsQuery, [phone_number.trim()]);
 
@@ -299,8 +304,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
   return res
   .status(200)
-  .cookie("accessToken",accessToken)
-  .cookie("refreshToken",refreshToken)
+  .cookie("accessToken",accessToken,options)
+  .cookie("refreshToken",refreshToken,options)
   .json(new ApiResponse(
     200,
     null,

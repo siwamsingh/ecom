@@ -136,7 +136,7 @@ const verifyRegisterOtp = asyncHandler(async (req, res) => {
   if (!getOtpDataResult) {
     throw new ApiError(500, "Something went wrong while fetching otp data.");
   }
-  if (getOtpDataResult.rowCount && getOtpDataResult.rowCount === 0) {
+  if (!(getOtpDataResult.rowCount && getOtpDataResult.rowCount > 0)) {
     throw new ApiError(500, "No record for the given number was found.")
   }
 
