@@ -250,7 +250,57 @@ const updateProduct = asyncHandler(async (req, res) => {
   }
 });
 
+const getProducts = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 10, category, status, search } = req.body;
+
+
+  // Pagination calculation
+  const offset = (Number(page) - 1) * Number(limit);
+
+  // Base query
+  let baseQuery = `FROM products WHERE 1=1`;
+  const queryParams: any[] = [];
+
+  // Filtering by category
+  if (category) {
+    baseQuery += ` AND categorie_id = $${queryParams.length + 1}`;
+    queryParams.push(category);
+  }
+
+  // Filtering by status
+  if (status) {
+    baseQuery += ` AND status = $${queryParams.length + 1}`;
+    queryParams.push(status);
+  }
+
+  // Search by product name or description
+  if (search) {
+    baseQuery += ` AND (product_name ILIKE $${queryParams.length + 1} OR description ILIKE $${queryParams.length + 1})`;
+    queryParams.push(`%${search}%`);
+  }
+
+  // Query to get the total count of products
+  const countQuery = `SELECT COUNT(*) ${baseQuery}`;
+  const countResult = await client.query(countQuery, queryParams);
+  const totalCount = parseInt(countResult.rows[0].count, 10);
+  const maxPages = Math.ceil(totalCount / Number(limit));
+
+  // Query to get paginated products
+  const dataQuery = `SELECT * ${baseQuery} LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
+  queryParams.push(limit, offset);
+
+  const result = await client.query(dataQuery, queryParams);
+  res.status(200).json({
+    page,
+    limit,
+    maxPages,
+    totalCount,
+    products: result.rows,
+  });
+});
+
 export {
   addNewProduct,
   updateProduct,
+  getProducts
 }
