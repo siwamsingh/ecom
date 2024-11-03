@@ -39,4 +39,21 @@ async function uploadToCloudinary(localFilePath: string): Promise<{success: bool
   }
 }
 
-export { uploadToCloudinary };
+async function deleteFromCloudinary(imageUrl: string): Promise<{ success: boolean, message: string }> {
+  try {
+    const publicIdMatch = imageUrl.match(/\/([^/]+)\.[\w]+$/);
+    if (!publicIdMatch) {
+      return { success: false, message: "Invalid image URL" };
+    }
+
+    const publicId = publicIdMatch[1]; // Extracted public ID
+    await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
+
+    return { success: true, message: "Image deleted successfully" };
+  } catch (error) {
+    console.log(error);
+    return { success: false, message: "Failed to delete image" };
+  }
+}
+
+export { uploadToCloudinary , deleteFromCloudinary};

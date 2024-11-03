@@ -6,6 +6,6 @@ import upload from "../middlewares/multer.middleware";
 const router = Router()
 
 router.route('/add-new-product').post(verifyJWT,upload.single('image'),addNewProduct)
-router.route('/update-product').post(verifyJWT,updateProduct)
+router.route('/update-product').post(verifyJWT,upload.single('image'),updateProduct)
 
 export default router;
