@@ -226,7 +226,8 @@ const loginUser = asyncHandler(async (req, res) => {
 })
 
 const logoutUser = asyncHandler(async (req, res) => {
-  const { _id } = req.body.user;
+  const { _id } = req.user;
+  ;
 
   if (!_id) {
     throw new ApiError(400, "User ID is missing from request.");

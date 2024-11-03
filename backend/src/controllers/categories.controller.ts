@@ -4,7 +4,7 @@ import { ApiResponse } from "../utils/apiResponse";
 import { asyncHandler } from "../utils/asyncHandler";
 
 const getAllCategories = asyncHandler(async (req, res) => {
-  const user = req.body.user;
+  const user = req.user;
 
   if (user.role !== "admin") {
     throw new ApiError(403, "Permission Denied.");
@@ -31,7 +31,7 @@ const addNewCategory = asyncHandler(async (req, res) => {
 
   let { category_name, url_slug, parent_categorie_id, status } = req.body;
 
-  const user = req.body.user;
+  const user = req.user;
 
   if (user.role !== "admin") {
     throw new ApiError(402, "Permission Denied.")
@@ -87,7 +87,7 @@ const addNewCategory = asyncHandler(async (req, res) => {
 const updateCategory = asyncHandler(async (req, res) => {
   const { _id } = req.body;
   let { category_name, url_slug, status } = req.body;
-  const user = req.body.user;
+  const user = req.user;
 
   if (user.role !== "admin") {
     throw new ApiError(403, "Permission Denied.");
@@ -164,7 +164,7 @@ const updateCategory = asyncHandler(async (req, res) => {
 // NOTE: deal with child category when parent category is destroyed
 const deleteCategory = asyncHandler(async (req, res) => {
   const { _id } = req.body;
-  const user = req.body.user;
+  const user = req.user;
 
   if (user.role !== "admin") {
     throw new ApiError(403, "Permission Denied.");

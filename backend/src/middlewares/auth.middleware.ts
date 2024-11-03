@@ -2,6 +2,7 @@ import { ApiError } from "../utils/apiError";
 import { asyncHandler } from "../utils/asyncHandler";
 import jwt from "jsonwebtoken"
 import { client } from "../db/db.connect";
+import { Request } from "express";
 
 const verifyJWT = asyncHandler(async (req, res, next) => {
 
@@ -32,7 +33,11 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
     throw new ApiError(401, "Invalid Access Token.");
   }
 
-  req.body.user = searchQueryResult.rows[0];
+  interface customRequest extends Request {
+    user: string // or any other type
+  }
+
+  (req as customRequest).user  = searchQueryResult.rows[0];
   next()
 
 })

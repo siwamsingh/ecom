@@ -25,4 +25,7 @@ app.use("/api/v1/otp",otpRouter)
 import categoryRoutes from './routes/categories.routes'
 app.use("/api/v1/category",categoryRoutes)
 
+import productRoutes from './routes/products.routes'
+app.use('/api/v1/product',productRoutes)
+
 export default app
