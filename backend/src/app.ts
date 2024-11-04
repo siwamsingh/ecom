@@ -28,4 +28,7 @@ app.use("/api/v1/category",categoryRoutes)
 import productRoutes from './routes/products.routes'
 app.use('/api/v1/product',productRoutes)
 
+import discountRoutes from './routes/discounts.routes'
+app.use('/api/v1/discount',discountRoutes)
+
 export default app

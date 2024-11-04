@@ -253,6 +253,9 @@ const updateProduct = asyncHandler(async (req, res) => {
 const getProducts = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, category, status, search } = req.body;
 
+  if(status && status!="active" && status!=="inactive"){
+    throw new ApiError(400,"Invalid value of status.")
+  }
 
   // Pagination calculation
   const offset = (Number(page) - 1) * Number(limit);
@@ -290,13 +293,16 @@ const getProducts = asyncHandler(async (req, res) => {
   queryParams.push(limit, offset);
 
   const result = await client.query(dataQuery, queryParams);
-  res.status(200).json({
-    page,
-    limit,
-    maxPages,
-    totalCount,
-    products: result.rows,
-  });
+  res.status(200).json(new ApiResponse(
+    200,
+    {
+      page,
+      limit,
+      maxPages,
+      totalCount,
+      products: result.rows,
+    },
+    "Products fetched successfully."));
 });
 
 export {
