@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware";
-import { addToCart, deleteFromCart, getCart, updateCart } from "../controllers/cart.controllers";
+import { addToCart, deleteFromCart, getCart, updateCart } from "../controllers/cart.controller";
 
 
 const router = Router()
