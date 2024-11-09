@@ -37,4 +37,7 @@ app.use('/api/v1/cart',cartRoutes)
 import addressRoutes from './routes/address.routes'
 app.use('/api/v1/address',addressRoutes)
 
+import orderRoutes from './routes/orders.routes'
+app.use('/api/v1/orders',orderRoutes)
+
 export default app
