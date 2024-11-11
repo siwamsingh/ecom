@@ -49,10 +49,10 @@ function App() {
     }
 
     const options = {
-      key: "RAZOR_PAY_KEY",
+      key: "rzp_test_kDj2MoMcOx7pcM",
       amount: amount,
       currency: "INR",
-      order_id: "order_PJC74qZtLgP7Xv",
+      order_id: "order_PJ9T7S1HEebDpV",
       name: "foon Coders",
       description: "Payment to fon Coders",
       image:

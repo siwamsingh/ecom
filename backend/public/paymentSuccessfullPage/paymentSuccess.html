@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Successful</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .success-icon {
+      font-size: 4rem;
+      color: #4CAF50;
+      margin-bottom: 10px;
+    }
+
+    .message {
+      font-size: 1.25rem;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .order-info {
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    .order-info span {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .redirect-button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .redirect-button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="success-icon">✔️</div>
+    <div class="message">Payment Successful!</div>
+    <div class="order-info">
+      <p>Order ID: <span id="order-id"></span></p>
+      <p>Amount Paid: <span id="amount"></span></p>
+    </div>
+    <a href="#" id="redirect-link" class="redirect-button">Go to Orders</a>
+  </div>
+
+  <script>
+    // Populate order ID and amount dynamically
+    document.getElementById('order-id').textContent = "{{ORDER_ID}}";
+    document.getElementById('amount').textContent = "{{AMOUNT}}";
+    document.getElementById('redirect-link').href = "{{REDIRECT_LINK}}";
+  </script>
+</body>
+</html>

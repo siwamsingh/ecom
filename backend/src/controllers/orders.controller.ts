@@ -4,6 +4,8 @@ import { ApiResponse } from "../utils/apiResponse";
 import { asyncHandler } from "../utils/asyncHandler";
 import { createOrderPromise } from "../utils/razorpay";
 import { verifyRazorpayPayment } from "../utils/razorpay";
+import fs from "fs";
+import path from "path";
 
 const validateInput = (field: string, fieldName: string) => {
   if (!field) {
@@ -21,40 +23,103 @@ const createOrder = asyncHandler(async (req, res) => {
   const { order_items, shipping_address_id, coupon_code } = req.body;
 
   validateInput(shipping_address_id, "Shipping Address");
-  if(coupon_code) validateInput(coupon_code, "Coupon Code");
+  if (coupon_code) validateInput(coupon_code, "Coupon Code");
 
-  if (!Array.isArray(order_items) || order_items.length === 0) {
-    throw new ApiError(400, "Order items should be a non-empty array of valid product IDs.");
+  if (!Array.isArray(order_items) || order_items.length === 0 || order_items.length > 5) {
+    throw new ApiError(400, "Order items should be a non-empty array of valid product IDs with length 0 < len < 5.");
   }
 
 
-  order_items.forEach((item, index) => {
-    validateInput(item, `Order item[${index}]`);
-  });
+  const uniqueProductIds = new Set();
+
+order_items.forEach((item, index) => {
+  validateInput(item, `Order item[${index}]`);
+
+  if (uniqueProductIds.has(item.product_id)) {
+    throw new ApiError(400, "Duplicate product detected. Product id - " + item.product_id);
+  }
+
+  uniqueProductIds.add(item.product_id);
+
+  if (item.quantity <= 0 || item.quantity > 5) {
+    throw new ApiError(400, "Quantity should be between 1 and 5. Product id - " + item.product_id);
+  }
+});
+
+
+  let discountValue = 0;
+  let discountedProductId = -1;
+  if (coupon_code) {
+    const checkCouponQuery = `
+      SELECT product_id, discount_value, start_date, end_date, status
+      FROM discounts
+      WHERE coupon_code = $1;
+    `;
+    const couponResult = await client.query(checkCouponQuery, [coupon_code]);
+    if (couponResult.rowCount === 0) {
+      throw new ApiError(400, "Invalid coupon code.");
+    }
+
+    const coupon = couponResult.rows[0];
+
+    if(!uniqueProductIds.has(coupon.product_id)){
+      throw new ApiError(400,"Given coupoun is not valid for any the products.")
+    }
+
+    const currentDate = new Date();
+    if (coupon.status !== 'active' || currentDate < new Date(coupon.start_date) || currentDate > new Date(coupon.end_date)) {
+      throw new ApiError(400, "The coupon code is not active or is outside the valid date range.");
+    }
+    discountedProductId = coupon.product_id;
+    discountValue = parseFloat(coupon.discount_value);
+  }
 
   const productIds = order_items.map(item => Number(item.product_id));
   const checkProductsExistQuery = `
-    SELECT _id, price
+    SELECT _id, price, stock_quantity
     FROM products
     WHERE _id = ANY($1::int[]) AND status = 'active';
   `;
 
   const result = await client.query(checkProductsExistQuery, [productIds]);
-  
+
+  const stockProductMap = new Map(result.rows.map(row => [row._id,row.stock_quantity]))
+
   const existingProducts = new Map(result.rows.map(row => [row._id, row.price]));
   const missingProducts = productIds.filter(id => !existingProducts.has(id));
-  
+
+
   if (missingProducts.length > 0) {
     throw new ApiError(400, `The following product IDs are invalid or inactive: ${missingProducts.join(', ')}`);
   }
 
   let grossAmount = 0;
+  let discountAmount = 0;
   const orderItemsData = order_items.map(item => {
+
     const productPrice = existingProducts.get(item.product_id);
+    const productStock = stockProductMap.get(item.product_id);
+
+    if(productStock === 0){
+      throw new ApiError(400,`Item with product id ${item.product_id} is out of stock.`)
+    }
+
+    if(productStock < item.quantity){
+      throw new ApiError(400,`Quantity of product with id ${item.product_id} exeeds stock quantity.`)
+    }
+
+
     const totalItemPrice = productPrice * item.quantity;
-    grossAmount += totalItemPrice;
+    if(item.product_id === discountedProductId){
+      discountAmount = parseFloat(((totalItemPrice * discountValue) / 100).toFixed(2));
+      grossAmount += totalItemPrice - discountAmount
+    }else{
+      grossAmount += totalItemPrice;
+    }
+
     return { ...item, price: productPrice, total_amount: totalItemPrice };
   });
+
 
   const checkAddressQuery = `
     SELECT address._id
@@ -67,33 +132,14 @@ const createOrder = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid shipping address. Ensure the address belongs to the user.");
   }
 
-  let discountValue = 0;
-  if (coupon_code) {
-    const checkCouponQuery = `
-      SELECT discount_value, start_date, end_date, status
-      FROM discounts
-      WHERE coupon_code = $1;
-    `;
-    const couponResult = await client.query(checkCouponQuery, [coupon_code]);
-    if (couponResult.rowCount === 0) {
-      throw new ApiError(400, "Invalid coupon code.");
-    }
-
-    const coupon = couponResult.rows[0];
-    const currentDate = new Date();
-    if (coupon.status !== 'active' || currentDate < new Date(coupon.start_date) || currentDate > new Date(coupon.end_date)) {
-      throw new ApiError(400, "The coupon code is not active or is outside the valid date range.");
-    }
-    discountValue = parseFloat(coupon.discount_value);
-  }
-
-  const discountAmount = (grossAmount * discountValue) / 100;
-  const netAmount = grossAmount - discountAmount;
+  const netAmount = parseFloat(grossAmount.toFixed(2)) ;
 
   const orderPromise = createOrderPromise({ amount: netAmount, currency: "INR" });
   let order;
   try {
     order = await orderPromise;
+    console.log(order);
+    
 
     const orderNumber = order.id; // Use order.id as the order_number
 
@@ -123,8 +169,8 @@ const createOrder = asyncHandler(async (req, res) => {
     );
     await Promise.all(orderItemsPromises);
 
-  } catch (error) {
-    throw new ApiError(500, "Something went wrong while creating order.");
+  } catch (error : any) {
+    throw new ApiError(500, "Something went wrong while creating order." + error.stack);
   }
 
   res.status(200).json(new ApiResponse(200, {
@@ -134,12 +180,12 @@ const createOrder = asyncHandler(async (req, res) => {
   }));
 });
 
-
+// on verification stock decreasing not implemented
 const verifyPayment = asyncHandler(async (req, res) => {
   console.log(req);
 
-  const {  razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
-console.log(req.body);
+  const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
+  console.log(req.body);
 
   // Validate inputs
   validateInput(razorpay_payment_id, "Razorpay Payment ID");
@@ -148,7 +194,7 @@ console.log(req.body);
 
   // Check if the order exists and belongs to the user
   const checkOrderQuery = `
-    SELECT _id, payment_status
+    SELECT _id, payment_status, net_amount
     FROM orders
     WHERE order_number = $1;
   `;
@@ -160,12 +206,10 @@ console.log(req.body);
 
   const order = orderResult.rows[0];
 
-  // Check if payment is already marked as paid
   if (order.payment_status === "paid") {
     throw new ApiError(400, "The order has already been paid.");
   }
 
-  // Use the verifyRazorpayPayment function
   try {
     verifyRazorpayPayment({
       razorpay_order_id,
@@ -185,9 +229,23 @@ console.log(req.body);
   await client.query(updateOrderStatusQuery, [razorpay_payment_id, order._id]);
 
 
-  // send a static page of Payment Successfull
-  res.status(200).json(new ApiResponse(200,null,"Payment verified and order status updated to paid."));
+  try {
+    const filePath = path.join(__dirname, '../../public/paymentSuccessfullPage/paymentSuccess.html');
+
+    let htmlData = fs.readFileSync(filePath, 'utf8');
+
+    // Replace placeholders with actual data
+    const html = htmlData
+      .replace('{{ORDER_ID}}', razorpay_order_id)
+      .replace('{{AMOUNT}}', order.net_amount)
+      .replace('{{REDIRECT_LINK}}', `/orders/${order._id}`);
+
+    res.status(200).send(html);
+  } catch (error) {
+    res.status(500).send("Could not load confirmation page");
+  }
+  // res.status(200).json(new ApiResponse(200,null,"Payment verified and order status updated to paid."));
 });
 
 
-export { createOrder , verifyPayment};
+export { createOrder, verifyPayment };
