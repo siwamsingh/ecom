@@ -37,6 +37,10 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
     user: string // or any other type
   }
 
+  if(searchQueryResult.rows[0].status === "blocked" ){
+    throw new ApiError(400, "User has been blocked by the admin.");
+  }
+
   (req as customRequest).user  = searchQueryResult.rows[0];
   next()
 

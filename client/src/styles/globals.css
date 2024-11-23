@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Caladea:ital,wght@0,400;0,700;1,400;1,700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+  
+body {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+/* For Chrome, Safari, and newer versions of Edge */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.montserrat-a-normal {
+  font-family: "Montserrat Alternates", sans-serif;
+  font-style: normal;
+}
+.montserrat-a-italic {
+  font-family: "Montserrat Alternates", sans-serif;
+  font-style: italic;
+}
+
+.caladea-normal {
+  font-family: "Caladea", serif;
+  font-style: normal;
+}
+
+.caladea-italic {
+  font-family: "Caladea", serif;
+  font-style: italic;
+}
+
+.lato-normal {
+  font-family: "Lato", sans-serif;
+  font-style: normal;
+}
+
+.lato-italic {
+  font-family: "Lato", sans-serif;
+  font-style: italic;
+}

@@ -52,7 +52,7 @@ function App() {
       key: "rzp_test_kDj2MoMcOx7pcM",
       amount: amount,
       currency: "INR",
-      order_id: "order_PJ9T7S1HEebDpV",
+      order_id: "order_PKiiFh3j0x8B7S", 
       name: "foon Coders",
       description: "Payment to fon Coders",
       image:
