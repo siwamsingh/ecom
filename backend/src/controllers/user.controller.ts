@@ -141,10 +141,10 @@ const loginUser = asyncHandler(async (req, res) => {
 
   // Validate input fields
   if ([phone_number, userPassword].some((field) => !field)) {
-    throw new ApiError(400, "All fields are required");
+    throw new ApiError(401, "All fields are required");
   }
   if ([phone_number, userPassword].some((field) => field?.trim() === "")) {
-    throw new ApiError(400, "All fields are required");
+    throw new ApiError(401, "All fields are required");
   }
 
   phone_number = phone_number.trim();
@@ -152,7 +152,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const phoneRegex = /^\+91\d{10}$/;
   if (!phoneRegex.test(phone_number)) {
-    throw new ApiError(400, "Invalid phone number.");
+    throw new ApiError(401, "Invalid phone number.");
   }
 
   const findUserQuery = 'SELECT _id , username , password , status , role , last_login_time , login_attempt FROM "user" WHERE phone_number = $1;'
@@ -183,7 +183,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   // If login_attempt reaches 3, block login attempts for the next 12 hours
   if (login_attempt >= 3) {
-    throw new ApiError(429, "Too many failed attempts. Please try again after 12 hours." + " @" + last_login_time);
+    throw new ApiError(401, "Too many failed attempts. Please try again after 12 hours." + " Last Login Time : " + last_login_time);
   }
 
   const isPasswordCorrect = await bcrypt.compare(userPassword, password);
@@ -196,7 +196,7 @@ const loginUser = asyncHandler(async (req, res) => {
       [login_attempt, new Date(), _id]
     );
 
-    throw new ApiError(402, "Wrong Password.");
+    throw new ApiError(401, `Wrong Password. Attempts Remaining : ${3-login_attempt}/3`);
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken({ _id, status, role })
@@ -227,7 +227,6 @@ const loginUser = asyncHandler(async (req, res) => {
 
 const logoutUser = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  ;
 
   if (!_id) {
     throw new ApiError(400, "User ID is missing from request.");
