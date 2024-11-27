@@ -1,11 +1,10 @@
-import { FormEvent, useState } from "react";
-import loginApi from "../apis/login.api";
+import { FormEvent, useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { setUser } from "../redux/slices/userSlice";
+import loginApi from "../apis/login.api";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -29,7 +28,6 @@ export default function LoginPage() {
         userPassword: password,
       });
 
-      console.log(userData);
       dispatch(setUser(userData))
       
       localStorage.setItem("userData", JSON.stringify(userData));

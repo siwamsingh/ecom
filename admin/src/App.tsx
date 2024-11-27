@@ -1,7 +1,10 @@
 import Home from './pages/Home';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/Login';
+import { Routes, Route, useNavigate} from 'react-router-dom';
 import SecuredRoute from './components/SecuredRoutes';
+import { useEffect } from 'react';
+import { useDispatch } from "react-redux";
+import { setUser } from './redux/slices/userSlice';
 
 function About() {
   return <h1>About Page</h1>;
@@ -12,17 +15,33 @@ function Contact() {
 }
 
 function App() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const userString = localStorage.getItem("userData");
+    
+    if (!userString) {
+      navigate("/")
+      return;
+    }
+    try {
+      const userData = JSON.parse(userString);
+      dispatch(setUser(userData));
+    } catch (error) {
+      console.error("Failed to parse user data:", error);
+    }
+  }, []);
+
   return (
-    <Router>
-      <div>
-        <Routes>
-          <Route path="/" element={<SecuredRoute><Home /></SecuredRoute>} />
-          <Route path='/login' element={<LoginPage />} />
-          <Route path="/about" element={<SecuredRoute><About /></SecuredRoute>} />
-          <Route path="/contact" element={<Contact />} />
-        </Routes>
-      </div>
-    </Router>
+    <div>
+      <Routes>
+        <Route path="/" element={<SecuredRoute><Home /></SecuredRoute>} />
+        <Route path='/login' element={<LoginPage />} />
+        <Route path="/about" element={<SecuredRoute><About /></SecuredRoute>} />
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+    </div>
   );
 }
 

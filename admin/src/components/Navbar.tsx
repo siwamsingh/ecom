@@ -1,9 +1,11 @@
 import { FaUserCircle } from "react-icons/fa";
-import { clearUser, setUser } from "../redux/slices/userSlice";
+import { clearUser } from "../redux/slices/userSlice";
 import { useDispatch , useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 function Navbar() {
   const dispatch = useDispatch();
+  const user = useSelector((state: RootState)=> state.user.user)
   
   const logoutUser = ()=>{
     localStorage.removeItem("userData");
@@ -11,7 +13,7 @@ function Navbar() {
   }
 
   return (
-    <div>
+    (user ? <div>
       <div className="navbar bg-base-100">
         <div className="navbar-start">
           <div className="dropdown">
@@ -96,7 +98,7 @@ function Navbar() {
           </ul>
         </div>
       </div>
-    </div>
+    </div> : null)
   );
 }
 
