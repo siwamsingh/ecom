@@ -21,7 +21,17 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
     _id: string
   }
 
-  const decodedToken = jwt.verify(token, jwt_secret) as JwtPayload;
+  let decodedToken = null;
+  try {
+    decodedToken = jwt.verify(token, jwt_secret) as JwtPayload;
+
+  } catch (error: any) {
+    if (error.name === 'TokenExpiredError') {
+      throw new ApiError(577, 'Token has expired');
+    } else {
+      throw new ApiError(501, 'Invalid token');
+    }
+  }
 
   const _id = decodedToken?._id
 

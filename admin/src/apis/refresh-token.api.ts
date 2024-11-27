@@ -1,10 +1,11 @@
 import axios from 'axios';
+
 const serverUrl = import.meta.env.VITE_API_URL;
 
 
-const logoutApi = async () => {
+const refreshApi = async () => {
   try {
-    const response = await axios.post(`${serverUrl}/users/logout`,{},{withCredentials: true});
+    const response = await axios.post(`${serverUrl}/users/refresh-token`,{},{withCredentials: true});
     const {  statusCode, message, success } = response.data;
 
     if (success && statusCode === 200) {
@@ -14,8 +15,8 @@ const logoutApi = async () => {
     }
   } catch (error: any) {
     console.error("Error during login:", error?.message);
-  throw error;
+    throw error;
   }
 };
 
-export default logoutApi
+export default refreshApi

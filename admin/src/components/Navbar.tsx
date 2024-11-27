@@ -4,6 +4,7 @@ import { useDispatch , useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import logoutApi from "../apis/logout.api";
 import { useNavigate } from "react-router-dom";
+import refreshApi from "../apis/refresh-token.api";
 
 function Navbar() {
   const dispatch = useDispatch();
@@ -11,7 +12,26 @@ function Navbar() {
   const navigate = useNavigate()
   
   const logoutUser =async ()=>{
-    await logoutApi();
+    try {
+      await logoutApi();
+    } catch (error:any) {
+      if (error?.status === 577) {
+        try {
+          await refreshApi()
+        } catch (error:any) {
+          if(error?.status === 577){
+            localStorage.removeItem("userData");            
+            dispatch(clearUser());
+            navigate("/login")
+          }else{
+            console.error("Failed to refresh token.")
+            throw error;
+          }
+        }
+      }else{
+        throw error;
+      }
+    }
     localStorage.removeItem("userData");
     dispatch(clearUser());
     navigate("/")

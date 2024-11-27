@@ -255,8 +255,13 @@ const logoutUser = asyncHandler(async (req, res) => {
       .clearCookie("accessToken", options)
       .clearCookie("refreshToken", options)
       .json(new ApiResponse(200, null, "User logged out."));
-  } catch (error) {
-    throw new ApiError(500, "Failed to log out user.");
+  } catch (error: any) {
+
+    if(error?.statusCode === 577){
+      throw new ApiError(error?.statusCode, error?.message)
+    }
+
+    throw new ApiError(501, error?.message ? error?.message : "Failed to log out user.");
   }
 });
 
@@ -277,8 +282,18 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     _id: string
   }
 
-  const decodedToken = jwt.verify(incomingRefreshToken, jwt_secret) as JwtPayload;
-
+  let decodedToken = null;
+try {
+  
+    decodedToken = jwt.verify(incomingRefreshToken, jwt_secret) as JwtPayload;
+  
+} catch (error: any) {
+  if (error?.name === 'TokenExpiredError') {
+    throw new ApiError(577, 'Token has expired');
+  } else {
+    throw new ApiError(501, 'Invalid token');
+  }
+}
   const userId = decodedToken?._id;
 
   const findUserQuery = 'SELECT _id , username , password , status , role , refresh_token FROM "user" WHERE _id = $1;'
@@ -292,7 +307,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   let { _id , status, role, refresh_token } = findUserResult.rows[0];
 
   if (incomingRefreshToken !== refresh_token) {
-    throw new ApiError(401, "Refresh Token Expired or used.")
+    throw new ApiError(477, "Refresh Token Expired or used.")
   }
 
   const options = {
