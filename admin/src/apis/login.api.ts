@@ -9,7 +9,7 @@ type loginData = {
 
 const loginApi = async (loginData: loginData) => {
   try {
-    const response = await axios.post(`${serverUrl}/users/login`, loginData);
+    const response = await axios.post(`${serverUrl}/users/login`, loginData , { withCredentials: true });
     const { data, statusCode, message, success } = response.data;
 
     if (success && statusCode === 200) {

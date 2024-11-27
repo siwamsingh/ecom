@@ -2,14 +2,19 @@ import { FaUserCircle } from "react-icons/fa";
 import { clearUser } from "../redux/slices/userSlice";
 import { useDispatch , useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+import logoutApi from "../apis/logout.api";
+import { useNavigate } from "react-router-dom";
 
 function Navbar() {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState)=> state.user.user)
+  const navigate = useNavigate()
   
-  const logoutUser = ()=>{
+  const logoutUser =async ()=>{
+    await logoutApi();
     localStorage.removeItem("userData");
-    dispatch(clearUser())
+    dispatch(clearUser());
+    navigate("/")
   }
 
   return (
@@ -98,7 +103,8 @@ function Navbar() {
           </ul>
         </div>
       </div>
-    </div> : null)
+    </div> 
+    : null)
   );
 }
 
