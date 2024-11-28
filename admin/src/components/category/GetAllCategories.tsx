@@ -1,4 +1,4 @@
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import getAllCategoriesApi from "../../apis/categories/getAllCategories.api";
 import buildCategoryTree from "../../utility/buildCategoryTree"; // Ensure it correctly builds the tree
 import { useState } from "react";
@@ -29,7 +29,7 @@ const CategoryTree: React.FC<{
       {categories.map((category) => (
         <li key={category._id} className="my-2">
           <span
-            className="font-medium text-lg text-blue-600 hover:text-blue-800 hover:cursor-pointer"
+            className={`font-medium text-lg ${category.status==="active"?"text-blue-600":"text-red-500"} hover:text-blue-800 hover:cursor-pointer`}
             onClick={() => {
               dispatch(
                 setCategory({
@@ -77,7 +77,6 @@ export default function GetAllCategories({ onClick }: { onClick: () => void }) {
 
   return (
     <div className="p-6">
-      <ToastContainer />
       <button className="btn btn-secondary mb-4" onClick={getAllCategories}>
         Click to get categories
       </button>

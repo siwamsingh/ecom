@@ -6,6 +6,7 @@ import SecuredRoute from './components/Common/SecuredRoutes';
 import { useEffect } from 'react';
 import { useDispatch } from "react-redux";
 import { setUser } from './redux/slices/userSlice';
+import { ToastContainer } from 'react-toastify';
 
 function About() {
   return <h1>About Page</h1>;
@@ -36,6 +37,7 @@ function App() {
 
   return (
     <div>
+      <ToastContainer/>
       <Routes>
         <Route path="/" element={<SecuredRoute><Home /></SecuredRoute>} />
         <Route path='/login' element={<LoginPage />} />

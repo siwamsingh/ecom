@@ -167,7 +167,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
   }
 
   if (!_id) {
-    throw new ApiError(400, "Category ID is required.");
+    throw new ApiError(403, "Category ID is required.");
   }
 
   try {
@@ -175,7 +175,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
     const checkResult = await client.query(checkQuery, [_id]);
 
     if (checkResult.rowCount === 0) {
-      throw new ApiError(404, "Category not found.");
+      throw new ApiError(403, "Category not found.");
     }
 
     const deleteQuery = `DELETE FROM categories WHERE _id = $1 RETURNING *;`;
@@ -185,7 +185,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
       new ApiResponse(200, { category: result.rows[0] }, "Category deleted successfully")
     );
   } catch (error) {
-    throw new ApiError(500, (error as ApiError).message || "Failed to delete category.");
+    throw new ApiError(403, (error as ApiError).message || "Failed to delete category.");
   }
 });
 

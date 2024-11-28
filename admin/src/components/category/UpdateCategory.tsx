@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import slugify from 'react-slugify';
 import updateCategoryApi from '../../apis/categories/updateCategory.api';
@@ -62,7 +62,6 @@ const UpdateCategory: React.FC<UpdateCategoryProps> = ({ _id, category_name, url
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-50">
-      <ToastContainer/>
       <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
         <h2 className="text-2xl font-semibold mb-4 text-center">Update Category</h2>
         <form onSubmit={handleSubmit} className="space-y-4">

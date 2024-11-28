@@ -1,7 +1,7 @@
 import { FormEvent, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { setUser } from "../redux/slices/userSlice";
 import loginApi from "../apis/auth/login.api";
@@ -48,7 +48,7 @@ export default function LoginPage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-base-200">
       <div className="card w-full max-w-md shadow-lg bg-base-100 p-8 rounded-lg">
-        <ToastContainer />
+        
         <div className="text-center">
           <h2 className="text-2xl font-bold">Admin Login</h2>
         </div>
