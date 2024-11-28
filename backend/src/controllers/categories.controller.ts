@@ -19,7 +19,7 @@ const getAllCategories = asyncHandler(async (req, res) => {
       new ApiResponse(200, { categories: result.rows }, "Categories fetched successfully")
     );
   } catch (error) {
-    throw new ApiError(500, "Failed to fetch categories.");
+    throw new ApiError(505, "Failed to fetch categories.");
   }
 });
 
@@ -90,23 +90,23 @@ const updateCategory = asyncHandler(async (req, res) => {
   }
 
   if (!_id) {
-    throw new ApiError(400, "Category ID is required.");
+    throw new ApiError(403, "Category ID is required.");
   }
 
   // Validate required fields
   if (!category_name && !url_slug && !status) {
-    throw new ApiError(400, "At least one field is required to update.");
+    throw new ApiError(403, "At least one field is required to update.");
   }
 
   if (category_name) category_name = category_name.trim();
   if (url_slug) url_slug = url_slug.trim();
 
   if (category_name === "" || url_slug === "") {
-    throw new ApiError(400, "Category name cannot be empty.");
+    throw new ApiError(403, "Category name cannot be empty.");
   }
 
   if (status && status !== "active" && status !== "inactive") {
-    throw new ApiError(400, "Invalid value for status.");
+    throw new ApiError(403, "Invalid value for status.");
   }
 
   try {
@@ -115,7 +115,7 @@ const updateCategory = asyncHandler(async (req, res) => {
     const checkResult = await client.query(checkQuery, [_id]);
 
     if (checkResult.rowCount === 0) {
-      throw new ApiError(404, "Category not found.");
+      throw new ApiError(403, "Category not found.");
     }
 
     const updateFields: string[] = [];
@@ -150,10 +150,10 @@ const updateCategory = asyncHandler(async (req, res) => {
     );
   } catch (error) {
     if ((error as any).code && (error as any).code === "23505") {
-      throw new ApiError(409, "Category with the same name or URL slug already exists.");
+      throw new ApiError(403, "Category with the same name or URL slug already exists.");
     }
 
-    throw new ApiError(500, "Failed to update category.");
+    throw new ApiError(403, "Failed to update category.");
   }
 });
 

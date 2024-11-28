@@ -5,6 +5,7 @@ import { useState } from "react";
 import "react-toastify/dist/ReactToastify.css"; // Toastify styles
 import { useDispatch } from "react-redux";
 import { setCategory } from "../../redux/slices/categorySlice";
+import getErrorMsg from "../../utility/getErrorMsg";
 
 type Category = {
   _id: number;
@@ -63,15 +64,14 @@ export default function GetAllCategories({ onClick }: { onClick: () => void }) {
     try {
       const response = await getAllCategoriesApi();
       if (response) {
-        console.log(response);
-        
         const categoryTree = buildCategoryTree(response.categories);
         setCatTree(categoryTree);
         toast.success("Categories fetched successfully!");
       }
     } catch (error) {
+      const errorMsg = getErrorMsg(error,505,"Fetching Categories")
+      toast.error(errorMsg);
       console.error(error);
-      toast.error("Unexpected error while fetching categories.");
     }
   };
 

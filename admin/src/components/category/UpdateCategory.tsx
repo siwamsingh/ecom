@@ -3,6 +3,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import slugify from 'react-slugify';
 import updateCategoryApi from '../../apis/categories/updateCategory.api';
+import getErrorMsg from '../../utility/getErrorMsg';
 
 type UpdateCategoryProps = {
   _id: number|undefined;
@@ -10,10 +11,9 @@ type UpdateCategoryProps = {
   url_slug: string|undefined;
   status: string|undefined;
   onClose: () => void; // to close the modal
-  onUpdateSuccess: () => void; // to trigger a refresh or update after success
 };
 
-const UpdateCategory: React.FC<UpdateCategoryProps> = ({ _id, category_name, url_slug, status, onClose, onUpdateSuccess }) => {
+const UpdateCategory: React.FC<UpdateCategoryProps> = ({ _id, category_name, url_slug, status, onClose }) => {
   const [formData, setFormData] = useState({
     _id,
     category_name,
@@ -49,21 +49,20 @@ const UpdateCategory: React.FC<UpdateCategoryProps> = ({ _id, category_name, url
     try {
       formData._id = _id
       const response = await updateCategoryApi(formData);
-      if (response.success) {
+      if (response) {
         toast.success('Category updated successfully!');
-        onUpdateSuccess();
-        onClose();
       } else {
         toast.error(response.message || 'Error updating category.');
       }
     } catch (error) {
-      toast.error((error as Error).message);
+      const errorMsg = getErrorMsg(error,403,"updating category")
+      toast.error(errorMsg);
     }
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-50">
-      <ToastContainer />
+      <ToastContainer/>
       <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
         <h2 className="text-2xl font-semibold mb-4 text-center">Update Category</h2>
         <form onSubmit={handleSubmit} className="space-y-4">

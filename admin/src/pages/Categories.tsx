@@ -7,9 +7,7 @@ import { RootState } from "../redux/store";
 function Categories() {
   const [showModal, setShowModal] = useState(false);
   const category = useSelector((state: RootState)=>state.category.category)
-  const handleUpdateSuccess = () => {
-    // Refresh categories or do any update-related action
-  };
+  
 
   return (
     <div>
@@ -21,7 +19,6 @@ function Categories() {
           url_slug={category?.url_slug}
           status={category?.status}
           onClose={() => setShowModal(false)}
-          onUpdateSuccess={handleUpdateSuccess}
         />
       )}
       </div>
