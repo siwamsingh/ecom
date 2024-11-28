@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { setUser } from "../redux/slices/userSlice";
-import loginApi from "../apis/login.api";
+import loginApi from "../apis/auth/login.api";
+import getErrorMsg from "../utility/getErrorMsg";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -36,16 +37,7 @@ export default function LoginPage() {
     } catch (error: any) {
       console.log(error);
       
-      let errorMessage = "Unexpected error occurred during login.";
-
-      if (error.response && error.response.status === 401) {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(error.response.data, "text/html");
-        const preElement = doc.querySelector("pre");
-        errorMessage = preElement
-          ? preElement.innerHTML.split("<br>")[0].replace(/^Error:\s*/, "")
-          : errorMessage;
-      }
+      const errorMessage = getErrorMsg(error,401,"login");
 
       toast.error(errorMessage, {
         autoClose: 5000,

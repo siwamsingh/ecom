@@ -6,10 +6,6 @@ import { asyncHandler } from "../utils/asyncHandler";
 const getAllCategories = asyncHandler(async (req, res) => {
   const user = req.user;
 
-  if (user.role !== "admin") {
-    throw new ApiError(403, "Permission Denied.");
-  }
-
   try {
     const query = `
       SELECT _id, category_name, url_slug, parent_categorie_id, status

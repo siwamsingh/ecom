@@ -1,44 +1,50 @@
 import { FaUserCircle } from "react-icons/fa";
-import { clearUser } from "../redux/slices/userSlice";
-import { useDispatch , useSelector } from "react-redux";
-import { RootState } from "../redux/store";
-import logoutApi from "../apis/logout.api";
+import { clearUser } from "../../redux/slices/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import logoutApi from "../../apis/auth/logout.api";
 import { useNavigate } from "react-router-dom";
-import refreshApi from "../apis/refresh-token.api";
+import refreshApi from "../../apis/auth/refresh-token.api";
 
 function Navbar() {
   const dispatch = useDispatch();
-  const user = useSelector((state: RootState)=> state.user.user)
-  const navigate = useNavigate()
-  
-  const logoutUser =async ()=>{
+  const user = useSelector((state: RootState) => state.user.user);
+  const navigate = useNavigate();
+
+  const logoutUser = async () => {
     try {
       await logoutApi();
-    } catch (error:any) {
+    } catch (error: any) {
       if (error?.status === 577) {
         try {
-          await refreshApi()
-        } catch (error:any) {
-          if(error?.status === 577){
-            localStorage.removeItem("userData");            
+          await refreshApi();
+        } catch (error: any) {
+          if (error?.status === 577) {
+            localStorage.removeItem("userData");
             dispatch(clearUser());
-            navigate("/login")
-          }else{
-            console.error("Failed to refresh token.")
+            navigate("/login");
+          } else {
+            console.error("Failed to refresh token.");
+            localStorage.removeItem("userData");
+            dispatch(clearUser());
+            navigate("/login");
             throw error;
           }
         }
-      }else{
+      } else {
+        localStorage.removeItem("userData");
+        dispatch(clearUser());
+        navigate("/login");
         throw error;
       }
     }
     localStorage.removeItem("userData");
     dispatch(clearUser());
-    navigate("/")
-  }
+    navigate("/");
+  };
 
-  return (
-    (user ? <div>
+  return user ? (
+    <div>
       <div className="navbar bg-base-100">
         <div className="navbar-start">
           <div className="dropdown">
@@ -63,16 +69,24 @@ function Navbar() {
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
               <li>
-                <a>Item 1</a>
+                <button onClick={() => navigate("/")}>Home</button>
+              </li>
+              <li>
+                <button onClick={() => navigate("/categories")}>
+                  Categories
+                </button>
               </li>
               <li>
                 <a>Parent</a>
                 <ul className="p-2">
                   <li>
-                    <a>Submenu 1</a>
+                    <button>All Categories</button>
                   </li>
                   <li>
-                    <a>Submenu 2</a>
+                    <button>Add New Category</button>
+                  </li>
+                  <li>
+                    <button>Add New Category</button>
                   </li>
                 </ul>
               </li>
@@ -86,7 +100,12 @@ function Navbar() {
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">
             <li>
-              <a>Item 1</a>
+              <button onClick={() => navigate("/")}>Home</button>
+            </li>
+            <li>
+              <button onClick={() => navigate("/categories")}>
+                Categories
+              </button>
             </li>
             <li>
               <details>
@@ -115,7 +134,12 @@ function Navbar() {
                 </summary>
                 <ul className="">
                   <li>
-                      <button onClick={logoutUser} className="btn btn-outline btn-error">Logout</button>
+                    <button
+                      onClick={logoutUser}
+                      className="btn btn-outline btn-error"
+                    >
+                      Logout
+                    </button>
                   </li>
                 </ul>
               </details>
@@ -123,9 +147,8 @@ function Navbar() {
           </ul>
         </div>
       </div>
-    </div> 
-    : null)
-  );
+    </div>
+  ) : null;
 }
 
 export default Navbar;
