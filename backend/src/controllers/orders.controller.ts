@@ -9,10 +9,10 @@ import path from "path";
 
 const validateInput = (field: string, fieldName: string) => {
   if (!field) {
-    throw new ApiError(400, `${fieldName} is required.`);
+    throw new ApiError(401, `${fieldName} is required.`);
   }
   if (typeof field === 'string' && field.trim() === "") {
-    throw new ApiError(400, `${fieldName} cannot be empty.`);
+    throw new ApiError(401, `${fieldName} cannot be empty.`);
   }
   return field;
 };
@@ -26,7 +26,7 @@ const createOrder = asyncHandler(async (req, res) => {
   if (coupon_code) validateInput(coupon_code, "Coupon Code");
 
   if (!Array.isArray(order_items) || order_items.length === 0 || order_items.length > 5) {
-    throw new ApiError(400, "Order items should be a non-empty array of valid product IDs with length 0 < len < 5.");
+    throw new ApiError(401, "Order items should be a non-empty array of valid product IDs with length 0 < len < 5.");
   }
 
 
@@ -36,13 +36,13 @@ order_items.forEach((item, index) => {
   validateInput(item, `Order item[${index}]`);
 
   if (uniqueProductIds.has(item.product_id)) {
-    throw new ApiError(400, "Duplicate product detected. Product id - " + item.product_id);
+    throw new ApiError(401, "Duplicate product detected. Product id - " + item.product_id);
   }
 
   uniqueProductIds.add(item.product_id);
 
   if (item.quantity <= 0 || item.quantity > 5) {
-    throw new ApiError(400, "Quantity should be between 1 and 5. Product id - " + item.product_id);
+    throw new ApiError(401, "Quantity should be between 1 and 5. Product id - " + item.product_id);
   }
 });
 
@@ -57,18 +57,18 @@ order_items.forEach((item, index) => {
     `;
     const couponResult = await client.query(checkCouponQuery, [coupon_code]);
     if (couponResult.rowCount === 0) {
-      throw new ApiError(400, "Invalid coupon code.");
+      throw new ApiError(401, "Invalid coupon code.");
     }
 
     const coupon = couponResult.rows[0];
 
     if(!uniqueProductIds.has(coupon.product_id)){
-      throw new ApiError(400,"Given coupoun is not valid for any the products.")
+      throw new ApiError(401,"Given coupoun is not valid for any the products.")
     }
 
     const currentDate = new Date();
     if (coupon.status !== 'active' || currentDate < new Date(coupon.start_date) || currentDate > new Date(coupon.end_date)) {
-      throw new ApiError(400, "The coupon code is not active or is outside the valid date range.");
+      throw new ApiError(401, "The coupon code is not active or is outside the valid date range.");
     }
     discountedProductId = coupon.product_id;
     discountValue = parseFloat(coupon.discount_value);
@@ -90,7 +90,7 @@ order_items.forEach((item, index) => {
 
 
   if (missingProducts.length > 0) {
-    throw new ApiError(400, `The following product IDs are invalid or inactive: ${missingProducts.join(', ')}`);
+    throw new ApiError(401, `The following product IDs are invalid or inactive: ${missingProducts.join(', ')}`);
   }
 
   let grossAmount = 0;
@@ -101,11 +101,11 @@ order_items.forEach((item, index) => {
     const productStock = stockProductMap.get(item.product_id);
 
     if(productStock === 0){
-      throw new ApiError(400,`Item with product id ${item.product_id} is out of stock.`)
+      throw new ApiError(401,`Item with product id ${item.product_id} is out of stock.`)
     }
 
     if(productStock < item.quantity){
-      throw new ApiError(400,`Quantity of product with id ${item.product_id} exeeds stock quantity.`)
+      throw new ApiError(401,`Quantity of product with id ${item.product_id} exeeds stock quantity.`)
     }
 
 
@@ -129,7 +129,7 @@ order_items.forEach((item, index) => {
   `;
   const addressResult = await client.query(checkAddressQuery, [shipping_address_id, user._id]);
   if (addressResult.rowCount === 0) {
-    throw new ApiError(400, "Invalid shipping address. Ensure the address belongs to the user.");
+    throw new ApiError(401, "Invalid shipping address. Ensure the address belongs to the user.");
   }
 
   const netAmount = parseFloat(grossAmount.toFixed(2)) ;
@@ -170,7 +170,7 @@ order_items.forEach((item, index) => {
     await Promise.all(orderItemsPromises);
 
   } catch (error : any) {
-    throw new ApiError(500, "Something went wrong while creating order." + error.stack);
+    throw new ApiError(501, "Something went wrong while creating order." + error.stack);
   }
 
   res.status(200).json(new ApiResponse(200, {
@@ -201,13 +201,13 @@ const verifyPayment = asyncHandler(async (req, res) => {
   const orderResult = await client.query(checkOrderQuery, [razorpay_order_id]);
 
   if (orderResult.rowCount === 0) {
-    throw new ApiError(400, "Order not found or does not belong to the user.");
+    throw new ApiError(401, "Order not found or does not belong to the user.");
   }
 
   const order = orderResult.rows[0];
 
   if (order.payment_status === "paid") {
-    throw new ApiError(400, "The order has already been paid.");
+    throw new ApiError(401, "The order has already been paid.");
   }
 
   try {
@@ -217,7 +217,7 @@ const verifyPayment = asyncHandler(async (req, res) => {
       razorpay_signature
     });
   } catch (error) {
-    throw new ApiError(400, "Payment verification failed. Invalid signature.");
+    throw new ApiError(401, "Payment verification failed. Invalid signature.");
   }
 
   // Update the order status to 'paid' after successful verification
@@ -242,7 +242,7 @@ const verifyPayment = asyncHandler(async (req, res) => {
 
     res.status(200).send(html);
   } catch (error) {
-    res.status(500).send("Could not load confirmation page");
+    res.status(501).send("Could not load confirmation page");
   }
   // res.status(200).json(new ApiResponse(200,null,"Payment verified and order status updated to paid."));
 });

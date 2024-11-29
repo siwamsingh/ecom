@@ -14,7 +14,7 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
 
   const jwt_secret = process.env.JWT_SECRET
   if (!jwt_secret) {
-    throw new ApiError(504, "Critical Error : Secret key missing.");
+    throw new ApiError(501, "Critical Error : Secret key missing.");
   }
 
   interface JwtPayload {
@@ -48,7 +48,7 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
   }
 
   if(searchQueryResult.rows[0].status === "blocked" ){
-    throw new ApiError(400, "User has been blocked by the admin.");
+    throw new ApiError(401, "User has been blocked by the admin.");
   }
 
   (req as customRequest).user  = searchQueryResult.rows[0];

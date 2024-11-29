@@ -203,7 +203,9 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: true
+    secure: true,
+    sameSite: 'lax' as 'lax',
+    // maxAge: 30 * 24 * 60 * 60 * 1000 
   }
 
   res.status(200)
@@ -229,7 +231,7 @@ const logoutUser = asyncHandler(async (req, res) => {
   const { _id } = req.user;
 
   if (!_id) {
-    throw new ApiError(400, "User ID is missing from request.");
+    throw new ApiError(401, "User ID is missing from request.");
   }
 
   try {
@@ -242,7 +244,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     const result = await client.query(updateTokenQuery, ["", _id]);
 
     if (result.rowCount === 0) {
-      throw new ApiError(404, "User not found.");
+      throw new ApiError(401, "User not found.");
     }
 
     const options = {
@@ -256,10 +258,6 @@ const logoutUser = asyncHandler(async (req, res) => {
       .clearCookie("refreshToken", options)
       .json(new ApiResponse(200, null, "User logged out."));
   } catch (error: any) {
-
-    if(error?.statusCode === 577){
-      throw new ApiError(error?.statusCode, error?.message)
-    }
 
     throw new ApiError(501, error?.message ? error?.message : "Failed to log out user.");
   }
@@ -275,7 +273,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
   const jwt_secret = process.env.JWT_SECRET
   if (!jwt_secret) {
-    throw new ApiError(504, "Critical Error : Secret key missing.");
+    throw new ApiError(501, "Critical Error : Secret key missing.");
   }
 
   interface JwtPayload {
@@ -307,12 +305,14 @@ try {
   let { _id , status, role, refresh_token } = findUserResult.rows[0];
 
   if (incomingRefreshToken !== refresh_token) {
-    throw new ApiError(477, "Refresh Token Expired or used.")
+    throw new ApiError(577, "Refresh Token Expired or used.")
   }
 
   const options = {
     httpOnly: true,
-    secure: true
+    secure: true,
+    sameSite: 'lax' as 'lax',
+    // maxAge: 30 * 24 * 60 * 60 * 1000 
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken({_id , status ,role});

@@ -10,11 +10,11 @@ const addToCart = asyncHandler(async (req, res) => {
   try {
     // Validate input
     if (!product_id || !quantity || quantity <= 0) {
-      throw new ApiError(400, "Product ID and a positive quantity are required.");
+      throw new ApiError(401, "Product ID and a positive quantity are required.");
     }
 
     if (quantity > 5) {
-      throw new ApiError(400, "Quantity should be between 1 and 5.");
+      throw new ApiError(401, "Quantity should be between 1 and 5.");
     }
 
     // Check if the product exists and is active
@@ -30,7 +30,7 @@ const addToCart = asyncHandler(async (req, res) => {
     const cartItemCount = parseInt(cartCountResult.rows[0].count, 10);
 
     if (cartItemCount >= 5) {
-      throw new ApiError(400, "Cart limit reached. Only 5 items allowed in the cart at a time.");
+      throw new ApiError(401, "Cart limit reached. Only 5 items allowed in the cart at a time.");
     }
 
     // Check if the product is already in the cart
@@ -38,7 +38,7 @@ const addToCart = asyncHandler(async (req, res) => {
     const cartCheckResult = await client.query(cartCheckQuery, [user._id, product_id]);
 
     if (cartCheckResult.rowCount && cartCheckResult.rowCount > 0) {
-      throw new ApiError(409, "Product already in cart.");
+      throw new ApiError(401, "Product already in cart.");
     }
 
     // Insert into cart
@@ -49,7 +49,7 @@ const addToCart = asyncHandler(async (req, res) => {
     `;
     const result = await client.query(insertQuery, [user._id, product_id, quantity]);
 
-    res.status(201).json(new ApiResponse(201, { cart: result.rows[0] }, "Product added to cart successfully."));
+    res.status(200).json(new ApiResponse(200, { cart: result.rows[0] }, "Product added to cart successfully."));
   } catch (error) {
     throw new ApiError((error as ApiError)?.statusCode || 500, (error as ApiError)?.message || "Failed to add product to cart.");
   }
@@ -62,11 +62,11 @@ const updateCart = asyncHandler(async (req, res) => {
   try {
     // Validate input
     if (!product_id || !quantity || quantity <= 0) {
-      throw new ApiError(400, "Product ID and a positive quantity are required.");
+      throw new ApiError(401, "Product ID and a positive quantity are required.");
     }
 
     if(quantity > 5){
-      throw new ApiError(400,"Quantity should be between 1 and 5.")
+      throw new ApiError(401,"Quantity should be between 1 and 5.")
     }
 
     // Validate product exists in cart
@@ -74,7 +74,7 @@ const updateCart = asyncHandler(async (req, res) => {
     const cartCheckResult = await client.query(cartCheckQuery, [user._id, product_id]);
 
     if (cartCheckResult.rowCount === 0) {
-      throw new ApiError(404, "Product not found in cart.");
+      throw new ApiError(401, "Product not found in cart.");
     }
 
     // Update quantity in cart
@@ -99,7 +99,7 @@ const deleteFromCart = asyncHandler(async (req, res) => {
   try {
     // Validate input
     if (!product_id) {
-      throw new ApiError(400, "Product ID is required.");
+      throw new ApiError(401, "Product ID is required.");
     }
 
     // Validate product exists in cart
@@ -107,7 +107,7 @@ const deleteFromCart = asyncHandler(async (req, res) => {
     const cartCheckResult = await client.query(cartCheckQuery, [user._id, product_id]);
 
     if (cartCheckResult.rowCount === 0) {
-      throw new ApiError(404, "Product not found in cart.");
+      throw new ApiError(401, "Product not found in cart.");
     }
 
     // Delete from cart

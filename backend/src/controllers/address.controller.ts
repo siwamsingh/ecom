@@ -73,8 +73,8 @@ const addNewAddress = asyncHandler(async (req, res) => {
     user._id, addressResult.rows[0]._id, addressCount === 0
   ]);
 
-  res.status(201).json(new ApiResponse(
-    201,
+  res.status(200).json(new ApiResponse(
+    200,
     { address: userAddressResult.rows[0] },
     "Address added successfully."
   ));

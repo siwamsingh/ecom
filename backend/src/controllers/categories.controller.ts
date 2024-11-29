@@ -19,7 +19,7 @@ const getAllCategories = asyncHandler(async (req, res) => {
       new ApiResponse(200, { categories: result.rows }, "Categories fetched successfully")
     );
   } catch (error) {
-    throw new ApiError(505, "Failed to fetch categories.");
+    throw new ApiError(501, "Failed to fetch categories.");
   }
 });
 
@@ -60,7 +60,7 @@ const addNewCategory = asyncHandler(async (req, res) => {
     `;
 
     const result = await client.query(insertQuery, [category_name, url_slug, parent_categorie_id, status]);
-    res.status(201).json(new ApiResponse(
+    res.status(200).json(new ApiResponse(
       200,
       {
         category: result.rows[0]
@@ -76,7 +76,7 @@ const addNewCategory = asyncHandler(async (req, res) => {
     if ((error as pgError).code === '23505') {
       throw new ApiError(409, "Category already exists.");
     }
-    throw new ApiError(500, "Failed to create category.");
+    throw new ApiError(501, "Failed to create category.");
   }
 })
 
@@ -86,27 +86,27 @@ const updateCategory = asyncHandler(async (req, res) => {
   const user = req.user;
 
   if (user.role !== "admin") {
-    throw new ApiError(403, "Permission Denied.");
+    throw new ApiError(401, "Permission Denied.");
   }
 
   if (!_id) {
-    throw new ApiError(403, "Category ID is required.");
+    throw new ApiError(401, "Category ID is required.");
   }
 
   // Validate required fields
   if (!category_name && !url_slug && !status) {
-    throw new ApiError(403, "At least one field is required to update.");
+    throw new ApiError(401, "At least one field is required to update.");
   }
 
   if (category_name) category_name = category_name.trim();
   if (url_slug) url_slug = url_slug.trim();
 
   if (category_name === "" || url_slug === "") {
-    throw new ApiError(403, "Category name cannot be empty.");
+    throw new ApiError(401, "Category name cannot be empty.");
   }
 
   if (status && status !== "active" && status !== "inactive") {
-    throw new ApiError(403, "Invalid value for status.");
+    throw new ApiError(401, "Invalid value for status.");
   }
 
   try {
@@ -115,7 +115,7 @@ const updateCategory = asyncHandler(async (req, res) => {
     const checkResult = await client.query(checkQuery, [_id]);
 
     if (checkResult.rowCount === 0) {
-      throw new ApiError(403, "Category not found.");
+      throw new ApiError(401, "Category not found.");
     }
 
     const updateFields: string[] = [];
@@ -150,10 +150,10 @@ const updateCategory = asyncHandler(async (req, res) => {
     );
   } catch (error) {
     if ((error as any).code && (error as any).code === "23505") {
-      throw new ApiError(403, "Category with the same name or URL slug already exists.");
+      throw new ApiError(401, "Category with the same name or URL slug already exists.");
     }
 
-    throw new ApiError(403, "Failed to update category.");
+    throw new ApiError(401, "Failed to update category.");
   }
 });
 
@@ -163,11 +163,11 @@ const deleteCategory = asyncHandler(async (req, res) => {
   const user = req.user;
 
   if (user.role !== "admin") {
-    throw new ApiError(403, "Permission Denied.");
+    throw new ApiError(401, "Permission Denied.");
   }
 
   if (!_id) {
-    throw new ApiError(403, "Category ID is required.");
+    throw new ApiError(401, "Category ID is required.");
   }
 
   try {
@@ -175,7 +175,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
     const checkResult = await client.query(checkQuery, [_id]);
 
     if (checkResult.rowCount === 0) {
-      throw new ApiError(403, "Category not found.");
+      throw new ApiError(401, "Category not found.");
     }
 
     const deleteQuery = `DELETE FROM categories WHERE _id = $1 RETURNING *;`;
@@ -185,7 +185,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
       new ApiResponse(200, { category: result.rows[0] }, "Category deleted successfully")
     );
   } catch (error) {
-    throw new ApiError(403, (error as ApiError).message || "Failed to delete category.");
+    throw new ApiError(401, (error as ApiError).message || "Failed to delete category.");
   }
 });
 

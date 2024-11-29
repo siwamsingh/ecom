@@ -12,15 +12,15 @@ const addNewProduct = asyncHandler(async (req, res) => {
 
   try {
     if (!productImagePath) {
-      throw new ApiError(400, "Product image is required.");
+      throw new ApiError(401, "Product image is required.");
     }
   
     if (user.role !== "admin") {
-      throw new ApiError(402, "Permission Denied.");
+      throw new ApiError(401, "Permission Denied.");
     }
   
     if (!product_name || !url_slug || !price || !status) {
-      throw new ApiError(400, "Missing required fields.");
+      throw new ApiError(401, "Missing required fields.");
     }
   
     product_name = product_name.trim();
@@ -31,7 +31,7 @@ const addNewProduct = asyncHandler(async (req, res) => {
     }
   
     if (product_name === "" || url_slug === "" || price === "") {
-      throw new ApiError(400, "Missing required fields.");
+      throw new ApiError(401, "Missing required fields.");
     }
   
     // Set default values for optional fields
@@ -45,14 +45,14 @@ const addNewProduct = asyncHandler(async (req, res) => {
     const slugCheckResult = await client.query(slugCheckQuery, [url_slug]);
   
     if ( slugCheckResult.rowCount && slugCheckResult.rowCount > 0) {
-      throw new ApiError(409, "Product with this URL slug already exists.");
+      throw new ApiError(401, "Product with this URL slug already exists.");
     }
   
     // Proceed with the upload to Cloudinary only if url_slug is unique
     const { success, imageUrl } = await uploadToCloudinary(productImagePath);
   
     if (!success) {
-      throw new ApiError(500, "Failed to upload image.");
+      throw new ApiError(501, "Failed to upload image.");
     }
   
     try {
@@ -64,7 +64,7 @@ const addNewProduct = asyncHandler(async (req, res) => {
   
       const result = await client.query(insertQuery, [product_name, url_slug, categorie_id, description, price, stock_quantity, status, imageUrl]);
   
-      res.status(201).json(new ApiResponse(
+      res.status(200).json(new ApiResponse(
         200,
         { product: result.rows[0] },
         "Product created successfully"
@@ -79,12 +79,12 @@ const addNewProduct = asyncHandler(async (req, res) => {
   
       // Handle unique constraint violation for url_slug
       if ((error as pgError).code === '23505') {
-        throw new ApiError(409, "Product with this URL slug already exists.");
+        throw new ApiError(401, "Product with this URL slug already exists.");
       }
   
-      throw new ApiError(500, "Failed to create product.");
+      throw new ApiError(501, "Failed to create product.");
     }
-  } catch (error) {
+  } catch (error: any) {
     if (productImagePath && fs.existsSync(productImagePath)) {
       fs.unlinkSync(productImagePath);
     }
@@ -101,17 +101,17 @@ const updateProduct = asyncHandler(async (req, res) => {
   try {
     // Check if user has admin privileges
     if (user.role !== "admin") {
-      throw new ApiError(403, "Permission Denied.");
+      throw new ApiError(401, "Permission Denied.");
     }
   
     // Check if the product ID is provided
     if (!_id) {
-      throw new ApiError(400, "Product ID is required.");
+      throw new ApiError(401, "Product ID is required.");
     }
   
     // Ensure at least one field is being updated
     if (!product_name && !url_slug && !categorie_id && !description && !price && !stock_quantity && !status && !productImagePath) {
-      throw new ApiError(400, "At least one field is required to update.");
+      throw new ApiError(401, "At least one field is required to update.");
     }
   
     if (product_name) product_name = product_name.trim();
@@ -119,19 +119,19 @@ const updateProduct = asyncHandler(async (req, res) => {
   
     // Validation checks
     if ((product_name === "") || (url_slug === "")) {
-      throw new ApiError(400, "Product name and URL slug cannot be empty.");
+      throw new ApiError(401, "Product name and URL slug cannot be empty.");
     }
   
     if (status && status !== "active" && status !== "inactive") {
-      throw new ApiError(400, "Invalid value for status.");
+      throw new ApiError(401, "Invalid value for status.");
     }
   
     if (price != null && price < 0) {
-      throw new ApiError(400, "Price cannot be negative.");
+      throw new ApiError(401, "Price cannot be negative.");
     }
   
     if (stock_quantity != null && stock_quantity < 0) {
-      throw new ApiError(400, "Stock quantity cannot be negative.");
+      throw new ApiError(401, "Stock quantity cannot be negative.");
     }
   
   
@@ -142,7 +142,7 @@ const updateProduct = asyncHandler(async (req, res) => {
       const checkResult = await client.query(checkQuery, [_id]);
   
       if (checkResult.rowCount === 0) {
-        throw new ApiError(404, "Product not found.");
+        throw new ApiError(401, "Product not found.");
       }
   
       // If categorie_id is provided, check if it exists
@@ -150,7 +150,7 @@ const updateProduct = asyncHandler(async (req, res) => {
         const categoryCheckQuery = `SELECT _id FROM categories WHERE _id = $1`;
         const categoryResult = await client.query(categoryCheckQuery, [categorie_id]);
         if (categoryResult.rowCount === 0) {
-          throw new ApiError(400, "Invalid category ID.");
+          throw new ApiError(401, "Invalid category ID.");
         }
       }
   
@@ -160,7 +160,7 @@ const updateProduct = asyncHandler(async (req, res) => {
         const slugCheckResult = await client.query(slugCheckQuery, [url_slug, _id]);
   
         if (slugCheckResult.rowCount && slugCheckResult.rowCount > 0) {
-          throw new ApiError(409, "Product with the same URL slug already exists.");
+          throw new ApiError(401, "Product with the same URL slug already exists.");
         }
       }
   
@@ -174,7 +174,7 @@ const updateProduct = asyncHandler(async (req, res) => {
           if (fs.existsSync(productImagePath)) {
             fs.unlinkSync(productImagePath);
           }
-          throw new ApiError(500, "Failed to upload image.");
+          throw new ApiError(501, "Failed to upload image.");
         }
         imageUrl = cloudinaryUrl;
         updateFields.push("image_url = $" + (updateValues.length + 1));
@@ -254,7 +254,7 @@ const getProducts = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, category, status, search } = req.body;
 
   if(status && status!="active" && status!=="inactive"){
-    throw new ApiError(400,"Invalid value of status.")
+    throw new ApiError(401,"Invalid value of status.")
   }
 
   // Pagination calculation

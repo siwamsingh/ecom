@@ -13,7 +13,7 @@ const gernerateRegisterOtp = asyncHandler(async (req, res) => {
   const phoneRegex = /^\+91\d{10}$/;
 
   if (!phone_number || !phoneRegex.test(phone_number.trim())) {
-    throw new ApiError(400, "Invalid phone number.")
+    throw new ApiError(401, "Invalid phone number.")
   }
 
   const userExistsQuery = 'SELECT 1 FROM "user" WHERE phone_number = $1; ';
@@ -21,7 +21,7 @@ const gernerateRegisterOtp = asyncHandler(async (req, res) => {
   const userExistsResult = await client.query(userExistsQuery, [phone_number.trim()]);
 
   if (userExistsResult.rowCount !== null && userExistsResult.rowCount > 0) {
-    throw new ApiError(408, "Phone number is already verified.");
+    throw new ApiError(401, "Phone number is already verified.");
   }
 
   const otp = otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
@@ -67,7 +67,7 @@ const gernerateRegisterOtp = asyncHandler(async (req, res) => {
 
           numberOfAttempts = 1;
         } else {
-          throw new ApiError(402, "Only 3 request can be sent every 24 hours");
+          throw new ApiError(401, "Only 3 request can be sent every 24 hours");
         }
       } else {
         // if 5 min passed and requestNo < 3 send a update req. attempNo + 1
@@ -78,7 +78,7 @@ const gernerateRegisterOtp = asyncHandler(async (req, res) => {
         numberOfAttempts = attempt_count + 1;
       }
     } else {
-      throw new ApiError(400, "Otp limit reached. Only one otp every 5 min");
+      throw new ApiError(401, "Otp limit reached. Only one otp every 5 min");
     }
   } else {
     // if phone not exist add new record in db
@@ -118,13 +118,13 @@ const verifyRegisterOtp = asyncHandler(async (req, res) => {
   const phoneRegex = /^\+91\d{10}$/;
 
   if (!phone_number || !phoneRegex.test(phone_number.trim())) {
-    throw new ApiError(400, "Invalid phone number.");
+    throw new ApiError(401, "Invalid phone number.");
   }
 
   const otpRegex = /^\d{6}$/;
 
   if (!verification_otp || !otpRegex.test(verification_otp.trim())) {
-    throw new ApiError(400, "Invalid otp.");
+    throw new ApiError(401, "Invalid otp.");
   }
 
   const getOtpDataQuery = ' SELECT otp , last_request_time , ip_address FROM phone_login_otp WHERE phone_number = $1;'
@@ -134,10 +134,10 @@ const verifyRegisterOtp = asyncHandler(async (req, res) => {
   const getOtpDataResult = await client.query(getOtpDataQuery, values);
 
   if (!getOtpDataResult) {
-    throw new ApiError(500, "Something went wrong while fetching otp data.");
+    throw new ApiError(501, "Something went wrong while fetching otp data.");
   }
   if (!(getOtpDataResult.rowCount && getOtpDataResult.rowCount > 0)) {
-    throw new ApiError(500, "No record for the given number was found.")
+    throw new ApiError(501, "No record for the given number was found.")
   }
 
   const { otp, last_request_time, ip_address }: { otp: string, last_request_time: Date, ip_address: string } = getOtpDataResult.rows[0];
@@ -150,7 +150,7 @@ const verifyRegisterOtp = asyncHandler(async (req, res) => {
   try {
     isOtpCorrect = await bcrypt.compare(verification_otp.trim(), otp);
   } catch (error) {
-    throw new ApiError(502, "Something went wrong while compairing otp");
+    throw new ApiError(501, "Something went wrong while compairing otp");
   }
 
   const isWithingFiveMin = (timeNow - lastRequestTime) < 300000;
@@ -158,26 +158,26 @@ const verifyRegisterOtp = asyncHandler(async (req, res) => {
   const isIpMatching = (userIp === ip_address);
 
   if (!isOtpCorrect) {
-    throw new ApiError(400, "Wrong Otp try again.");
+    throw new ApiError(401, "Wrong Otp try again.");
   }
   if (!isWithingFiveMin) {
-    throw new ApiError(400, "OTP has expired try again.");
+    throw new ApiError(401, "OTP has expired try again.");
   }
   if (!isIpMatching) {
-    throw new ApiError(403, "Network was changed.");
+    throw new ApiError(401, "Network was changed.");
   }
 
   // if otp and ip matches in 5 min send a token in db
 
   const jwt_secret = process.env.JWT_SECRET
   if (!jwt_secret) {
-    throw new ApiError(504, "Critical Error : Secret key missing.");
+    throw new ApiError(501, "Critical Error : Secret key missing.");
   }
 
   const otpToken = jwt.sign({ ip: userIp, type: "register"}, jwt_secret, { expiresIn: '10min' });
 
   if (!otpToken) {
-    throw new ApiError(500, "Could not create token.")
+    throw new ApiError(501, "Could not create token.")
   }
 
   const updateTokenQuery = 'UPDATE "phone_login_otp" SET token = $2 WHERE phone_number = $1;'
@@ -192,7 +192,7 @@ const verifyRegisterOtp = asyncHandler(async (req, res) => {
       "verified successfully"
     )
   )}else{
-    throw new ApiError(504,"Database error could not store token.")
+    throw new ApiError(501,"Database error could not store token.")
   }
 
   

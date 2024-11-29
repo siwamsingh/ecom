@@ -11,12 +11,12 @@ const addNewDiscount = asyncHandler(async (req, res) => {
   try {
     // Check if the user has admin permissions
     if (user.role !== "admin") {
-      throw new ApiError(403, "Permission Denied.");
+      throw new ApiError(401, "Permission Denied.");
     }
 
     // Validate required fields
     if (!coupon_code || !product_id || !discount_value || !start_date || !end_date || !status) {
-      throw new ApiError(400, "Missing required fields.");
+      throw new ApiError(401, "Missing required fields.");
     }
 
     // Trim inputs
@@ -25,19 +25,19 @@ const addNewDiscount = asyncHandler(async (req, res) => {
 
     // Check status value
     if (status !== "active" && status !== "inactive") {
-      throw new ApiError(400, "Incorrect value for status.");
+      throw new ApiError(401, "Incorrect value for status.");
     }
 
     // Validate discount value is between 0 and 100
     if (discount_value < 0 || discount_value > 100) {
-      throw new ApiError(400, "Discount value must be between 0 and 100.");
+      throw new ApiError(401, "Discount value must be between 0 and 100.");
     }
 
     // Validate start and end dates
     const startDate = new Date(start_date);
     const endDate = new Date(end_date);
     if (endDate <= startDate) {
-      throw new ApiError(400, "End date must be after start date.");
+      throw new ApiError(401, "End date must be after start date.");
     }
 
     // Check if a discount with the same coupon_code already exists
@@ -47,7 +47,7 @@ const addNewDiscount = asyncHandler(async (req, res) => {
     const codeCheckResult = await client.query(codeCheckQuery, [coupon_code]);
 
     if (codeCheckResult.rowCount && codeCheckResult.rowCount > 0) {
-      throw new ApiError(409, "Discount with this coupon code already exists.");
+      throw new ApiError(401, "Discount with this coupon code already exists.");
     }
 
     // Insert the new discount into the database
@@ -59,13 +59,13 @@ const addNewDiscount = asyncHandler(async (req, res) => {
 
     const result = await client.query(insertQuery, [coupon_code, product_id, discount_value, start_date, end_date, description, status]);
 
-    res.status(201).json(new ApiResponse(
-      201,
+    res.status(200).json(new ApiResponse(
+      200,
       { discount: result.rows[0] },
       "Discount created successfully"
     ));
   } catch (error) {
-    throw new ApiError((error as ApiError)?.statusCode || 500, (error as ApiError)?.message || "Something went wrong while adding new discount.");
+    throw new ApiError((error as ApiError)?.statusCode || 501, (error as ApiError)?.message || "Something went wrong while adding new discount.");
   }
 });
 
@@ -75,31 +75,31 @@ const updateDiscount = asyncHandler(async (req, res) => {
 
   try {
     if (user.role !== "admin") {
-      throw new ApiError(403, "Permission Denied.");
+      throw new ApiError(401, "Permission Denied.");
     }
 
     if (!_id) {
-      throw new ApiError(400, "Discount ID is required.");
+      throw new ApiError(401, "Discount ID is required.");
     }
 
     if (discount_value == null && !start_date && !end_date && !status) {
-      throw new ApiError(400, "At least one field is required to update.");
+      throw new ApiError(401, "At least one field is required to update.");
     }
 
     // Validate fields
     if (discount_value != null && (discount_value < 0 || discount_value > 100)) {
-      throw new ApiError(400, "Discount value must be between 0 and 100.");
+      throw new ApiError(401, "Discount value must be between 0 and 100.");
     }
 
     const startDate = start_date ? new Date(start_date) : null;
     const endDate = end_date ? new Date(end_date) : null;
 
     if (startDate && endDate && endDate <= startDate) {
-      throw new ApiError(400, "End date must be after start date.");
+      throw new ApiError(401, "End date must be after start date.");
     }
 
     if (status && status !== "active" && status !== "inactive") {
-      throw new ApiError(400, "Invalid value for status.");
+      throw new ApiError(401, "Invalid value for status.");
     }
 
     // Check if the discount exists
@@ -107,7 +107,7 @@ const updateDiscount = asyncHandler(async (req, res) => {
     const checkResult = await client.query(checkQuery, [_id]);
 
     if (checkResult.rowCount === 0) {
-      throw new ApiError(404, "Discount not found.");
+      throw new ApiError(401, "Discount not found.");
     }
 
     // Build dynamic update query
@@ -149,7 +149,7 @@ const updateDiscount = asyncHandler(async (req, res) => {
     interface pgError extends Error {
       code: string;
     }
-    throw new ApiError((error as pgError).code === "23505" ? 409 : 500, "Failed to update discount.");
+    throw new ApiError((error as pgError).code === "23505" ? 409 : 501, "Failed to update discount.");
   }
 });
 
@@ -157,11 +157,11 @@ const validateDiscountFilters = (status?: string, expired?: boolean) => {
   const validStatuses = ['active', 'inactive'];
 
   if (status && !validStatuses.includes(status)) {
-    throw new ApiError(400, `Invalid status. Allowed values are: ${validStatuses.join(', ')}`);
+    throw new ApiError(401, `Invalid status. Allowed values are: ${validStatuses.join(', ')}`);
   }
 
   if (expired !== undefined && typeof expired !== 'boolean') {
-    throw new ApiError(400, "Invalid value for expired. It must be a boolean (true or false).");
+    throw new ApiError(401, "Invalid value for expired. It must be a boolean (true or false).");
   }
 };
 
@@ -193,7 +193,7 @@ const getDiscount = asyncHandler(async (req, res) => {
   const result = await client.query(baseQuery, queryParams);
 
   if (result.rowCount === 0) {
-    throw new ApiError(404, "Discount not found.");
+    throw new ApiError(401, "Discount not found.");
   }
 
   res.status(200).json(new ApiResponse(200,
@@ -250,12 +250,12 @@ const deleteDiscount = asyncHandler(async (req, res) => {
 
   // Check if user has admin privileges
   if (user.role !== "admin") {
-    throw new ApiError(403, "Permission Denied.");
+    throw new ApiError(401, "Permission Denied.");
   }
 
   // Check if discount ID is provided
   if (!discount_id) {
-    throw new ApiError(400, "Discount ID is required.");
+    throw new ApiError(401, "Discount ID is required.");
   }
 
   try {
@@ -264,7 +264,7 @@ const deleteDiscount = asyncHandler(async (req, res) => {
     const checkResult = await client.query(checkQuery, [discount_id]);
 
     if (checkResult.rowCount === 0) {
-      throw new ApiError(404, "Discount not found.");
+      throw new ApiError(401, "Discount not found.");
     }
 
     // Delete the discount
@@ -275,7 +275,7 @@ const deleteDiscount = asyncHandler(async (req, res) => {
       new ApiResponse(200, { discount: deleteResult.rows[0] }, "Discount deleted successfully")
     );
   } catch (error) {
-    throw new ApiError(500, "Failed to delete discount.");
+    throw new ApiError(501, "Failed to delete discount.");
   }
 });
 
