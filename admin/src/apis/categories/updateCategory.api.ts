@@ -35,7 +35,7 @@ const updateCategoryApi = async (updateData: UpdateCategoryProps) => {
     try {
       if (error?.status === 577) {
         await refreshApi();
-        await updateCategory(updateData);
+        return await updateCategory(updateData);
       } else {
         throw error;
       }

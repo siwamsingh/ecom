@@ -23,7 +23,7 @@ const getAllCategoriesApi = async () => {
     try {
       if (error?.status === 577) {
         await refreshApi();
-        await getAllCategories();
+        return await getAllCategories();
       } else {
         throw error;
       }

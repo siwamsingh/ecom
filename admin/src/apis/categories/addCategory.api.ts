@@ -32,7 +32,7 @@ const addCategoryApi = async (categoryData: catData) => {
     try {
       if (error?.status === 577) {
         await refreshApi();
-        await addCategory(categoryData);
+        return await addCategory(categoryData);
       } else {
         throw error;
       }

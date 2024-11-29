@@ -30,7 +30,7 @@ const deleteCategoryApi = async (_id: number) => {
     try {
       if (error?.status === 577) {
         await refreshApi();
-        await deleteCategory(_id);
+        return await deleteCategory(_id);
       } else {
         throw error;
       }
