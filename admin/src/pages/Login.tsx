@@ -6,7 +6,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { setUser } from "../redux/slices/userSlice";
 import loginApi from "../apis/auth/login.api";
 import getErrorMsg from "../utility/getErrorMsg";
-
 export default function LoginPage() {
   const navigate = useNavigate();
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -27,7 +26,8 @@ export default function LoginPage() {
       const userData = await loginApi({
         phone_number: phoneNumber,
         userPassword: password,
-      });
+      });// sets the cookies from the server
+
 
       dispatch(setUser(userData))
       
@@ -35,7 +35,7 @@ export default function LoginPage() {
 
       navigate("/");
     } catch (error: any) {
-      console.log(error);
+      console.error(error);
       
       const errorMessage = getErrorMsg(error,401,"login");
 

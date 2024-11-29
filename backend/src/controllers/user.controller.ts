@@ -287,7 +287,7 @@ try {
   
 } catch (error: any) {
   if (error?.name === 'TokenExpiredError') {
-    throw new ApiError(577, 'Token has expired');
+    throw new ApiError(577, 'Session has expired');
   } else {
     throw new ApiError(501, 'Invalid token');
   }

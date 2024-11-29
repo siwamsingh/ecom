@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { toast } from 'react-toastify';
-import slugify from 'react-slugify'; // Importing slugify
-import 'react-toastify/dist/ReactToastify.css'; // Importing Toastify styles
-import addCategoryApi from '../../apis/categories/addCategory.api';
+import React, { useState } from "react";
+import { toast } from "react-toastify";
+import slugify from "react-slugify"; // Importing slugify
+import "react-toastify/dist/ReactToastify.css"; // Importing Toastify styles
+import addCategoryApi from "../../apis/categories/addCategory.api";
+import getErrorMsg from "../../utility/getErrorMsg";
 
 type CategoryFormData = {
   category_name: string;
@@ -11,25 +12,26 @@ type CategoryFormData = {
   status: string;
 };
 
-
 const AddNewCategory: React.FC = () => {
   const [formData, setFormData] = useState<CategoryFormData>({
-    category_name: '',
-    url_slug: '',
+    category_name: "",
+    url_slug: "",
     parent_categorie_id: null,
-    status: 'active',
+    status: "active",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     let { name, value } = e.target;
 
-    if (name === 'category_name') {
+    if (name === "category_name") {
       setFormData((prevData) => ({
         ...prevData,
         [name]: value,
         url_slug: slugify(value),
       }));
-    } else if (name === 'url_slug') {
+    } else if (name === "url_slug") {
       value = slugify(value);
       setFormData((prevData) => ({
         ...prevData,
@@ -48,21 +50,36 @@ const AddNewCategory: React.FC = () => {
     try {
       const response = await addCategoryApi(formData);
       if (response) {
-        toast.success('Category added successfully!');
-        setFormData({ category_name: '', url_slug: '', parent_categorie_id: null, status: 'active' }); // Clear form after success
+        toast.success("Category added successfully!");
+        setFormData({
+          category_name: "",
+          url_slug: "",
+          parent_categorie_id: null,
+          status: "active",
+        }); // Clear form after success
       } else {
-        toast.error(response.message || 'Error adding category.');
+        toast.error(response.message || "Error adding category.");
       }
-    } catch (error) {
-      toast.error((error as Error).message);
+    } catch (error: any) {
+      if (error?.status === 577 || error?.status === 477) {
+        toast.error("Session Expired Login Again.");
+      } else {
+        const errMsg = getErrorMsg(error, 401, "logout");
+        toast.error(errMsg);
+      }
     }
   };
 
   return (
     <div className="container mx-auto p-6">
-      <form onSubmit={handleSubmit} className="border input-bordered p-6 rounded-lg  max-w-lg mx-auto">
+      <form
+        onSubmit={handleSubmit}
+        className="border input-bordered p-6 rounded-lg  max-w-lg mx-auto"
+      >
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Category Name</label>
+          <label className="block text-sm font-medium mb-1">
+            Category Name
+          </label>
           <input
             type="text"
             name="category_name"
@@ -86,12 +103,19 @@ const AddNewCategory: React.FC = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Parent Category ID</label>
+          <label className="block text-sm font-medium mb-1">
+            Parent Category ID
+          </label>
           <input
             type="number"
             name="parent_categorie_id"
-            value={formData.parent_categorie_id ?? ''}
-            onChange={(e) => setFormData((prev) => ({ ...prev, parent_categorie_id: Number(e.target.value) || null }))}
+            value={formData.parent_categorie_id ?? ""}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                parent_categorie_id: Number(e.target.value) || null,
+              }))
+            }
             className="input input-bordered w-full"
             placeholder="Enter parent category ID or leave blank for root category"
           />

@@ -9,7 +9,7 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
   const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
-    throw new ApiError(401, "Unauthorized request");
+    throw new ApiError(477, "Unauthorized request");
   }
 
   const jwt_secret = process.env.JWT_SECRET
@@ -27,7 +27,7 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
 
   } catch (error: any) {
     if (error.name === 'TokenExpiredError') {
-      throw new ApiError(577, 'Token has expired');
+      throw new ApiError(577, 'Session has expired');
     } else {
       throw new ApiError(501, 'Invalid token');
     }

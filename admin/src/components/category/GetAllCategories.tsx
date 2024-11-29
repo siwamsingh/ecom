@@ -21,7 +21,6 @@ const CategoryTree: React.FC<{
   first: boolean;
   onClick: () => void;
 }> = ({ categories, first = false, onClick }) => {
-
   const dispatch = useDispatch();
 
   return (
@@ -29,7 +28,9 @@ const CategoryTree: React.FC<{
       {categories.map((category) => (
         <li key={category._id} className="my-2">
           <span
-            className={`font-medium text-lg ${category.status==="active"?"text-blue-600":"text-red-500"} hover:text-blue-800 hover:cursor-pointer`}
+            className={`font-medium text-lg ${
+              category.status === "active" ? "text-blue-600" : "text-red-500"
+            } hover:text-blue-800 hover:cursor-pointer`}
             onClick={() => {
               dispatch(
                 setCategory({
@@ -68,10 +69,14 @@ export default function GetAllCategories({ onClick }: { onClick: () => void }) {
         setCatTree(categoryTree);
         toast.success("Categories fetched successfully!");
       }
-    } catch (error) {
-      const errorMsg = getErrorMsg(error,505,"Fetching Categories")
-      toast.error(errorMsg);
-      console.error(error);
+    } catch (error: any) {
+      if (error?.status === 577 || error?.status === 477) {
+        toast.error("Session Expired Login Again.");
+      } else {
+        const errorMsg = getErrorMsg(error, 505, "Fetching Categories");
+        toast.error(errorMsg);
+        console.error(error);
+      }
     }
   };
 

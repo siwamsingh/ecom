@@ -1,19 +1,25 @@
-import React, { useState } from 'react';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import slugify from 'react-slugify';
-import updateCategoryApi from '../../apis/categories/updateCategory.api';
-import getErrorMsg from '../../utility/getErrorMsg';
+import React, { useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import slugify from "react-slugify";
+import updateCategoryApi from "../../apis/categories/updateCategory.api";
+import getErrorMsg from "../../utility/getErrorMsg";
 
 type UpdateCategoryProps = {
-  _id: number|undefined;
-  category_name: string|undefined;
-  url_slug: string|undefined;
-  status: string|undefined;
+  _id: number | undefined;
+  category_name: string | undefined;
+  url_slug: string | undefined;
+  status: string | undefined;
   onClose: () => void; // to close the modal
 };
 
-const UpdateCategory: React.FC<UpdateCategoryProps> = ({ _id, category_name, url_slug, status, onClose }) => {
+const UpdateCategory: React.FC<UpdateCategoryProps> = ({
+  _id,
+  category_name,
+  url_slug,
+  status,
+  onClose,
+}) => {
   const [formData, setFormData] = useState({
     _id,
     category_name,
@@ -21,14 +27,16 @@ const UpdateCategory: React.FC<UpdateCategoryProps> = ({ _id, category_name, url
     status,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     let { name, value } = e.target;
 
-    if (name === 'url_slug') {
+    if (name === "url_slug") {
       value = slugify(value); // Convert to slug format
     }
 
-    if (name === 'category_name') {
+    if (name === "category_name") {
       // Auto-generate slug from category name when it changes
       setFormData((prevData) => ({
         ...prevData,
@@ -43,30 +51,38 @@ const UpdateCategory: React.FC<UpdateCategoryProps> = ({ _id, category_name, url
     }
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      formData._id = _id
+    try { 
+      formData._id = _id;
       const response = await updateCategoryApi(formData);
       if (response) {
-        toast.success('Category updated successfully!');
+        toast.success("Category updated successfully!");
       } else {
-        toast.error(response.message || 'Error updating category.');
+        toast.error(response.message || "Error updating category.");
       }
-    } catch (error) {
-      const errorMsg = getErrorMsg(error,403,"updating category")
-      toast.error(errorMsg);
+    } catch (error: any) {
+      if (error?.status === 577 || error?.status === 477) {
+        toast.error("Session Expired Login Again.");
+      } else {
+        const errorMsg = getErrorMsg(error, 403, "updating category");
+        toast.error(errorMsg);
+        console.error(error);
+      }
     }
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-50">
       <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
-        <h2 className="text-2xl font-semibold mb-4 text-center">Update Category</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-center">
+          Update Category
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Category Name</label>
+            <label className="block text-sm font-medium mb-1">
+              Category Name
+            </label>
             <input
               type="text"
               name="category_name"

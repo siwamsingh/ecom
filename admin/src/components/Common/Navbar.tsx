@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import logoutApi from "../../apis/auth/logout.api";
 import { useNavigate } from "react-router-dom";
-import refreshApi from "../../apis/auth/refresh-token.api";
+import getErrorMsg from "../../utility/getErrorMsg";
+import { toast } from "react-toastify";
 
 function Navbar() {
   const dispatch = useDispatch();
@@ -15,32 +16,17 @@ function Navbar() {
     try {
       await logoutApi();
     } catch (error: any) {
-      if (error?.status === 577) {
-        try {
-          await refreshApi();
-        } catch (error: any) {
-          if (error?.status === 577) {
-            localStorage.removeItem("userData");
-            dispatch(clearUser());
-            navigate("/login");
-          } else {
-            console.error("Failed to refresh token.");
-            localStorage.removeItem("userData");
-            dispatch(clearUser());
-            navigate("/login");
-            throw error;
-          }
-        }
+      if (error?.status === 577 || error?.status === 477) {
+        toast.error("Session Expired Login Again.");
       } else {
-        localStorage.removeItem("userData");
-        dispatch(clearUser());
-        navigate("/login");
-        throw error;
+        const errMsg = getErrorMsg(error, 477, "logout");
+        toast.error(errMsg);
       }
     }
+
     localStorage.removeItem("userData");
     dispatch(clearUser());
-    navigate("/");
+    navigate("/login");
   };
 
   return user ? (
@@ -77,6 +63,9 @@ function Navbar() {
                 </button>
               </li>
               <li>
+                <button onClick={() => navigate("/products")}>Products</button>
+              </li>
+              <li>
                 <a>Parent</a>
                 <ul className="p-2">
                   <li>
@@ -106,6 +95,9 @@ function Navbar() {
               <button onClick={() => navigate("/categories")}>
                 Categories
               </button>
+            </li>
+            <li>
+              <button onClick={() => navigate("/products")}>Products</button>
             </li>
             <li>
               <details>
