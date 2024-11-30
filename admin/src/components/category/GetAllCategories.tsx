@@ -4,7 +4,7 @@ import buildCategoryTree from "../../utility/buildCategoryTree"; // Ensure it co
 import { useState } from "react";
 import "react-toastify/dist/ReactToastify.css"; // Toastify styles
 import { useDispatch } from "react-redux";
-import { setCategory } from "../../redux/slices/categorySlice";
+import { setCategories, setCategory } from "../../redux/slices/categorySlice";
 import getErrorMsg from "../../utility/getErrorMsg";
 
 type Category = {
@@ -38,6 +38,7 @@ const CategoryTree: React.FC<{
                   category_name: category.category_name,
                   url_slug: category.url_slug,
                   status: category.status,
+                  parent_categorie_id: category.parent_categorie_id
                 })
               ),
                 onClick();
@@ -61,11 +62,14 @@ const CategoryTree: React.FC<{
 export default function GetAllCategories({ onClick }: { onClick: () => void }) {
   const [catTree, setCatTree] = useState<Category[]>([]);
 
+  const dispatch = useDispatch()
+
   const getAllCategories = async () => {
     try {
       const response = await getAllCategoriesApi();
       if (response) {
         const categoryTree = buildCategoryTree(response.categories);
+        dispatch(setCategories(response.categories))
         setCatTree(categoryTree);
         toast.success("Categories fetched successfully!");
       }

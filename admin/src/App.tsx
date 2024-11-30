@@ -7,7 +7,8 @@ import { useEffect } from 'react';
 import { useDispatch } from "react-redux";
 import { setUser } from './redux/slices/userSlice';
 import { ToastContainer } from 'react-toastify';
-import Products from './pages/Products';
+import Products from './pages/ProductsAdd';
+import ProductsGet from './pages/ProductsGet';
 
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
         <Route path='/login' element={<LoginPage />} />
         <Route path="/categories" element={<SecuredRoute><Categories /></SecuredRoute>} />
         <Route path="/products/add" element={<SecuredRoute><Products /></SecuredRoute>} />
+        <Route path="/products/get" element={<SecuredRoute><ProductsGet /></SecuredRoute>} />
       </Routes>
     </div>
   );

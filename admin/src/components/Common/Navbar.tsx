@@ -71,7 +71,7 @@ function Navbar() {
                     </button>
                   </li>
                   <li>
-                    <button onClick={() => navigate("/products/update")}>
+                    <button onClick={() => navigate("/products/get")}>
                       Update/Delete Product
                     </button>
                   </li>
@@ -105,7 +105,7 @@ function Navbar() {
                     </button>
                   </li>
                   <li>
-                    <button onClick={() => navigate("/products/update")}>
+                    <button onClick={() => navigate("/products/get")}>
                       Update/Delete Product
                     </button>
                   </li>

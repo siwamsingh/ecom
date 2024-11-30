@@ -1,20 +1,25 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+export interface Category {
+  _id: number;
+  category_name: string;
+  url_slug: string;
+  status: string;
+  parent_categorie_id: number|null;
+}
+
 export interface CatState {
-  category: {
-    _id: number,
-    category_name: string,
-    url_slug: string,
-    status: string,
-  } | null;
+  categories: Category[]; // Storing all categories
+  category: Category | null; // Optional field for selected category
 }
 
 const initialState: CatState = {
   category: null,
+  categories: [],
 };
 
 const categorySlice = createSlice({
-  name: "user",
+  name: "user ",
   initialState,
   reducers: {
     setCategory: (state, action: PayloadAction<CatState["category"]>) => {
@@ -23,8 +28,13 @@ const categorySlice = createSlice({
     clearCategory: (state) => {
       state.category = null;
     },
+    setCategories: (state, action: PayloadAction<Category[]>) => {
+      console.log(action.payload);
+      
+      state.categories = action.payload;
+    }
   },
 });
 
-export const { setCategory, clearCategory } = categorySlice.actions;
+export const { setCategory, clearCategory, setCategories } = categorySlice.actions;
 export default categorySlice.reducer;
