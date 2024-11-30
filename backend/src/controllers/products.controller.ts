@@ -81,14 +81,18 @@ const addNewProduct = asyncHandler(async (req, res) => {
       if ((error as pgError).code === '23505') {
         throw new ApiError(401, "Product with this URL slug already exists.");
       }
-  
-      throw new ApiError(501, "Failed to create product.");
+      if ((error as pgError).code === '23503') {
+        throw new ApiError(401, "Category Id not found.");
+      }
+      console.log(error);
+      
+      throw new ApiError(401, "Failed to create product.");
     }
   } catch (error: any) {
     if (productImagePath && fs.existsSync(productImagePath)) {
       fs.unlinkSync(productImagePath);
     }
-    throw new ApiError((error as ApiError)?.statusCode || 500 , (error as ApiError)?.message || "Something went wrong while adding new product.")
+    throw new ApiError((error as ApiError)?.statusCode || 501 , (error as ApiError)?.message || "Something went wrong while adding new product.")
   }
 });
 

@@ -65,7 +65,7 @@ const UpdateCategory: React.FC<UpdateCategoryProps> = ({
       if (error?.status === 577 || error?.status === 477) {
         toast.error("Session Expired Login Again.");
       } else {
-        const errorMsg = getErrorMsg(error, 403, "updating category");
+        const errorMsg = getErrorMsg(error, 401, "updating category");
         toast.error(errorMsg);
         console.error(error);
       }

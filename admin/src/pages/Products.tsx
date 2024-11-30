@@ -1,4 +1,3 @@
-import React from 'react'
 import AddProductForm from '../components/product/AddProduct'
 
 function Products() {

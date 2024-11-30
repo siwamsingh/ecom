@@ -63,19 +63,17 @@ function Navbar() {
                 </button>
               </li>
               <li>
-                <button onClick={() => navigate("/products")}>Products</button>
-              </li>
-              <li>
-                <a>Parent</a>
+                <a>Product</a>
                 <ul className="p-2">
                   <li>
-                    <button>All Categories</button>
+                    <button onClick={() => navigate("/products/add")}>
+                      Add Product
+                    </button>
                   </li>
                   <li>
-                    <button>Add New Category</button>
-                  </li>
-                  <li>
-                    <button>Add New Category</button>
+                    <button onClick={() => navigate("/products/update")}>
+                      Update/Delete Product
+                    </button>
                   </li>
                 </ul>
               </li>
@@ -96,18 +94,20 @@ function Navbar() {
                 Categories
               </button>
             </li>
-            <li>
-              <button onClick={() => navigate("/products")}>Products</button>
-            </li>
+
             <li>
               <details>
-                <summary>Parent</summary>
+                <summary>Product</summary>
                 <ul className="p-2">
                   <li>
-                    <a>Submenu 1</a>
+                    <button onClick={() => navigate("/products/add")}>
+                      Add Product
+                    </button>
                   </li>
                   <li>
-                    <a>Submenu 2</a>
+                    <button onClick={() => navigate("/products/update")}>
+                      Update/Delete Product
+                    </button>
                   </li>
                 </ul>
               </details>

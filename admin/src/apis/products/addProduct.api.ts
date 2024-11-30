@@ -1,5 +1,6 @@
 // src/api/addProductApi.ts
 import axios from 'axios';
+import refreshApi from '../auth/refresh-token.api';
 
 const serverUrl = import.meta.env.VITE_API_URL;
 
@@ -14,7 +15,7 @@ type ProductData = {
   product_image: File;
 };
 
-const addProductApi = async (productData: ProductData) => {
+const addProduct = async (productData: ProductData)=>{
   const formData = new FormData();
   
   formData.append('product_name', productData.product_name);
@@ -27,22 +28,40 @@ const addProductApi = async (productData: ProductData) => {
   formData.append('product_image', productData.product_image);
 
   try {
-    const response = await axios.post(`${serverUrl}/product/add-new`, formData, {
+    const response = await axios.post(`${serverUrl}/product/add-new-product`, formData, {
       withCredentials: true,
       headers: { 'Content-Type': 'multipart/form-data' },
     });
-
+  
     const { data, statusCode, message, success } = response.data;
-
+  
     if (success && statusCode === 200) {
       console.log(message);
       return data;
     } else {
       throw new Error(message || 'An unexpected error occurred.');
     }
+  } catch (error) {
+    throw error
+  }
+}
+
+const addProductApi = async (productData: ProductData) => {
+  
+  try {
+    await addProduct(productData);
   } catch (error: any) {
     console.error('Error during product addition:', error?.message);
-    throw error;
+    try {
+      if (error?.status === 577) {
+        await refreshApi();
+        return await addProduct(productData);
+      } else {
+        throw error;
+      }
+    } catch (err: any) {
+      throw err;
+    }
   }
 };
 
