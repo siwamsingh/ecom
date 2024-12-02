@@ -74,7 +74,7 @@ export default function GetAllCategories({ onClick }: { onClick: () => void }) {
         toast.success("Categories fetched successfully!");
       }
     } catch (error: any) {
-      if (error?.status === 577 || error?.status === 477) {
+      if (error.status &&  error?.status === 577 || error?.status === 477) {
         toast.error("Session Expired Login Again.");
       } else {
         const errorMsg = getErrorMsg(error, 505, "Fetching Categories");

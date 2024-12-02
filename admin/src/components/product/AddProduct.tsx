@@ -134,7 +134,7 @@ const AddProductForm = () => {
       toast.success("Product added successfully!");
       resetForm();
     } catch (error: any) {
-      if (error?.status === 577 || error?.status === 477) {
+      if (error.status &&  error?.status === 577 || error?.status === 477) {
         toast.error("Session Expired Login Again.");
       } else {
         const errorMsg = getErrorMsg(error, null, "adding product");

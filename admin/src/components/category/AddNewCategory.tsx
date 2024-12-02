@@ -61,7 +61,7 @@ const AddNewCategory: React.FC = () => {
         toast.error(response.message || "Error adding category.");
       }
     } catch (error: any) {
-      if (error?.status === 577 || error?.status === 477) {
+      if (error.status &&  error?.status === 577 || error?.status === 477) {
         toast.error("Session Expired Login Again.");
       } else {
         const errMsg = getErrorMsg(error, 401, "add category");

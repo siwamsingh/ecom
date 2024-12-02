@@ -16,7 +16,7 @@ function Navbar() {
     try {
       await logoutApi();
     } catch (error: any) {
-      if (error?.status === 577 || error?.status === 477) {
+      if (error.status &&  error?.status === 577 || error?.status === 477) {
         toast.error("Session Expired Login Again.");
       } else {
         const errMsg = getErrorMsg(error, 477, "logout");
@@ -72,7 +72,7 @@ function Navbar() {
                   </li>
                   <li>
                     <button onClick={() => navigate("/products/get")}>
-                      Update/Delete Product
+                      Update Product
                     </button>
                   </li>
                 </ul>
@@ -106,7 +106,7 @@ function Navbar() {
                   </li>
                   <li>
                     <button onClick={() => navigate("/products/get")}>
-                      Update/Delete Product
+                      Update Product
                     </button>
                   </li>
                 </ul>

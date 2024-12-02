@@ -1,21 +1,29 @@
+import { useEffect } from 'react';
 import Home from './pages/Home';
 import LoginPage from './pages/Login';
-import Categories from './pages/Categories';
-import { Routes, Route, useNavigate} from 'react-router-dom';
-import SecuredRoute from './components/Common/SecuredRoutes';
-import { useEffect } from 'react';
-import { useDispatch } from "react-redux";
-import { setUser } from './redux/slices/userSlice';
-import { ToastContainer } from 'react-toastify';
 import Products from './pages/ProductsAdd';
 import ProductsGet from './pages/ProductsGet';
+import Categories from './pages/Categories';
+import { Routes, Route, useNavigate} from 'react-router-dom';
+import { useDispatch } from "react-redux";
+import SecuredRoute from './components/Common/SecuredRoutes';
+import { setUser } from './redux/slices/userSlice';
+import { ToastContainer } from 'react-toastify';
+
 
 
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  
+
+  let loadedOnce = false
+
   useEffect(() => {
+    if(loadedOnce) return;
+    loadedOnce = true;
+
     const userString = localStorage.getItem("userData");
     
     if (!userString) {
@@ -28,6 +36,7 @@ function App() {
     } catch (error) {
       console.error("Failed to parse user data:", error);
     }
+
   }, []);
 
   return (

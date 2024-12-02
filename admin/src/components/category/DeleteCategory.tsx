@@ -16,7 +16,7 @@ const DeleteCategory: React.FC<DeleteCategoryProps> = ({ _id }) => {
         await deleteCategoryApi(_id);
         toast.success("Category deleted successfully!");
       } catch (error: any) {
-        if (error?.status === 577 || error?.status === 477) {
+        if (error.status &&  error?.status === 577 || error?.status === 477) {
           toast.error("Session Expired Login Again.");
         } else {
           const errMsg = getErrorMsg(error, 401, "delete category");
