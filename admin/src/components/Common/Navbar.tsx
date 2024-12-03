@@ -78,6 +78,21 @@ function Navbar() {
                 </ul>
               </li>
               <li>
+                <a>Discount</a>
+                <ul className="p-2">
+                  <li>
+                    <button onClick={() => navigate("/discounts/add")}>
+                      Add Discount
+                    </button>
+                  </li>
+                  <li>
+                    <button onClick={() => navigate("/discounts/get")}>
+                      Update Discount
+                    </button>
+                  </li>
+                </ul>
+              </li>
+              <li>
                 <a>Item 3</a>
               </li>
             </ul>
@@ -98,7 +113,7 @@ function Navbar() {
             <li>
               <details>
                 <summary>Product</summary>
-                <ul className="p-2">
+                <ul className="p-2 z-50">
                   <li>
                     <button onClick={() => navigate("/products/add")}>
                       Add Product
@@ -107,6 +122,23 @@ function Navbar() {
                   <li>
                     <button onClick={() => navigate("/products/get")}>
                       Update Product
+                    </button>
+                  </li>
+                </ul>
+              </details>
+            </li>
+            <li>
+              <details>
+                <summary>Discount</summary>
+                <ul className="p-2 z-50">
+                  <li>
+                    <button onClick={() => navigate("/discounts/add")}>
+                      Add Discount
+                    </button>
+                  </li>
+                  <li>
+                    <button onClick={() => navigate("/discounts/get")}>
+                      Update Discount
                     </button>
                   </li>
                 </ul>

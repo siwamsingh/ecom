@@ -9,6 +9,8 @@ import { useDispatch } from "react-redux";
 import SecuredRoute from './components/Common/SecuredRoutes';
 import { setUser } from './redux/slices/userSlice';
 import { ToastContainer } from 'react-toastify';
+import AddDiscount from './pages/AddDiscount';
+import GetDiscounts from './pages/GetDiscounts';
 
 
 
@@ -48,6 +50,8 @@ function App() {
         <Route path="/categories" element={<SecuredRoute><Categories /></SecuredRoute>} />
         <Route path="/products/add" element={<SecuredRoute><Products /></SecuredRoute>} />
         <Route path="/products/get" element={<SecuredRoute><ProductsGet /></SecuredRoute>} />
+        <Route path="/discounts/add" element={<SecuredRoute><AddDiscount /></SecuredRoute>} />
+        <Route path="/discounts/get" element={<SecuredRoute><GetDiscounts/></SecuredRoute>} />
       </Routes>
     </div>
   );
