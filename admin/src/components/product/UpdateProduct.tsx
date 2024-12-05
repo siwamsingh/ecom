@@ -65,7 +65,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ product, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-sm h-fit text-base sm:text-lg ">
       <div className=" px-2 w-full sm:w-7/12 h-screen overflow-auto">
-        <div className="  dark:bg-gray-800 p-4 rounded-lg shadow-lg focus">
+        <div className="bg-gray-100  dark:bg-gray-800 p-4 rounded-lg shadow-lg focus">
           <div className="mb-6 ">
             <div
               className="relative flex justify-end cursor-pointer"
@@ -77,7 +77,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ product, onClose }) => {
             <img
               src={product.image_url}
               alt={product.product_name}
-              className="overflow-scroll h-48 object-contain rounded-lg"
+              className="overflow-scroll border h-48 object-contain rounded-lg"
             />
           </div>
           <div className="flex h-fit  items-center gap-1 mb-8">

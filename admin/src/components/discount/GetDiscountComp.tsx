@@ -123,7 +123,7 @@ const GetDiscountComp: React.FC = () => {
         {discounts.map((discount) => (
           <div
             key={discount._id}
-            className="card bg-white dark:bg-gray-800 shadow-lg p-4 rounded-lg transition-all duration-300"
+            className="card bg-gray-100 dark:bg-gray-800 shadow-lg p-4 rounded-lg transition-all duration-300"
           >
             <div className="flex justify-between">
             <h2 className="text-base sm:text-lg md:text-xl font-bold mb-4 flex  gap-4 dark:text-white">

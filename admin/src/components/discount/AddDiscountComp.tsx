@@ -50,7 +50,7 @@ const AddDiscountComp: React.FC = ({}) => {
   
 
   return (
-    <div className="max-w-2xl mx-auto sm:p-8 shadow-md bg-base-100 rounded-lg">
+    <div className="max-w-2xl mx-auto sm:p-8 shadow-md bg-gray-100 dark:bg-base-100 rounded-lg">
       <div className=" p-4 sm:p-8 mx-auto  rounded-lg max-w-lg">
         <h2 className="text-2xl font-bold mb-4">Add Discount</h2>
         <form onSubmit={handleSubmit} className="space-y-4">

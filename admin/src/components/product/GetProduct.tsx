@@ -212,7 +212,7 @@ const GetProduct = () => {
           products.map((product) => (
             <div
               key={product._id}
-              className={`flex items-center p-2 sm:p-4 bg-white dark:bg-gray-800 shadow-md rounded-md border ${
+              className={`flex items-center p-2 sm:p-4 bg-gray-100 dark:bg-gray-800 shadow-md rounded-md border ${
                 product.status !== "active"
                   ? "border-red-500"
                   : "border-transparent"
@@ -225,7 +225,7 @@ const GetProduct = () => {
                 src={product.image_url}
                 alt={product.product_name}
                 loading="lazy"
-                className="w-24 h-24 object-contain rounded-md flex-shrink-0 "
+                className="w-24 h-24 bg-blue-100 object-contain rounded-md flex-shrink-0 "
               />
               <div className="ml-2 flex-1 overflow-hidden  ">
                 <h2 className="font-semibold text-base sm:text-lg ">
