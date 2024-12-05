@@ -27,8 +27,7 @@ const generateAccessAndRefreshToken = async ({ _id, status, role }: { _id: numbe
     );
 
     await client.query(
-      'UPDATE "user" SET refresh_token = $1 ;',
-      [ refreshToken ]
+      'UPDATE "user" SET refresh_token = $1 ;', [refreshToken]
     );
 
     return { accessToken, refreshToken };
@@ -196,7 +195,7 @@ const loginUser = asyncHandler(async (req, res) => {
       [login_attempt, new Date(), _id]
     );
 
-    throw new ApiError(401, `Wrong Password. Attempts Remaining : ${3-login_attempt}/3`);
+    throw new ApiError(401, `Wrong Password. Attempts Remaining : ${3 - login_attempt}/3`);
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken({ _id, status, role })
@@ -281,17 +280,17 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 
   let decodedToken = null;
-try {
-  
+  try {
+
     decodedToken = jwt.verify(incomingRefreshToken, jwt_secret) as JwtPayload;
-  
-} catch (error: any) {
-  if (error?.name === 'TokenExpiredError') {
-    throw new ApiError(577, 'Session has expired');
-  } else {
-    throw new ApiError(501, 'Invalid token');
+
+  } catch (error: any) {
+    if (error?.name === 'TokenExpiredError') {
+      throw new ApiError(577, 'Session has expired');
+    } else {
+      throw new ApiError(501, 'Invalid token');
+    }
   }
-}
   const userId = decodedToken?._id;
 
   const findUserQuery = 'SELECT _id , username , password , status , role , refresh_token FROM "user" WHERE _id = $1;'
@@ -302,7 +301,7 @@ try {
     throw new ApiError(401, "Invalid Request Token.")
   }
 
-  let { _id , status, role, refresh_token } = findUserResult.rows[0];
+  let { _id, status, role, refresh_token } = findUserResult.rows[0];
 
   if (incomingRefreshToken !== refresh_token) {
     throw new ApiError(577, "Refresh Token Expired or used.")
@@ -315,18 +314,203 @@ try {
     // maxAge: 30 * 24 * 60 * 60 * 1000 
   }
 
-  const { accessToken, refreshToken } = await generateAccessAndRefreshToken({_id , status ,role});
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken({ _id, status, role });
 
   return res
-  .status(200)
-  .cookie("accessToken",accessToken,options)
-  .cookie("refreshToken",refreshToken,options)
-  .json(new ApiResponse(
-    200,
-    null,
-    "Tokens Refreshed Successfully."
-  ))
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(new ApiResponse(
+      200,
+      null,
+      "Tokens Refreshed Successfully."
+    ))
 
 })
 
-export { registerUser, loginUser, logoutUser , refreshAccessToken};
+// only for admin 
+const editUserConfig = asyncHandler(async (req, res) => {
+  let user = req.user;
+
+  if (user.role && user.role !== "admin") {
+    throw new ApiError(401, "Permisson Denied.")
+  }
+
+  const { user_id, user_phone_number, user_status, user_login_attempt } = req.body
+
+  const customerUserId = user_id;
+  const customerPhoneNumber = user_phone_number;
+
+
+  if (!customerUserId && !customerPhoneNumber) {
+    throw new ApiError(401, "User Id or Phone Number Is Required.");
+  }
+
+  if (!user_status && !user_login_attempt) {
+    throw new ApiError(401, "Atleast One Field Is Required.");
+  }
+
+  if (user_status !== "active" && user_status !== "inactive" && user_status !== "blocked") {
+    throw new ApiError(401, "Enter A Valid User Status.");
+  }
+
+  if (user_login_attempt < 0 || user_login_attempt > 3) {
+    throw new ApiError(401, "Enter A Valid Number Between 0 And 3");
+  }
+
+  let queryParam: string;
+  let queryParamVal: number | string;
+
+  if (customerPhoneNumber) {
+    queryParam = "phone_number = $1"
+    queryParamVal = customerPhoneNumber
+  } else {
+    queryParam = "_id = $1"
+    queryParamVal = customerUserId
+  }
+
+  try {
+    const checkQuery = `SELECT _id , role FROM "user" WHERE ${queryParam}`;
+
+    const checkResult = await client.query(checkQuery, [queryParamVal]);
+
+    if (checkResult.rowCount === 0) {
+      throw new ApiError(401, "User doesn't exist.");
+    }
+
+    const userToUpdate = checkResult.rows[0];
+    const userToUpdateId = checkResult.rows[0]._id;
+
+    if (userToUpdate.role === "admin") {
+      throw new ApiError(401, "Cannot edit another admin.")
+    }
+
+    const updateFields: string[] = [];
+    const updateValues: any[] = [];
+
+    if (user_login_attempt) {
+      updateFields.push("login_attempt = $" + (updateValues.length + 1));
+      updateValues.push(user_login_attempt);
+    }
+    if (user_status) {
+      updateFields.push("status = $" + (updateValues.length + 1));
+      updateValues.push(user_status);
+    }
+
+    updateValues.push(userToUpdateId)
+
+    const updateQuery = `
+    UPDATE "user"
+    SET ${updateFields.join(", ")}
+    WHERE _id = $${updateValues.length} ;`;
+
+    await client.query(updateQuery, updateValues);
+
+    res.status(200).json(
+      new ApiResponse(200, {}, "User updated successfully.")
+    );
+
+  } catch (error: any) {
+    throw new ApiError(error?.statusCode ? error.statusCode : 501, error?.message ? error.message : "Something went wrong while updating user data.")
+  }
+})
+
+const getUsers = asyncHandler(async (req, res) => {
+  const { page = 1, role, status } = req.body;
+
+  const limit = 10;
+
+  if (limit < 1 || page < 1) {
+    throw new ApiError(400, "Page and limit must be greater than 0.");
+  }
+
+  const conditions: string[] = [];
+  const queryValues: any[] = [];
+
+  if (role) {
+    conditions.push(`role = $${queryValues.length + 1}`);
+    queryValues.push(role);
+  }
+  if (status) {
+    conditions.push(`status = $${queryValues.length + 1}`);
+    queryValues.push(status);
+  }
+
+  const offset = (page - 1) * limit;
+  queryValues.push(limit, offset);
+
+  const whereClause = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  const fetchQuery = `
+    SELECT _id, username, phone_number, status, role, last_login_time, login_attempt, created_at
+    FROM "user"
+    ${whereClause}
+    ORDER BY _id ASC
+    LIMIT $${queryValues.length - 1} OFFSET $${queryValues.length};
+  `;
+
+  try {
+    const result = await client.query(fetchQuery, queryValues);
+
+    res.status(200).json(
+      new ApiResponse(200, {
+        success: true,
+        total: result.rowCount,
+        page,
+        limit,
+        data: result.rows,
+      }, "User updated successfully.")
+    );
+
+  } catch (error: any) {
+    throw new ApiError(
+      error?.statusCode || 500,
+      error?.message || "Error fetching user data."
+    );
+  }
+});
+
+const getUser = asyncHandler(async (req, res) => {
+  const { user_id, user_phone_number } = req.body;
+
+  if (!user_id && !user_phone_number) {
+    throw new ApiError(400, "User ID or Phone Number is required.");
+  }
+
+  let query;
+  let queryValue;
+
+  if (user_id) {
+    query = 'SELECT _id, username, phone_number, status, role, last_login_time, login_attempt, created_at FROM "user" WHERE _id = $1';
+    queryValue = user_id;
+  } else {
+    query = 'SELECT _id, username, phone_number, status, role, last_login_time, login_attempt, created_at FROM "user" WHERE phone_number = $1';
+    queryValue = user_phone_number;
+  }
+
+  try {
+    const result = await client.query(query, [queryValue]);
+
+    if (result.rowCount === 0) {
+      throw new ApiError(404, "User not found.");
+    }
+
+    res.status(200).json(
+      new ApiResponse(200, {
+        success: true,
+        user: result.rows[0]
+      }, "User fetched successfully.")
+    );
+
+  } catch (error: any) {
+    throw new ApiError(
+      error?.statusCode || 500,
+      error?.message || "Error fetching user data."
+    );
+  }
+});
+
+
+
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken, editUserConfig, getUsers, getUser };

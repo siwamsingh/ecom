@@ -86,7 +86,7 @@ const updateCategory = asyncHandler(async (req, res) => {
   const user = req.user;
 
   if (user.role !== "admin") {
-    throw new ApiError(401, "Permission Denied.");
+    throw new ApiError(401, "Permisson Denied.");
   }
 
   if (!_id) {
