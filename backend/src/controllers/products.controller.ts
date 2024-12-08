@@ -269,10 +269,12 @@ const getProducts = asyncHandler(async (req, res) => {
   const queryParams: any[] = [];
 
   // Filtering by category
-  if (category && category !== -1) {
+  if (category && category !== -1 && category !== "-1") {
     baseQuery += ` AND categorie_id = $${queryParams.length + 1}`;
     queryParams.push(category);
   }
+
+  
 
   // Filtering by status
   if (status) {
