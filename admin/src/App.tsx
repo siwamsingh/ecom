@@ -11,6 +11,7 @@ import { setUser } from './redux/slices/userSlice';
 import { ToastContainer } from 'react-toastify';
 import AddDiscount from './pages/AddDiscount';
 import GetDiscounts from './pages/GetDiscounts';
+import GetUser from './pages/GetUser';
 
 
 
@@ -52,6 +53,7 @@ function App() {
         <Route path="/products/get" element={<SecuredRoute><ProductsGet /></SecuredRoute>} />
         <Route path="/discounts/add" element={<SecuredRoute><AddDiscount /></SecuredRoute>} />
         <Route path="/discounts/get" element={<SecuredRoute><GetDiscounts/></SecuredRoute>} />
+        <Route path="/users/get-users" element={<SecuredRoute><GetUser/></SecuredRoute>} />
       </Routes>
     </div>
   );

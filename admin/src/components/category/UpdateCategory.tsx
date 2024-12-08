@@ -73,8 +73,8 @@ const UpdateCategory: React.FC<UpdateCategoryProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-50">
-      <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
+      <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-6 w-96 shadow-lg">
         <h2 className="text-2xl font-semibold mb-4 text-center">
           Update Category
         </h2>

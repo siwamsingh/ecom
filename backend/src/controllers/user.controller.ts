@@ -200,9 +200,9 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken({ _id, status, role })
 
-  const options = {
+  const options = {  // change these if problem with cookies 
     httpOnly: true,
-    secure: true,
+    secure: false,
     sameSite: 'lax' as 'lax',
     // maxAge: 30 * 24 * 60 * 60 * 1000 
   }
@@ -309,7 +309,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: false,
     sameSite: 'lax' as 'lax',
     // maxAge: 30 * 24 * 60 * 60 * 1000 
   }

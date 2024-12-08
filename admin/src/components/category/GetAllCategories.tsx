@@ -85,7 +85,7 @@ export default function GetAllCategories({ onClick }: { onClick: () => void }) {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-0 sm:p-6">
       <button className="btn btn-secondary mb-4" onClick={getAllCategories}>
         Click to get categories
       </button>

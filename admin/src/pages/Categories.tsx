@@ -12,7 +12,7 @@ function Categories() {
   const category = useSelector((state: RootState) => state.category.category);
 
   return (
-    <div className="flex flex-col sm:flex-row h-fit p-6 bg-base-200 text-base-content sm:gap-3">
+    <div className="flex flex-col sm:flex-row h-fit p-2 sm:p-6 bg-base-200 text-base-content sm:gap-3">
       {/* Left Side - Categories Tree */}
       <div className="sm:w-2/5 w-full bg-base-100 p-4 rounded-md shadow-lg mb-4 sm:mb-0">
         <h2 className="text-2xl font-bold mb-4">Category Tree</h2>

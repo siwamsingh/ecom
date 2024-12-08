@@ -29,8 +29,6 @@ const categorySlice = createSlice({
       state.category = null;
     },
     setCategories: (state, action: PayloadAction<Category[]>) => {
-      console.log(action.payload);
-      
       state.categories = action.payload;
     }
   },

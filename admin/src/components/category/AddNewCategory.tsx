@@ -71,10 +71,10 @@ const AddNewCategory: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto sm:p-6">
       <form
         onSubmit={handleSubmit}
-        className="border input-bordered p-6 rounded-lg  max-w-lg mx-auto"
+        className="border input-bordered p-3 pt-6 sm:p-6  rounded-lg  max-w-lg mx-auto"
       >
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">

@@ -30,7 +30,7 @@ function Navbar() {
   };
 
   return user ? (
-    <div>
+    <div className="z-50">
       <div className="navbar bg-base-100">
         <div className="navbar-start">
           <div className="dropdown">
@@ -150,7 +150,7 @@ function Navbar() {
           </ul>
         </div>
         <div className="navbar-end ">
-          <ul className="menu menu-horizontal px-1">
+          <ul className="menu menu-horizontal px-1 z-50">
             <li>
               <details>
                 <summary>

@@ -65,7 +65,7 @@ const GetProduct = () => {
           toast.success("Categories loaded successfully!");
         }
       } catch (error: any) {
-        if ((error.status && error?.status === 577) || error?.status === 477) {
+        if ((error?.status && (error?.status === 577) || error?.status === 477)) {
           toast.error("Session Expired Login Again.");
         } else {
           toast.error("Categories not loaded. RELOAD");
@@ -103,6 +103,11 @@ const GetProduct = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+
+    if (name === "category" && value === "-1") {
+      setFilters({ ...filters, [name]: undefined });
+    }
+
     setFilters({ ...filters, [name]: value });
   };
 
@@ -120,6 +125,8 @@ const GetProduct = () => {
     const selectedCategoryId =
       categories.find((cat) => cat._id === categoryId)?._id || -1;
     setSelectedCategory(selectedCategoryId);
+
+    handleFilterChange(e);
   };
 
   return (
@@ -150,6 +157,7 @@ const GetProduct = () => {
             categories.map((cat) => (
               <option key={cat._id} value={cat._id}>
                 {cat.category_name}
+                {" ( " + cat._id + " ) "}
               </option>
             ))}
         </select>

@@ -94,20 +94,20 @@ const GetDiscountComp: React.FC = () => {
         </div>
       )}
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Discounts</h2>
+        <h2 className="text-xl sm:text-2xl font-bold">Discounts</h2>
         <div className="flex space-x-4">
           <select
             value={status}
             onChange={(e) =>
               setStatus(e.target.value as "active" | "inactive" | "")
             }
-            className="select select-bordered"
+            className="sm:select sm:select-bordered border focus:border-none text-sm "
           >
-            <option value="">All Statuses</option>
+            <option value="" >All Statuses</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
-          <label className="flex items-center space-x-2">
+          <label className="flex items-center space-x-2 text-xs sm:text-base">
             <input
               type="checkbox"
               checked={showExpired}
@@ -147,7 +147,7 @@ const GetDiscountComp: React.FC = () => {
             <p className="text-gray-700 dark:text-gray-300 text-sm md:text-sm">
               Discount: {discount.discount_value}%
             </p>
-            <p className="text-gray-700 dark:text-gray-300 text-xs md:text-sm">
+            <p className="text-gray-700 dark:text-gray-300 text-sm md:text-sm">
               Start Date: {new Date(discount.start_date).toLocaleDateString()}
             </p>
             <p className="text-gray-700 dark:text-gray-300 text-sm md:text-sm">
