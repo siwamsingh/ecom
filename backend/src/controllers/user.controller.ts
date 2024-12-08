@@ -417,7 +417,6 @@ const editUserConfig = asyncHandler(async (req, res) => {
 
 const getUsers = asyncHandler(async (req, res) => {
   const { page = 1, role, status } = req.body;
-
   const limit = 10;
 
   if (limit < 1 || page < 1) {
@@ -436,32 +435,49 @@ const getUsers = asyncHandler(async (req, res) => {
     queryValues.push(status);
   }
 
-  const offset = (page - 1) * limit;
-  queryValues.push(limit, offset);
-
   const whereClause = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
 
+  // Query to fetch users
   const fetchQuery = `
     SELECT _id, username, phone_number, status, role, last_login_time, login_attempt, created_at
     FROM "user"
     ${whereClause}
     ORDER BY _id ASC
-    LIMIT $${queryValues.length - 1} OFFSET $${queryValues.length};
+    LIMIT $${queryValues.length + 1} OFFSET $${queryValues.length + 2};
   `;
 
+  // Query to count total users matching the conditions
+  const countQuery = `
+    SELECT COUNT(*) AS total
+    FROM "user"
+    ${whereClause};
+  `;
+
+  queryValues.push(limit, (page - 1) * limit);
+
   try {
-    const result = await client.query(fetchQuery, queryValues);
+    const [userResult, countResult] = await Promise.all([
+      client.query(fetchQuery, queryValues),
+      client.query(countQuery, queryValues.slice(0, -2)),
+    ]);
+
+    const totalUsers = parseInt(countResult.rows[0].total, 10);
+    const maxPages = Math.ceil(totalUsers / limit);
 
     res.status(200).json(
-      new ApiResponse(200, {
-        success: true,
-        total: result.rowCount,
-        page,
-        limit,
-        data: result.rows,
-      }, "User updated successfully.")
+      new ApiResponse(
+        200,
+        {
+          success: true,
+          total: totalUsers,
+          page,
+          limit,
+          maxPages,
+          data: userResult.rows,
+        },
+        "Users fetched successfully."
+      )
     );
-
   } catch (error: any) {
     throw new ApiError(
       error?.statusCode || 500,
@@ -469,6 +485,7 @@ const getUsers = asyncHandler(async (req, res) => {
     );
   }
 });
+
 
 const getUser = asyncHandler(async (req, res) => {
   const { user_id, user_phone_number } = req.body;

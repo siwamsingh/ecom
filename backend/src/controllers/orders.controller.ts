@@ -1,3 +1,4 @@
+import { query } from "express";
 import { client } from "../db/db.connect";
 import { ApiError } from "../utils/apiError";
 import { ApiResponse } from "../utils/apiResponse";
@@ -247,5 +248,76 @@ const verifyPayment = asyncHandler(async (req, res) => {
   // res.status(200).json(new ApiResponse(200,null,"Payment verified and order status updated to paid."));
 });
 
+const getOrdersOfUser= asyncHandler(async (req,res)=>{
+  const {user_id} = req.body;
 
-export { createOrder, verifyPayment };
+  const user = req.user;
+
+  if(!user_id){
+    throw new ApiError(401,"user_id is required");
+  }
+
+  if (user.role && user.role !== "admin" && user._id !== Number(user_id)) {
+    throw new ApiError(401, "Permisson Denied.")
+  }
+
+  const getOrdersQuery = `
+  SELECT
+    o.*,
+    COALESCE(
+        JSON_AGG(
+            JSON_BUILD_OBJECT(
+                'order_item_id', oi._id,
+                'product_id', oi.product_id,
+                'quantity', oi.quantity,
+                'price', oi.price,
+                'total_amount', oi.total_amount,
+                'shipping_address_id', oi.shipping_address_id,
+                'created_at', oi.created_at,
+                'product_details', JSON_BUILD_OBJECT(
+                    'product_name', p.product_name,
+                    'url_slug', p.url_slug,
+                    'categorie_id', p.categorie_id,
+                    'description', p.description,
+                    'price', p.price,
+                    'stock_quantity', p.stock_quantity,
+                    'status', p.status,
+                    'image_url', p.image_url
+                )
+            )
+        ) FILTER (WHERE oi._id IS NOT NULL),
+        '[]'
+    ) AS order_items
+FROM
+    orders o
+LEFT JOIN
+    order_items oi ON o._id = oi.order_id
+LEFT JOIN
+    products p ON oi.product_id = p._id
+WHERE
+    o.user_id = $1
+GROUP BY
+    o._id
+ORDER BY
+    o.created_at DESC;
+
+  `
+
+  try {
+    const queryResult  = await client.query(getOrdersQuery,[user_id]);
+    console.log(queryResult.rows);
+
+    res.status(200).json(queryResult.rows)
+      
+  } catch (error: any) {
+    throw new ApiError(
+      error?.statusCode || 501,
+      error?.message || "Something went wrong while fetching orders."
+    );
+  }
+})
+
+
+export { createOrder, verifyPayment, 
+  getOrdersOfUser
+ };
