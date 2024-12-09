@@ -6,6 +6,9 @@ import { toast } from "react-toastify";
 import getErrorMsg from "../../utility/getErrorMsg";
 import imageCompression from "browser-image-compression";
 
+import { IoBagAdd } from "react-icons/io5";
+
+
 const AddProductForm = () => {
   const [productData, setProductData] = useState({
     product_name: "",
@@ -178,7 +181,7 @@ const AddProductForm = () => {
 
   return (
     <div className="max-w-2xl mx-auto p-8 bg-gray-100 shadow-md dark:bg-base-100 rounded-lg mt-10">
-      <h2 className="text-lg sm:text-xl font-bold mb-5">Add New Product</h2>
+      <h2 className="text-lg sm:text-xl font-bold mb-5 flex items-center gap-2 sm:gap-4"><IoBagAdd size={20}/>Add Product</h2>
       <form onSubmit={handleSubmit} className="space-y-6 text-sm sm:text-base">
         <label>
           Product Name

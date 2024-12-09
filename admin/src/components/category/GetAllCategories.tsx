@@ -7,6 +7,8 @@ import { useDispatch } from "react-redux";
 import { setCategories, setCategory } from "../../redux/slices/categorySlice";
 import getErrorMsg from "../../utility/getErrorMsg";
 
+import { GrTree } from "react-icons/gr";
+
 type Category = {
   _id: number;
   category_name: string;
@@ -24,13 +26,14 @@ const CategoryTree: React.FC<{
   const dispatch = useDispatch();
 
   return (
-    <ul className={`pl-6 mb-8  ${first ? "" : "border-l border-gray-300"}`}>
+    <ul className={` ${first ? "" : "border-l border-gray-800 dark:border-gray-300 ml-[2.7rem]"}`}>
+      
       {categories.map((category) => (
-        <li key={category._id} className="my-2">
+        <li key={category._id} className="pt-4">
           <span
-            className={`font-medium text-lg ${
+            className={`font-medium text-sm ${
               category.status === "active" ? "text-blue-600" : "text-red-500"
-            } hover:text-blue-800 hover:cursor-pointer`}
+            } hover:opacity-50 hover:border-r border-gray-800 dark:border-gray-300 hover:cursor-pointer flex items-center gap-2`}
             onClick={() => {
               dispatch(
                 setCategory({
@@ -38,14 +41,21 @@ const CategoryTree: React.FC<{
                   category_name: category.category_name,
                   url_slug: category.url_slug,
                   status: category.status,
-                  parent_categorie_id: category.parent_categorie_id
+                  parent_categorie_id: category.parent_categorie_id,
                 })
               ),
                 onClick();
             }}
           >
-            {category._id + " . " + category.category_name}
+            <div className="flex gap-2">
+              <div className={`w-6 h-6 ${first ? "":"border-b border-gray-800 dark:border-gray-300"} relative bottom-0`}></div>
+            <div className=" text-sm text-black text-center dark:text-white  h-fit border border-gray-800 dark:border-gray-300 w-6 flex items-center justify-center">
+              {category._id}
+            </div>{" "}
+            {category.category_name}
+            </div>
           </span>
+          
           {category.children && category.children.length > 0 && (
             <CategoryTree
               categories={category.children}
@@ -62,19 +72,19 @@ const CategoryTree: React.FC<{
 export default function GetAllCategories({ onClick }: { onClick: () => void }) {
   const [catTree, setCatTree] = useState<Category[]>([]);
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const getAllCategories = async () => {
     try {
       const response = await getAllCategoriesApi();
       if (response) {
         const categoryTree = buildCategoryTree(response.categories);
-        dispatch(setCategories(response.categories))
+        dispatch(setCategories(response.categories));
         setCatTree(categoryTree);
         toast.success("Categories fetched successfully!");
       }
     } catch (error: any) {
-      if (error.status &&  error?.status === 577 || error?.status === 477) {
+      if ((error.status && error?.status === 577) || error?.status === 477) {
         toast.error("Session Expired Login Again.");
       } else {
         const errorMsg = getErrorMsg(error, 505, "Fetching Categories");
@@ -86,8 +96,11 @@ export default function GetAllCategories({ onClick }: { onClick: () => void }) {
 
   return (
     <div className="p-0 sm:p-6">
-      <button className="btn btn-secondary mb-4" onClick={getAllCategories}>
-        Click to get categories
+      <button
+        className="btn btn-secondary mb-4 p-2 "
+        onClick={getAllCategories}
+      >
+        <GrTree size={20} />
       </button>
       <CategoryTree categories={catTree} first={true} onClick={onClick} />
     </div>

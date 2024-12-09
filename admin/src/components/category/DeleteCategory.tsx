@@ -4,6 +4,9 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import getErrorMsg from "../../utility/getErrorMsg";
 
+import { RiDeleteBinLine } from "react-icons/ri";
+
+
 type DeleteCategoryProps = {
   _id: number | null;
 };
@@ -31,9 +34,9 @@ const DeleteCategory: React.FC<DeleteCategoryProps> = ({ _id }) => {
     <div className="flex justify-center items-center p-4">
       <button
         onClick={handleDelete}
-        className="btn btn-error text-white px-4 py-2 rounded-md shadow-md hover:bg-red-600 focus:outline-none"
+        className="btn btn-error text-white px-4 py-2 rounded-md shadow-md hover:bg-red-600 focus:outline-none flex items-center"
       >
-        Delete Category
+        <RiDeleteBinLine size={18}/> Category
       </button>
     </div>
   );

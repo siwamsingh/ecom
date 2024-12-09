@@ -4,6 +4,8 @@ import slugify from "react-slugify"; // Importing slugify
 import "react-toastify/dist/ReactToastify.css"; // Importing Toastify styles
 import addCategoryApi from "../../apis/categories/addCategory.api";
 import getErrorMsg from "../../utility/getErrorMsg";
+import { MdOutlinePostAdd } from "react-icons/md";
+
 
 type CategoryFormData = {
   category_name: string;
@@ -133,8 +135,8 @@ const AddNewCategory: React.FC = () => {
           </select>
         </div>
         <div className="flex justify-end">
-          <button type="submit" className="btn btn-primary">
-            Add Category
+          <button type="submit" className="btn btn-primary flex items-center ">
+          <MdOutlinePostAdd size={22}/> Category
           </button>
         </div>
       </form>
