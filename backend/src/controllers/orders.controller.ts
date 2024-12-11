@@ -120,10 +120,10 @@ order_items.forEach((item, index) => {
 
     return { ...item, price: productPrice, total_amount: totalItemPrice };
   });
-
+ 
 
   const checkAddressQuery = `
-    SELECT address._id
+    SELECT address.*
     FROM address
     JOIN user_address ON address._id = user_address.address_id
     WHERE address._id = $1 AND user_address.user_id = $2;
@@ -132,6 +132,9 @@ order_items.forEach((item, index) => {
   if (addressResult.rowCount === 0) {
     throw new ApiError(401, "Invalid shipping address. Ensure the address belongs to the user.");
   }
+  
+
+  const shipping_address = JSON.stringify(addressResult.rows[0])
 
   const netAmount = parseFloat(grossAmount.toFixed(2)) ;
 
@@ -139,16 +142,15 @@ order_items.forEach((item, index) => {
   let order;
   try {
     order = await orderPromise;
-    console.log(order);
-    
 
     const orderNumber = order.id; // Use order.id as the order_number
 
     const createOrderQuery = `
-    INSERT INTO orders (order_number, user_id, total_amount, discount_amount, gross_amount, net_amount, status, payment_status, shipping_address_id)
+    INSERT INTO orders (order_number, user_id, total_amount, discount_amount, gross_amount, net_amount, status, payment_status, shipping_address)
     VALUES ($1, $2, $3, $4, $5, $6, 'placed', 'unpaid', $7)
     RETURNING _id;
   `;
+
     const orderResult = await client.query(createOrderQuery, [
       orderNumber,
       user._id,
@@ -156,7 +158,7 @@ order_items.forEach((item, index) => {
       discountAmount,
       grossAmount,
       netAmount,
-      shipping_address_id,
+      shipping_address,
     ]);
 
     const orderId = orderResult.rows[0]._id;
@@ -275,6 +277,7 @@ const getOrdersOfUser= asyncHandler(async (req,res)=>{
                 'shipping_address_id', oi.shipping_address_id,
                 'created_at', oi.created_at,
                 'product_details', JSON_BUILD_OBJECT(
+                    'product_id', p._id,
                     'product_name', p.product_name,
                     'url_slug', p.url_slug,
                     'categorie_id', p.categorie_id,
@@ -305,9 +308,8 @@ ORDER BY
 
   try {
     const queryResult  = await client.query(getOrdersQuery,[user_id]);
-    console.log(queryResult.rows);
-
-    res.status(200).json(queryResult.rows)
+    
+    res.status(200).json(new ApiResponse(200,queryResult.rows,"Orders fetched successfully"))
       
   } catch (error: any) {
     throw new ApiError(

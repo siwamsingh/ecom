@@ -82,6 +82,7 @@ const GetProduct = () => {
     if (loadedOnce) return;
     loadedOnce = true;
     loadCategories();
+    fetchProducts();
   }, []);
 
   const fetchProducts = async () => {

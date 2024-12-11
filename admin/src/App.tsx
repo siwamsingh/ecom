@@ -12,6 +12,7 @@ import { ToastContainer } from 'react-toastify';
 import AddDiscount from './pages/AddDiscount';
 import GetDiscounts from './pages/GetDiscounts';
 import GetUser from './pages/GetUser';
+import UserHistory from './components/user/UserHistory';
 
 
 
@@ -54,6 +55,8 @@ function App() {
         <Route path="/discounts/add" element={<SecuredRoute><AddDiscount /></SecuredRoute>} />
         <Route path="/discounts/get" element={<SecuredRoute><GetDiscounts/></SecuredRoute>} />
         <Route path="/users/get-users" element={<SecuredRoute><GetUser/></SecuredRoute>} />
+        <Route path="/users/get-user-history/:userId" element={<SecuredRoute><UserHistory /></SecuredRoute>} />
+
       </Routes>
     </div>
   );

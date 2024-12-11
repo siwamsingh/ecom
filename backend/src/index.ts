@@ -9,7 +9,7 @@ dotenv.config({
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT} / http://192.168.206.96:${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT} `);
 });
 
 client.connect(function (err: Error) {

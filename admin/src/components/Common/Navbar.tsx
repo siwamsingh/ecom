@@ -16,7 +16,7 @@ function Navbar() {
     try {
       await logoutApi();
     } catch (error: any) {
-      if (error.status &&  error?.status === 577 || error?.status === 477) {
+      if ((error.status && error?.status === 577) || error?.status === 477) {
         toast.error("Session Expired Login Again.");
       } else {
         const errMsg = getErrorMsg(error, 477, "logout");
@@ -93,12 +93,15 @@ function Navbar() {
                 </ul>
               </li>
               <li>
-                <a>Item 3</a>
+                <button onClick={() => navigate("/users/get-users")}>
+                  Manage Users
+                </button>
               </li>
             </ul>
           </div>
           <a className="btn btn-ghost text-xl">daisyUI</a>
         </div>
+
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">
             <li>
@@ -145,10 +148,13 @@ function Navbar() {
               </details>
             </li>
             <li>
-              <a>Item 3</a>
+              <button onClick={() => navigate("/users/get-users")}>
+                Manage Users
+              </button>
             </li>
           </ul>
         </div>
+
         <div className="navbar-end ">
           <ul className="menu menu-horizontal px-1 z-50">
             <li>
