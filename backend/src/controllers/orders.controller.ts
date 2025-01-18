@@ -319,7 +319,240 @@ ORDER BY
   }
 })
 
+// admin routes
+const getAllOrders = asyncHandler(async (req, res) => {
+
+  const user = req.user;
+
+  if (user.role && user.role !== "admin") {
+    throw new ApiError(401, "Permisson Denied.")
+  }
+
+  const { payment_status, status, start_time, end_time, page = 1, limit = 10 } = req.body;
+
+  // Pagination calculation
+  const offset = (Number(page) - 1) * Number(limit);
+
+  // Base query
+  let baseQuery = `
+    FROM orders o
+    LEFT JOIN order_items oi ON o._id = oi.order_id
+    LEFT JOIN products p ON oi.product_id = p._id
+    WHERE 1=1
+  `;
+  const queryParams: any[] = [];
+
+  // Filtering by payment_status
+  if (payment_status) {
+    baseQuery += ` AND o.payment_status = $${queryParams.length + 1}`;
+    queryParams.push(payment_status);
+  }
+
+  // Filtering by status
+  if (status) {
+    baseQuery += ` AND o.status = $${queryParams.length + 1}`;
+    queryParams.push(status);
+  }
+
+  // Filtering by time range
+  if (start_time) {
+    baseQuery += ` AND o.created_at >= $${queryParams.length + 1}`;
+    queryParams.push(start_time);
+  }
+  if (end_time) {
+    baseQuery += ` AND o.created_at <= $${queryParams.length + 1}`;
+    queryParams.push(end_time);
+  }
+
+  // Query to get the total count of orders
+  const countQuery = `SELECT COUNT(DISTINCT o._id) ${baseQuery}`;
+  const countResult = await client.query(countQuery, queryParams);
+  const totalCount = parseInt(countResult.rows[0].count, 10);
+  const maxPages = Math.ceil(totalCount / Number(limit));
+
+  // Query to fetch paginated orders with aggregated order_items
+  const dataQuery = `
+    SELECT
+      o.*,
+      COALESCE(
+          JSON_AGG(
+              DISTINCT JSONB_BUILD_OBJECT(
+                  'order_item_id', oi._id,
+                  'product_id', oi.product_id,
+                  'quantity', oi.quantity,
+                  'price', oi.price,
+                  'total_amount', oi.total_amount,
+                  'shipping_address_id', oi.shipping_address_id,
+                  'created_at', oi.created_at,
+                  'product_details', JSONB_BUILD_OBJECT(
+                      'product_id', p._id,
+                      'product_name', p.product_name,
+                      'url_slug', p.url_slug,
+                      'categorie_id', p.categorie_id,
+                      'description', p.description,
+                      'price', p.price,
+                      'stock_quantity', p.stock_quantity,
+                      'status', p.status,
+                      'image_url', p.image_url
+                  )
+              )
+          ) FILTER (WHERE oi._id IS NOT NULL),
+          '[]'
+      ) AS order_items
+    ${baseQuery}
+    GROUP BY o._id
+    ORDER BY o.created_at DESC
+    LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2};
+  `;
+
+  queryParams.push(limit, offset);
+
+  try {
+    const dataResult = await client.query(dataQuery, queryParams);
+
+    res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          page,
+          limit,
+          maxPages,
+          totalCount,
+          orders: dataResult.rows,
+        },
+        "Orders fetched successfully."
+      )
+    );
+  } catch (error: any) {
+    throw new ApiError(
+      error?.statusCode || 501,
+      error?.message || "Something went wrong while fetching orders."
+    );
+  }
+});
+
+const getAllOrdersNoPagination = asyncHandler(async (req, res) => {
+  const { payment_status, status, start_time, end_time } = req.body;
+
+  // Base query
+  let baseQuery = `
+    FROM orders o
+    LEFT JOIN order_items oi ON o._id = oi.order_id
+    LEFT JOIN products p ON oi.product_id = p._id
+    WHERE 1=1
+  `;
+  const queryParams: any[] = [];
+
+  // Filtering by payment_status
+  if (payment_status) {
+    baseQuery += ` AND o.payment_status = $${queryParams.length + 1}`;
+    queryParams.push(payment_status);
+  }
+
+  // Filtering by status
+  if (status) {
+    baseQuery += ` AND o.status = $${queryParams.length + 1}`;
+    queryParams.push(status);
+  }
+
+  // Filtering by time range
+  if (start_time) {
+    baseQuery += ` AND o.created_at >= $${queryParams.length + 1}`;
+    queryParams.push(start_time);
+  }
+  if (end_time) {
+    baseQuery += ` AND o.created_at <= $${queryParams.length + 1}`;
+    queryParams.push(end_time);
+  }
+
+  // Query to fetch orders with aggregated order_items
+  const dataQuery = `
+    SELECT
+      o.*,
+      COALESCE(
+          JSON_AGG(
+              DISTINCT JSONB_BUILD_OBJECT(
+                  'order_item_id', oi._id,
+                  'product_id', oi.product_id,
+                  'quantity', oi.quantity,
+                  'price', oi.price,
+                  'total_amount', oi.total_amount,
+                  'shipping_address_id', oi.shipping_address_id,
+                  'created_at', oi.created_at,
+                  'product_details', JSONB_BUILD_OBJECT(
+                      'product_id', p._id,
+                      'product_name', p.product_name,
+                      'url_slug', p.url_slug,
+                      'categorie_id', p.categorie_id,
+                      'description', p.description,
+                      'price', p.price,
+                      'stock_quantity', p.stock_quantity,
+                      'status', p.status,
+                      'image_url', p.image_url
+                  )
+              )
+          ) FILTER (WHERE oi._id IS NOT NULL),
+          '[]'
+      ) AS order_items
+    ${baseQuery}
+    GROUP BY o._id
+    ORDER BY o.created_at DESC;
+  `;
+
+  try {
+    const dataResult = await client.query(dataQuery, queryParams);
+
+    res.status(200).json(
+      new ApiResponse(
+        200,
+        { orders: dataResult.rows },
+        "Orders fetched successfully."
+      )
+    );
+  } catch (error: any) {
+    throw new ApiError(
+      error?.statusCode || 501,
+      error?.message || "Something went wrong while fetching orders."
+    );
+  }
+});
+
+const getOrdersStatistics = asyncHandler(async (req, res) => {
+  const getQueryForDay = (dayIndex: number) => {
+    const startTime = `DATE_TRUNC('day', CURRENT_DATE - INTERVAL '${dayIndex} days') + INTERVAL '1 second'`;
+    const endTime = `DATE_TRUNC('day', CURRENT_DATE - INTERVAL '${dayIndex - 1} days') - INTERVAL '1 second'`;
+
+    return `
+      SELECT
+        ${dayIndex} AS day,
+        COUNT(*) FILTER (WHERE created_at >= ${startTime} AND created_at <= ${endTime}) AS placed_orders,
+        COUNT(*) FILTER (
+          WHERE created_at >= ${startTime} AND created_at <= ${endTime} AND payment_status = 'paid'
+        ) AS paid_orders,
+        COUNT(*) FILTER (
+          WHERE created_at >= ${startTime} AND created_at <= ${endTime} AND status != 'placed'
+        ) AS orders_processed
+      FROM orders
+    `;
+  };
+
+  // Combine queries for each of the last 10 days
+  const query = Array.from({ length: 10 }, (_, i) => getQueryForDay(10 - i)).join(' UNION ALL ');
+
+  try {
+    const result = await client.query(query);
+    res.status(200).json(new ApiResponse(200, result.rows, "Order statistics fetched successfully"));
+  } catch (error: any) {
+    throw new ApiError(
+      error?.statusCode || 501,
+      error?.message || "Something went wrong while fetching order statistics"
+    );
+  }
+});
+
 
 export { createOrder, verifyPayment, 
-  getOrdersOfUser
+  getOrdersOfUser , getAllOrders ,
+  getAllOrdersNoPagination,
+  getOrdersStatistics
  };

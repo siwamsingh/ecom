@@ -65,7 +65,7 @@ const GetProduct = () => {
           toast.success("Categories loaded successfully!");
         }
       } catch (error: any) {
-        if ((error?.status && (error?.status === 577) || error?.status === 477)) {
+        if ((error?.status && error?.status === 577) || error?.status === 477) {
           toast.error("Session Expired Login Again.");
         } else {
           toast.error("Categories not loaded. RELOAD");
@@ -113,11 +113,22 @@ const GetProduct = () => {
   };
 
   const handlePageChange = (direction: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      page: direction === "next" ? prev.page! + 1 : prev.page! - 1,
-    }));
+    let pageNum = filters.page;
+    if (!pageNum) {
+      return;
+    }
+    if (direction === "next") {
+      pageNum++;
+    } else {
+      if (pageNum === 0) return;
+      pageNum--;
+    }
+    setFilters((prev) => ({ ...prev, page: pageNum }));
   };
+
+  useEffect(() => {
+    fetchProducts();
+  }, [filters.page , filters.category , filters.status]);
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const categoryId = Number(e.target.value);
