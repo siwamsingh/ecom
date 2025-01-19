@@ -76,13 +76,13 @@ const GetProduct = () => {
     getAllCategories();
   };
 
-  let loadedOnce = false;
+  let catLoadOnce = false;
 
   useEffect(() => {
-    if (loadedOnce) return;
-    loadedOnce = true;
+    if(catLoadOnce) return;
     loadCategories();
-    fetchProducts();
+    // fetchProducts();  change in filters when category loads will call this below
+    catLoadOnce = true;
   }, []);
 
   const fetchProducts = async () => {
@@ -126,8 +126,14 @@ const GetProduct = () => {
     setFilters((prev) => ({ ...prev, page: pageNum }));
   };
 
+  let loadedOnce = false;
+
   useEffect(() => {
+    if (loadedOnce){ 
+      loadedOnce = false;
+      return;}
     fetchProducts();
+    loadedOnce = true;
   }, [filters.page , filters.category , filters.status]);
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

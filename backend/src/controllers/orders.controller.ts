@@ -8,6 +8,9 @@ import { verifyRazorpayPayment } from "../utils/razorpay";
 import fs from "fs";
 import path from "path";
 
+import { createHmac } from 'crypto';
+
+
 const validateInput = (field: string, fieldName: string) => {
   if (!field) {
     throw new ApiError(401, `${fieldName} is required.`);
@@ -185,15 +188,40 @@ order_items.forEach((item, index) => {
 
 // on verification stock decreasing not implemented
 const verifyPayment = asyncHandler(async (req, res) => {
-  console.log(req);
+  const secret = ''; 
+  // Use raw payload for HMAC calculation
+  const payloadString = JSON.stringify(req.body);
+  const signature = req.headers['x-razorpay-signature'] as string;
 
-  const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
-  console.log(req.body);
+  try {
+    // Verify the signature
+    const expectedSignature = createHmac('sha256', secret)
+      .update(payloadString)
+      .digest('hex');
+
+    if (signature !== expectedSignature) {
+      console.error('Invalid webhook signature');
+      return res.status(400).send('Invalid signature');
+    }
+
+    console.log('Webhook verified successfully:', req.body);
+  } catch (error) {
+    console.error('Error verifying webhook:', error);
+    throw new ApiError(401, "Webhook not verified");
+  }
+
+  // Extract necessary data from payload
+  const { payload } = req.body;
+  if (!payload || !payload.payment || !payload.payment.entity) {
+    throw new ApiError(400, "Invalid webhook payload structure");
+  }
+
+  const razorpay_payment_id = payload.payment.entity.id; // Payment ID
+  const razorpay_order_id = payload.payment.entity.order_id; // Order ID
 
   // Validate inputs
   validateInput(razorpay_payment_id, "Razorpay Payment ID");
   validateInput(razorpay_order_id, "Razorpay Order ID");
-  validateInput(razorpay_signature, "Razorpay Signature");
 
   // Check if the order exists and belongs to the user
   const checkOrderQuery = `
@@ -213,17 +241,7 @@ const verifyPayment = asyncHandler(async (req, res) => {
     throw new ApiError(401, "The order has already been paid.");
   }
 
-  try {
-    verifyRazorpayPayment({
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature
-    });
-  } catch (error) {
-    throw new ApiError(401, "Payment verification failed. Invalid signature.");
-  }
-
-  // Update the order status to 'paid' after successful verification
+  // Update the order status to 'paid'
   const updateOrderStatusQuery = `
     UPDATE orders
     SET payment_status = 'paid', payment_transaction_id = $1
@@ -231,24 +249,21 @@ const verifyPayment = asyncHandler(async (req, res) => {
   `;
   await client.query(updateOrderStatusQuery, [razorpay_payment_id, order._id]);
 
-
   try {
+    // Serve the confirmation page
     const filePath = path.join(__dirname, '../../public/paymentSuccessfullPage/paymentSuccess.html');
-
-    let htmlData = fs.readFileSync(filePath, 'utf8');
-
-    // Replace placeholders with actual data
+    const htmlData = fs.readFileSync(filePath, 'utf8');
     const html = htmlData
       .replace('{{ORDER_ID}}', razorpay_order_id)
       .replace('{{AMOUNT}}', order.net_amount)
       .replace('{{REDIRECT_LINK}}', `/orders/${order._id}`);
 
-    res.status(200).send(html);
+    res.status(200).send({ status: "ok" });
   } catch (error) {
     res.status(501).send("Could not load confirmation page");
   }
-  // res.status(200).json(new ApiResponse(200,null,"Payment verified and order status updated to paid."));
 });
+
 
 const getOrdersOfUser= asyncHandler(async (req,res)=>{
   const {user_id} = req.body;
@@ -518,26 +533,27 @@ const getAllOrdersNoPagination = asyncHandler(async (req, res) => {
 });
 
 const getOrdersStatistics = asyncHandler(async (req, res) => {
-  const getQueryForDay = (dayIndex: number) => {
-    const startTime = `DATE_TRUNC('day', CURRENT_DATE - INTERVAL '${dayIndex} days') + INTERVAL '1 second'`;
-    const endTime = `DATE_TRUNC('day', CURRENT_DATE - INTERVAL '${dayIndex - 1} days') - INTERVAL '1 second'`;
+  const getQueryForDay = (dayIndex: number) => `
+    SELECT
+      ${dayIndex} AS day,
+      COUNT(*) FILTER (
+        WHERE created_at >= DATE_TRUNC('day', (CURRENT_DATE + INTERVAL '1 day' - INTERVAL '${dayIndex} days'))
+          AND created_at < DATE_TRUNC('day', (CURRENT_DATE + INTERVAL '1 day' - INTERVAL '${dayIndex - 1} days'))
+      ) AS placed_orders,
+      COUNT(*) FILTER (
+        WHERE created_at >= DATE_TRUNC('day', (CURRENT_DATE + INTERVAL '1 day' - INTERVAL '${dayIndex} days'))
+          AND created_at < DATE_TRUNC('day', (CURRENT_DATE + INTERVAL '1 day' - INTERVAL '${dayIndex - 1} days'))
+          AND payment_status = 'paid'
+      ) AS paid_orders,
+      COUNT(*) FILTER (
+        WHERE created_at >= DATE_TRUNC('day', (CURRENT_DATE + INTERVAL '1 day' - INTERVAL '${dayIndex} days'))
+          AND created_at < DATE_TRUNC('day', (CURRENT_DATE + INTERVAL '1 day' - INTERVAL '${dayIndex - 1} days'))
+          AND status = 'processing'
+      ) AS orders_processed
+    FROM orders
+  `;
 
-    return `
-      SELECT
-        ${dayIndex} AS day,
-        COUNT(*) FILTER (WHERE created_at >= ${startTime} AND created_at <= ${endTime}) AS placed_orders,
-        COUNT(*) FILTER (
-          WHERE created_at >= ${startTime} AND created_at <= ${endTime} AND payment_status = 'paid'
-        ) AS paid_orders,
-        COUNT(*) FILTER (
-          WHERE created_at >= ${startTime} AND created_at <= ${endTime} AND status != 'placed'
-        ) AS orders_processed
-      FROM orders
-    `;
-  };
-
-  // Combine queries for each of the last 10 days
-  const query = Array.from({ length: 10 }, (_, i) => getQueryForDay(10 - i)).join(' UNION ALL ');
+  const query = Array.from({ length: 10 }, (_, i) => getQueryForDay(1 + i)).join(' UNION ALL ');
 
   try {
     const result = await client.query(query);

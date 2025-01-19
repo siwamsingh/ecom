@@ -13,6 +13,7 @@ import AddDiscount from './pages/AddDiscount';
 import GetDiscounts from './pages/GetDiscounts';
 import GetUser from './pages/GetUser';
 import UserHistory from './components/user/UserHistory';
+import RpCode from './RpTEst';
 
 
 
@@ -48,6 +49,8 @@ function App() {
       <ToastContainer/>
       <Routes>
         <Route path="/" element={<SecuredRoute><Home /></SecuredRoute>} />
+        <Route path='/pay' element={<RpCode />} />
+
         <Route path='/login' element={<LoginPage />} />
         <Route path="/categories" element={<SecuredRoute><Categories /></SecuredRoute>} />
         <Route path="/products/add" element={<SecuredRoute><Products /></SecuredRoute>} />

@@ -16,3 +16,5 @@ CREATE TABLE IF NOT EXISTS orders (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     parcel_id VARCHAR(50)
 );
+
+-- time is according to utc
