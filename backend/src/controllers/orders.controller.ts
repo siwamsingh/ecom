@@ -188,7 +188,10 @@ order_items.forEach((item, index) => {
 
 // on verification stock decreasing not implemented
 const verifyPayment = asyncHandler(async (req, res) => {
-  const secret = ''; 
+  const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+  if(!secret){
+    throw new ApiError(401,"Missing Important fields")
+  } 
   // Use raw payload for HMAC calculation
   const payloadString = JSON.stringify(req.body);
   const signature = req.headers['x-razorpay-signature'] as string;
