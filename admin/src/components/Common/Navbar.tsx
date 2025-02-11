@@ -156,17 +156,25 @@ function Navbar() {
         </div>
 
         <div className="navbar-end ">
-          <ul className="menu menu-horizontal px-1 z-50">
+          <ul className="menu menu-horizontal px-4  z-50">
             <li>
-              <details>
+              <details className="px-4">
                 <summary>
                   <FaUserCircle size={30} />
                 </summary>
-                <ul className="">
+                <ul className="w-full">
+                <li>
+                    <button
+                    onClick={() => navigate("/manage-store")}
+                      className="text-blue-500 border border-blue-400"
+                    >
+                      Profile
+                    </button>
+                  </li>
                   <li>
                     <button
                       onClick={logoutUser}
-                      className="btn btn-outline btn-error"
+                      className="text-red-500 border border-red-400 mt-2"
                     >
                       Logout
                     </button>
@@ -175,6 +183,7 @@ function Navbar() {
               </details>
             </li>
           </ul>
+          
         </div>
       </div>
     </div>

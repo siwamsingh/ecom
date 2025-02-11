@@ -14,6 +14,7 @@ import GetDiscounts from './pages/GetDiscounts';
 import GetUser from './pages/GetUser';
 import UserHistory from './components/user/UserHistory';
 import RpCode from './RpTEst';
+import ManageProfile from './pages/ManageProfile';
 
 
 
@@ -59,6 +60,7 @@ function App() {
         <Route path="/discounts/get" element={<SecuredRoute><GetDiscounts/></SecuredRoute>} />
         <Route path="/users/get-users" element={<SecuredRoute><GetUser/></SecuredRoute>} />
         <Route path="/users/get-user-history/:userId" element={<SecuredRoute><UserHistory /></SecuredRoute>} />
+        <Route path="/manage-store" element={<SecuredRoute><ManageProfile/></SecuredRoute>} />
 
       </Routes>
     </div>

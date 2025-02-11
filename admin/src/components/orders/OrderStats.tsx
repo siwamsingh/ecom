@@ -10,6 +10,8 @@ import {
   Legend,
 } from "chart.js";
 import getOrdersStatsApi from "../../apis/orders/getOrderStats.api";
+import { toast } from "react-toastify";
+import getErrorMsg from "../../utility/getErrorMsg";
 
 ChartJS.register(
   CategoryScale,
@@ -66,8 +68,14 @@ const OrdersStatsChart = () => {
             },
           ],
         });
-      } catch (error) {
-        console.error("Failed to fetch data for the chart:", error);
+      } catch (error: any) {
+        if (error.status &&  error?.status === 577 || error?.status === 477) {
+          toast.error("Session Expired Login Again.");
+        } else {
+          const errorMsg = getErrorMsg(error, null, "adding product");
+          toast.error(errorMsg);
+          console.error(error);
+        }
       }
     };
 
@@ -75,7 +83,7 @@ const OrdersStatsChart = () => {
   }, []);
 
   return (
-    <div className="w-full flex flex-col items-center p-4">
+    <div className="w-10/12 mx-auto flex flex-col items-center sm:p-4">
       <h2 className="text-xl font-semibold mb-4 text-center">
         Order Statistics
       </h2>

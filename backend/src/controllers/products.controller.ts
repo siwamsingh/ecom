@@ -311,8 +311,49 @@ const getProducts = asyncHandler(async (req, res) => {
     "Products fetched successfully."));
 });
 
+const masterSwitch = asyncHandler(async (req, res) => {
+  const { switch: masterSwitchValue } = req.body;
+  const user = req.user;
+
+  try {
+    // Check if the user has admin privileges
+    if (user.role !== "admin") {
+      throw new ApiError(401, "Permission Denied.");
+    }
+
+    // Validate the switch value
+    if (masterSwitchValue !== 0 && masterSwitchValue !== 1) {
+      throw new ApiError(400, "Invalid switch value. It must be either 0 or 1.");
+    }
+
+    // Set stock_quantity based on the switch value
+    const stockValue = masterSwitchValue === 0 ? 0 : 11;
+    const updateQuery = `
+      UPDATE products
+      SET stock_quantity = $1
+      RETURNING _id, product_name, stock_quantity;
+    `;
+
+    const result = await client.query(updateQuery, [stockValue]);
+
+    res.status(200).json(
+      new ApiResponse(
+        200,
+        { updatedProducts: result.rows },
+        `Stock quantities updated successfully to ${stockValue}.`
+      )
+    );
+  } catch (error: any) {
+    throw new ApiError(
+      error?.statusCode || 500,
+      error?.message || "Something went wrong while updating stock quantities."
+    );
+  }
+});
+
 export {
   addNewProduct,
   updateProduct,
-  getProducts
+  getProducts,
+  masterSwitch
 }
