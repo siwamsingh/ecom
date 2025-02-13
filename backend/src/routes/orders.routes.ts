@@ -12,7 +12,7 @@ router.route('/get-user-orders').post(verifyJWT,getOrdersOfUser);
 router.route('/get-all-orders').post(verifyJWT,getAllOrders);
 router.route('/get-all-orders-np').post(verifyJWT,getAllOrdersNoPagination);
 router.route('/get-orders-stats').post(verifyJWT,getOrdersStatistics);
-router.route('/upadte-order').post(verifyJWT,updateOrderStatus);
+router.route('/update-order').post(verifyJWT,updateOrderStatus);
 
 updateOrderStatus
 export default router; 

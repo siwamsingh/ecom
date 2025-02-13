@@ -48,10 +48,10 @@ function RpCode() {
     }
 
     const options = {
-      key: "",
+      key: "rzp_test_ogdkfn7AH3F0p3",
       amount: amount,
       currency: "INR",
-      order_id: "", 
+      order_id: "order_Pulot4sONDHauX", 
       name: "foon Coders",
       description: "Payment to fon Coders",
       image:

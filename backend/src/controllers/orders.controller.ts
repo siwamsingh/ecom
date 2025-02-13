@@ -611,9 +611,6 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
     let values = [];
     let index = 1;
 
-
-
-
     if (status) {
       query += `, status = $${index++}`;
       values.push(status);
@@ -623,7 +620,7 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
       values.push(parcel_id);
     }
 
-    query += ` WHERE _id = $${index} RETURNING _id, order_number, status, parcel_id, updated_at`;
+    query += ` WHERE _id = $${index} RETURNING _id, order_number, status, parcel_id, updated_at, user_id, shipping_address`;
     values.push(_id);
 
     const result = await client.query(query, values);
@@ -632,11 +629,55 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
       throw new ApiError(404, "Order not found.");
     }
 
+    // Get shipping address details
+    const shippingAddress = JSON.parse(result.rows[0].shipping_address);
+    const pincode = shippingAddress.pincode;
+
+    // Get user details
+    const userQuery = `SELECT username, phone_number FROM "user" WHERE _id = $1`;
+    const userResult = await client.query(userQuery, [result.rows[0].user_id]);
+    
+    if (userResult.rowCount === 0) {
+      throw new ApiError(404, "User not found.");
+    }
+
+    // Fetch post office details
+    // const postalResponse = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+    const postalResponse = await fetch(`https://api.postalpincode.in/pincode/110001`);
+    const postalData = await postalResponse.json();
+
+    if (postalData[0].Status === "Error") {
+      throw new ApiError(400, "Invalid pincode. No post office found.");
+    }
+
+    // Find first post office with delivery status
+    const postOffices = postalData[0].PostOffice;
+    let selectedPostOffice = postOffices.find( (po: any) => po?.DeliveryStatus === "Delivery") || postOffices[0];
+
+    if (!selectedPostOffice) {
+      throw new ApiError(400, "No post office found for this pincode.");
+    }
+
+    // Prepare response with all required details
+    const responseData = {
+      ...result.rows[0],
+      delivery_details: {
+        username: userResult.rows[0].username,
+        phone_number: userResult.rows[0].phone_number,
+        pincode: pincode,
+        post_office: selectedPostOffice.Name,
+        district: selectedPostOffice.District
+      }
+    };
+
     res.status(200).json(
-      new ApiResponse(200, result.rows[0], "Order updated successfully.")
+      new ApiResponse(200, responseData, "Order updated successfully.")
     );
-  } catch (error : any) {
-    throw new ApiError(error?.statusCode || 500, error?.message || "Something went wrong.");
+  } catch (error: any) {
+    throw new ApiError(
+      error?.statusCode || 500, 
+      error?.message || "Something went wrong."
+    );
   }
 });
 
