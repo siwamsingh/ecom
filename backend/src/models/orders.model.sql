@@ -17,4 +17,4 @@ CREATE TABLE IF NOT EXISTS orders (
     parcel_id VARCHAR(50)
 );
 
--- time is according to utc
+-- time is according to Ist

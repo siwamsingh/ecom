@@ -15,6 +15,7 @@ import GetUser from './pages/GetUser';
 import UserHistory from './components/user/UserHistory';
 import RpCode from './RpTEst';
 import ManageProfile from './pages/ManageProfile';
+import DownloadOrderSlip from './pages/DownloadOrderSlip';
 
 
 
@@ -61,6 +62,7 @@ function App() {
         <Route path="/users/get-users" element={<SecuredRoute><GetUser/></SecuredRoute>} />
         <Route path="/users/get-user-history/:userId" element={<SecuredRoute><UserHistory /></SecuredRoute>} />
         <Route path="/manage-store" element={<SecuredRoute><ManageProfile/></SecuredRoute>} />
+        <Route path="/order/download-slip" element={<SecuredRoute><DownloadOrderSlip/></SecuredRoute>} />
 
       </Routes>
     </div>

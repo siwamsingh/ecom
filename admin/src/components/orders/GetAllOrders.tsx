@@ -116,7 +116,7 @@ const GetAllOrders = () => {
   }
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 mt-10 ">
+    <div className="container mx-auto px-2 sm:px-4 mt-10 mb-96">
       <div className='flex justify-between'>
       <h1 className="text-xl font-bold mb-6 text-gray-700 dark:text-gray-200">Orders</h1>
 
@@ -140,7 +140,7 @@ const GetAllOrders = () => {
         <table className="table-auto w-full border-collapse border border-gray-200">
           <thead>
             <tr className="bg-gray-100 dark:bg-gray-800">
-              <th className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-200">Order Number</th>
+              <th className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-200">Order ID</th>
               <th className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-200">User ID</th>
               <th className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-200">Total Amount</th>
               <th className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-200">Status</th>
@@ -155,7 +155,7 @@ const GetAllOrders = () => {
                   onClick={() => toggleRow(order._id)}
                   className="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-150"
                 >
-                  <td className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200">{order.order_number}</td>
+                  <td className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200">{order._id}</td>
                   <td className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200">{order.user_id}</td>
                   <td className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200">₹{order.total_amount}</td>
                   <td className="border border-gray-300 dark:border-gray-700 px-3 py-2">
@@ -186,7 +186,8 @@ const GetAllOrders = () => {
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <h3 className="font-semibold text-gray-700 dark:text-gray-200">Order Details</h3>
-                            <p>Gross Amount: ₹{order.gross_amount}</p>
+                            <p>Order Number: {order.order_number}</p>
+                            <p>Total Amount: ₹{order.total_amount}</p>
                             <p>Discount: ₹{order.discount_amount}</p>
                             <p>Shipping: ₹{order.shipping_amount}</p>
                             <p>Net Amount: ₹{order.net_amount}</p>

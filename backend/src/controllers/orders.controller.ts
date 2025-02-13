@@ -99,6 +99,7 @@ order_items.forEach((item, index) => {
 
   let grossAmount = 0;
   let discountAmount = 0;
+  let totalAmount = 0;
   const orderItemsData = order_items.map(item => {
 
     const productPrice = existingProducts.get(item.product_id);
@@ -114,6 +115,8 @@ order_items.forEach((item, index) => {
 
 
     const totalItemPrice = productPrice * item.quantity;
+    totalAmount += totalItemPrice;
+    
     if(item.product_id === discountedProductId){
       discountAmount = parseFloat(((totalItemPrice * discountValue) / 100).toFixed(2));
       grossAmount += totalItemPrice - discountAmount
@@ -157,7 +160,7 @@ order_items.forEach((item, index) => {
     const orderResult = await client.query(createOrderQuery, [
       orderNumber,
       user._id,
-      netAmount,
+      totalAmount,
       discountAmount,
       grossAmount,
       netAmount,
@@ -452,6 +455,13 @@ const getAllOrders = asyncHandler(async (req, res) => {
 const getAllOrdersNoPagination = asyncHandler(async (req, res) => {
   const { payment_status, status, start_time, end_time } = req.body;
 
+  const user = req.user;
+
+  if (user.role && user.role !== "admin") {
+    throw new ApiError(401, "Permisson Denied.")
+  }
+
+
   // Base query
   let baseQuery = `
     FROM orders o
@@ -536,6 +546,12 @@ const getAllOrdersNoPagination = asyncHandler(async (req, res) => {
 });
 
 const getOrdersStatistics = asyncHandler(async (req, res) => {
+  const user = req.user;
+
+  if (user.role && user.role !== "admin") {
+    throw new ApiError(401, "Permisson Denied.")
+  }
+
   const getQueryForDay = (dayIndex: number) => `
     SELECT
       ${dayIndex} AS day,
@@ -551,7 +567,7 @@ const getOrdersStatistics = asyncHandler(async (req, res) => {
       COUNT(*) FILTER (
         WHERE created_at >= DATE_TRUNC('day', (CURRENT_DATE + INTERVAL '1 day' - INTERVAL '${dayIndex} days'))
           AND created_at < DATE_TRUNC('day', (CURRENT_DATE + INTERVAL '1 day' - INTERVAL '${dayIndex - 1} days'))
-          AND status = 'processing'
+          AND status = 'shipping'
       ) AS orders_processed
     FROM orders
   `;
@@ -569,9 +585,64 @@ const getOrdersStatistics = asyncHandler(async (req, res) => {
   }
 });
 
+const updateOrderStatus = asyncHandler(async (req, res) => {
+  const { _id, status, parcel_id } = req.body;
+  const user = req.user;
+
+  try {
+    // Check if the user has admin privileges
+    if (user.role !== "admin") {
+      throw new ApiError(401, "Permission Denied.");
+    }
+
+    // Validate _id
+    if (!_id) {
+      throw new ApiError(400, "Order ID (_id) is required.");
+    }
+
+    // Validate status if provided
+    const validStatuses = ["placed", "processing", "shipping", "delivered", "cancelled"];
+    if (status && !validStatuses.includes(status)) {
+      throw new ApiError(400, "Invalid status value.");
+    }
+
+    // Prepare query and values dynamically based on provided fields
+    let query = "UPDATE orders SET updated_at = CURRENT_TIMESTAMP";
+    let values = [];
+    let index = 1;
+
+
+
+
+    if (status) {
+      query += `, status = $${index++}`;
+      values.push(status);
+    }
+    if (parcel_id) {
+      query += `, parcel_id = $${index++}`;
+      values.push(parcel_id);
+    }
+
+    query += ` WHERE _id = $${index} RETURNING _id, order_number, status, parcel_id, updated_at`;
+    values.push(_id);
+
+    const result = await client.query(query, values);
+
+    if (result.rowCount === 0) {
+      throw new ApiError(404, "Order not found.");
+    }
+
+    res.status(200).json(
+      new ApiResponse(200, result.rows[0], "Order updated successfully.")
+    );
+  } catch (error : any) {
+    throw new ApiError(error?.statusCode || 500, error?.message || "Something went wrong.");
+  }
+});
 
 export { createOrder, verifyPayment, 
   getOrdersOfUser , getAllOrders ,
   getAllOrdersNoPagination,
-  getOrdersStatistics
+  getOrdersStatistics,
+  updateOrderStatus
  };

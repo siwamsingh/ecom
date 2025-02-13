@@ -15,7 +15,10 @@ function Home() {
           >
             Manage Account
           </button>
-          <button className="w-full py-4 text-lg font-semibold text-white rounded-2xl shadow-lg bg-gradient-to-r from-pink-400 to-pink-600 hover:from-pink-500 hover:to-pink-700 transition duration-300">
+          <button
+            onClick={() => navigate("/order/download-slip")}
+            className="w-full py-4 text-lg font-semibold text-white rounded-2xl shadow-lg bg-gradient-to-r from-pink-400 to-pink-600 hover:from-pink-500 hover:to-pink-700 transition duration-300"
+          >
             Download Order Slip
           </button>
           <button className="w-full py-4 text-lg font-semibold text-white rounded-2xl shadow-lg bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 transition duration-300">

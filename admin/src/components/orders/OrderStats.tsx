@@ -117,6 +117,9 @@ const OrdersStatsChart = () => {
                       text: "Order Count",
                     },
                     beginAtZero: true,
+                    ticks: {
+                      precision: 0, // Ensures no decimal values
+                    },  
                   },
                 },
               }}

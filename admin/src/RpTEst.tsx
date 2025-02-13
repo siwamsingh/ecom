@@ -48,17 +48,17 @@ function RpCode() {
     }
 
     const options = {
-      key: "rzp_test_kDj2MoMcOx7pcM",
+      key: "",
       amount: amount,
       currency: "INR",
-      order_id: "order_PKiiFh3j0x8B7S", 
+      order_id: "", 
       name: "foon Coders",
       description: "Payment to fon Coders",
       image:
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSu1fwzQ0WNnyp8Za7oI2VNuK2VyKRNXlbgkw&s",
 
-      callback_url: "http://localhost:8000/api/v1/orders/verify-order",
-      prefill: {
+        callback_url: "http://localhost:8000/api/v1/orders/verify-order",
+        prefill: {
         name: "don",
         email: "don@gmail.com",
       },
