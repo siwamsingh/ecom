@@ -27,16 +27,22 @@ const ManageOrder = () => {
   const [loading, setLoading] = useState(false);
   const orderInputRef = useRef<HTMLInputElement>(null);
 
-  // Load data from localStorage on initial render
+  const isFirstRender = useRef(true);
+
   useEffect(() => {
     const storedOrders = localStorage.getItem(STORAGE_KEY);
+    
     if (storedOrders) {
       setOrders(JSON.parse(storedOrders));
     }
   }, []);
-
-  // Update localStorage whenever orders change
+  
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    
     localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
   }, [orders]);
 
@@ -46,7 +52,6 @@ const ManageOrder = () => {
 
     setLoading(true);
     try {
-      console.log(orderId, parcelId);
 
       const data = await updateOrderApi({
         _id: parseInt(orderId),
