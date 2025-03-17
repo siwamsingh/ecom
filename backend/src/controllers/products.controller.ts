@@ -255,7 +255,7 @@ const updateProduct = asyncHandler(async (req, res) => {
 });
 
 const getProducts = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 10, category, status, search } = req.body;
+  const { page = 1, limit = 16, category, status, search } = req.body;
 
   if(status && status!="active" && status!=="inactive"){
     throw new ApiError(401,"Invalid value of status.")
@@ -351,9 +351,39 @@ const masterSwitch = asyncHandler(async (req, res) => {
   }
 });
 
+const getProduct = asyncHandler(async (req, res) => {
+  const { product_id } = req.body;
+
+  console.log(req.body);
+  
+  
+  if (!product_id) {
+    throw new ApiError(400, "Product ID is required.");
+  }
+  
+  // Query to get a single product by its ID
+  const query = "SELECT * FROM products WHERE _id = $1";
+  
+  const result = await client.query(query, [product_id]);
+  
+  // If no product is found
+  if (result.rows.length === 0) {
+    throw new ApiError(404, "Product not found.");
+  }
+  
+  res.status(200).json(new ApiResponse(
+    200,
+    {
+      product: result.rows[0]
+    },
+    "Product fetched successfully."
+  ));
+});
+
 export {
   addNewProduct,
   updateProduct,
   getProducts,
-  masterSwitch
+  masterSwitch,
+  getProduct
 }

@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { addNewProduct, getProducts, masterSwitch, updateProduct } from "../controllers/products.controller";
+  import { Router } from "express";
+import { addNewProduct, getProduct, getProducts, masterSwitch, updateProduct } from "../controllers/products.controller";
 import { verifyJWT } from "../middlewares/auth.middleware";
 import upload from "../middlewares/multer.middleware";
 
@@ -9,5 +9,6 @@ router.route('/add-new-product').post(verifyJWT,upload.single('product_image'),a
 router.route('/update-product').post(verifyJWT,upload.single('product_image'),updateProduct)
 router.route('/get-product').post(getProducts);
 router.route('/master-switch').post(verifyJWT,masterSwitch);
+router.route('/get-one-product').post(getProduct)
 
 export default router;

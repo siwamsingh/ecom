@@ -95,6 +95,10 @@ const styles = StyleSheet.create({
     borderColor: "#000",
     marginVertical: 10,
   },
+  dateFormat:{
+    fontSize: 6,
+    fontWeight: 100
+  },
   header: {
     marginBottom: 20,
     borderBottom: 1,
@@ -222,7 +226,7 @@ const OrderPage = ({ order }: { order: OrderWithUser }) => {
       </View>
 
       <View style={styles.section}>
-        <Text>Date: {new Date(order?.created_at).toLocaleDateString()}</Text>
+        <Text>Date: {new Date(order?.created_at).toLocaleDateString('en-GB')} <Text style={styles.dateFormat}>DD/MM/YYYY</Text></Text>
         <Text>Order ID: {order?._id}</Text>
         <Text>Order Number: {order?.order_number}</Text>
       </View>

@@ -45,15 +45,15 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // Validate input fields
   if ([username, phone_number, password].some((field) => !field)) {
-    throw new ApiError(400, "All fields are required");
+    throw new ApiError(401, "All fields are required");
   }
   if ([username, phone_number, password].some((field) => field?.trim() === "")) {
-    throw new ApiError(400, "All fields are required");
+    throw new ApiError(401, "All fields are required");
   }
 
   const phoneRegex = /^\+91\d{10}$/;
   if (!phoneRegex.test(phone_number.trim())) {
-    throw new ApiError(400, "Invalid phone number.");
+    throw new ApiError(401, "Invalid phone number.");
   }
 
   // Check if the username already exists
@@ -62,7 +62,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const userExistsResult = await client.query(userExistsQuery, [phone_number.trim()]);
 
   if (userExistsResult.rowCount !== null && userExistsResult.rowCount > 0) {
-    throw new ApiError(409, "Phone number already in use.");
+    throw new ApiError(401, "Phone number already in use.");
   }
 
   // if user doesnot exist bring otpToken for that user
@@ -72,7 +72,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 
   if (!(getOtpTokenResult && getOtpTokenResult.rowCount && getOtpTokenResult.rowCount > 0)) {
-    throw new ApiError(505, "Phone number verification required.");
+    throw new ApiError(401, "Phone number verification required.");
   }
 
   const { token } = getOtpTokenResult.rows[0];
@@ -85,7 +85,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const jwt_secret = process.env.JWT_SECRET
   if (!jwt_secret) {
-    throw new ApiError(504, "Critical Error : Secret key missing.");
+    throw new ApiError(505, "Critical Error : Secret key missing.");
   }
 
   jwt.verify(otpToken,
@@ -93,7 +93,7 @@ const registerUser = asyncHandler(async (req, res) => {
     (err: any, token: any) => {
       if (err) {
         if (err.name === 'TokenExpiredError') {
-          throw new ApiError(505, "Session has ended.")
+          throw new ApiError(401, "Phone number is invalid as 10 minutes have passed.")
         } else {
           throw new ApiError(505, "Something went wrong while verifying otp token.")
         }
@@ -102,7 +102,7 @@ const registerUser = asyncHandler(async (req, res) => {
         const { ip, type } = token;
 
         if (ip.trim() !== userIp && type !== "register") {
-          throw new ApiError(505, "Network change detected registeration aborted.")
+          throw new ApiError(401, "Network change detected registeration aborted.")
         }
 
       }
@@ -124,7 +124,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const registerUserResult = await client.query(registerUserQuery, userValues)
 
   if (!registerUserResult) {
-    throw new ApiError(505, "Failed to register user.")
+    throw new ApiError(401, "Failed to register user.")
   }
 
   //delete record from otp db
@@ -159,7 +159,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const findUserResult = await client.query(findUserQuery, [phone_number]);
 
   if (!(findUserResult && findUserResult.rowCount && findUserResult.rowCount > 0)) {
-    throw new ApiError(401, "User doesnot exist.")
+    throw new ApiError(401, "Account not found. Check Your Phone number")
   }
 
   let { _id, username, password, status, role, last_login_time, login_attempt } = findUserResult.rows[0];
@@ -200,12 +200,13 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken({ _id, status, role })
 
-  const options = {  // change these if problem with cookies 
-    httpOnly: true,
-    secure: false,
-    sameSite: 'lax' as 'lax',
-    // maxAge: 30 * 24 * 60 * 60 * 1000 
-  }
+  const options = {
+    httpOnly: true, 
+    secure: process.env.COOKIE_SECURE === "true", 
+    sameSite: process.env.COOKIE_SAMESITE as "lax" | "none",
+    domain: process.env.COOKIE_DOMAIN || undefined,
+    maxAge: parseInt(process.env.COOKIE_MAX_AGE || "2592000000") // Default: 30 days
+  };
 
   res.status(200)
     .cookie("accessToken", accessToken, options)
@@ -219,6 +220,10 @@ const loginUser = asyncHandler(async (req, res) => {
           phone_number,
           status,
           role
+        },
+        tokens:{
+          accessToken,
+          refreshToken
         }
       },
       "User logged In Successfully"
@@ -308,11 +313,12 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 
   const options = {
-    httpOnly: true,
-    secure: false,
-    sameSite: 'lax' as 'lax',
-    // maxAge: 30 * 24 * 60 * 60 * 1000 
-  }
+    httpOnly: true, 
+    secure: process.env.COOKIE_SECURE === "true", 
+    sameSite: process.env.COOKIE_SAMESITE as "lax" | "none",
+    domain: process.env.COOKIE_DOMAIN || undefined,
+    maxAge: parseInt(process.env.COOKIE_MAX_AGE || "2592000000") // Default: 30 days
+  };
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken({ _id, status, role });
 
@@ -322,7 +328,10 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     .cookie("refreshToken", refreshToken, options)
     .json(new ApiResponse(
       200,
-      null,
+      {tokens:{
+        accessToken,
+        refreshToken
+      }},
       "Tokens Refreshed Successfully."
     ))
 
@@ -488,10 +497,19 @@ const getUsers = asyncHandler(async (req, res) => {
 
 
 const getUser = asyncHandler(async (req, res) => {
-  const { user_id, user_phone_number } = req.body;
+  let { user_id, user_phone_number } = req.body;
+  const user = req.user
+
+  if(!user_id){
+    user_id = user._id;
+  }
 
   if (!user_id && !user_phone_number) {
     throw new ApiError(400, "User ID or Phone Number is required.");
+  }
+
+  if(user_id !== user._id && user.role !== "admin"){
+    throw new ApiError(401,"User doent have permission.")
   }
 
   let query;

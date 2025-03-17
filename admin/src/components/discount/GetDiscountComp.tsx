@@ -148,10 +148,10 @@ const GetDiscountComp: React.FC = () => {
               Discount: {discount.discount_value}%
             </p>
             <p className="text-gray-700 dark:text-gray-300 text-sm md:text-sm">
-              Start Date: {new Date(discount.start_date).toLocaleDateString()}
+              Start Date: {new Date(discount.start_date).toLocaleDateString('en-GB')}
             </p>
             <p className="text-gray-700 dark:text-gray-300 text-sm md:text-sm">
-              End Date: {new Date(discount.end_date).toLocaleDateString()}
+              End Date: {new Date(discount.end_date).toLocaleDateString('en-GB')}
             </p>
 
             <div className="mt-4 flex justify-between">

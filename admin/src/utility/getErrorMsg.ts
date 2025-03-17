@@ -15,6 +15,13 @@ const  getErrorMsg = (error: any, status: Number|null = null, task: string) => {
     }
   }
 
+  if(error.response && error.response.status === 477){
+    errorMessage = "Login to continue"
+  }
+  if(error.response && error.response.status === 577){
+    errorMessage = "Session expired. Login Again."
+  }
+  
   return errorMessage;
 
 }

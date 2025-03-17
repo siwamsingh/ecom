@@ -6,7 +6,7 @@ import { verifyJWT } from "../middlewares/auth.middleware";
 const router = Router()
 
 router.route('/add-new-category').post(verifyJWT,addNewCategory);
-router.route('/get-categories').post(verifyJWT,getAllCategories); 
+router.route('/get-categories').post(getAllCategories); 
 router.route('/update-categories').post(verifyJWT,updateCategory);
 router.route('/delete-category').post(verifyJWT,deleteCategory);
 

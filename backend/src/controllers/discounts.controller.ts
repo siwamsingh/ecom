@@ -193,7 +193,12 @@ const getDiscount = asyncHandler(async (req, res) => {
   const result = await client.query(baseQuery, queryParams);
 
   if (result.rowCount === 0) {
-    throw new ApiError(401, "Discount not found.");
+    res.status(200).json(new ApiResponse(200,
+      {
+        discount: [],
+      },
+      "Discounts fetched successfully."
+    ));
   }
 
   res.status(200).json(new ApiResponse(200,

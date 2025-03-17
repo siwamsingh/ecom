@@ -35,7 +35,7 @@ const OrdersStatsChart = () => {
           const today = new Date();
           const targetDate = new Date(today);
           targetDate.setDate(today.getDate() - (item.day-1));
-          return targetDate.toLocaleDateString(); // Format as 'MM/DD/YYYY'
+          return targetDate.toLocaleDateString('en-GB'); // Format as 'MM/DD/YYYY'
         });
 
         const placedOrders = stats.map((item) => item.placed_orders);
