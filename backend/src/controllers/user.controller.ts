@@ -1,13 +1,13 @@
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/apiError";
 import { client } from "../db/db.connect";
-import jwt from "jsonwebtoken"
+import jwt, { Secret } from "jsonwebtoken";
 import { ApiResponse } from "../utils/apiResponse";
 import bcrypt from "bcryptjs";
 
 const generateAccessAndRefreshToken = async ({ _id, status, role }: { _id: number, status: string, role: string }) => {
   try {
-    const jwtSecret = process.env.JWT_SECRET || "";
+    const jwtSecret: Secret = process.env.JWT_SECRET || "";
 
     if (!jwtSecret) {
       throw new ApiError(500, "Something went wrong while generating access and refresh token.");
