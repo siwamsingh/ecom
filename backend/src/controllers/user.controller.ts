@@ -6,35 +6,34 @@ import { ApiResponse } from "../utils/apiResponse";
 import bcrypt from "bcryptjs";
 
 const generateAccessAndRefreshToken = async ({ _id, status, role }: { _id: number, status: string, role: string }) => {
-
   try {
     const jwtSecret = process.env.JWT_SECRET || "";
 
     if (!jwtSecret) {
-      throw new ApiError(500, "Something went wrong while generating access and refresh token.")
+      throw new ApiError(500, "Something went wrong while generating access and refresh token.");
     }
 
     const accessToken = jwt.sign(
       { _id, status, role },
       jwtSecret,
-      { expiresIn: process.env.ACCESS_TOKEN_EXPIRY || '1d' }
+      { expiresIn: String(process.env.ACCESS_TOKEN_EXPIRY) || '1d' } // Cast to string
     );
 
     const refreshToken = jwt.sign(
       { _id },
       jwtSecret,
-      { expiresIn: process.env.REFRESH_TOKEN_EXPIRY || '30d' }
+      { expiresIn: String(process.env.REFRESH_TOKEN_EXPIRY) || '30d' } // Cast to string
     );
 
     await client.query(
-      'UPDATE "user" SET refresh_token = $1 ;', [refreshToken]
+      'UPDATE "user" SET refresh_token = $1 WHERE id = $2;', [refreshToken, _id] // Add WHERE clause to update only the intended user
     );
 
     return { accessToken, refreshToken };
   } catch (error) {
-    throw new ApiError(500, "Something went wrong while generating access and refresh token.")
+    throw new ApiError(500, "Something went wrong while generating access and refresh token.");
   }
-}
+};
 
 // TODO: insted of using .trim() every where use once like in loginUser
 const registerUser = asyncHandler(async (req, res) => {
