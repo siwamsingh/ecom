@@ -137,7 +137,8 @@ const getCart = asyncHandler(async (req, res) => {
         products._id AS product_id,
         products.product_name,
         products.price,
-        products.status
+        products.status,
+        products.image_url
       FROM cart
       JOIN products ON cart.product_id = products._id
       WHERE cart.user_id = $1 AND products.status = 'active';
