@@ -27,7 +27,7 @@ const generateAccessAndRefreshToken = async ({ _id, status, role }: { _id: numbe
     );
 
     await client.query(
-      'UPDATE "user" SET refresh_token = $1 ;', [refreshToken]
+      'UPDATE "user" SET refresh_token = $1 WHERE id = $2;', [refreshToken, _id]
     );
 
     return { accessToken, refreshToken };
