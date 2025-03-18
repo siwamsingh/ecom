@@ -14,9 +14,8 @@ const generateAccessAndRefreshToken = async ({ _id, status, role }: { _id: numbe
       throw new ApiError(500, "Something went wrong while generating access and refresh token.")
     }
 
-    const accessTokenExpiry = process.env.ACCESS_TOKEN_EXPIRY!;
-    const refreshTokenExpiry =  process.env.REFRESH_TOKEN_EXPIRY!;
-
+    const accessTokenExpiry = process.env.ACCESS_TOKEN_EXPIRY ?? "1d";  
+    const refreshTokenExpiry = process.env.REFRESH_TOKEN_EXPIRY ?? "30d"; 
     
     // const accessTokenExpiry = "10s";
     // const refreshTokenExpiry =  "10d";
@@ -44,6 +43,7 @@ const generateAccessAndRefreshToken = async ({ _id, status, role }: { _id: numbe
 
     return { accessToken, refreshToken };
   } catch (error) {
+    console.error("Token generation error:", error);
     throw new ApiError(500, "Something went wrong while generating access and refresh token.")
   }
 }
