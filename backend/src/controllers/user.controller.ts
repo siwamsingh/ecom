@@ -14,17 +14,18 @@ const generateAccessAndRefreshToken = async ({ _id, status, role }: { _id: numbe
       throw new ApiError(500, "Something went wrong while generating access and refresh token.")
     }
 
-    // const accessTokenExpiry = process.env.ACCESS_TOKEN_EXPIRY!;
-    // const refreshTokenExpiry =  process.env.REFRESH_TOKEN_EXPIRY!;
+    const accessTokenExpiry = process.env.ACCESS_TOKEN_EXPIRY!;
+    const refreshTokenExpiry =  process.env.REFRESH_TOKEN_EXPIRY!;
 
     
-    const accessTokenExpiry = "10s";
-    const refreshTokenExpiry =  "10d";
+    // const accessTokenExpiry = "10s";
+    // const refreshTokenExpiry =  "10d";
     
 
-    if(!refreshTokenExpiry || !accessTokenExpiry ){
+    if(!refreshTokenExpiry|| refreshTokenExpiry===null || !accessTokenExpiry || accessTokenExpiry===null ){
       throw new ApiError(500, "Something went wrong while generating access and refresh token.")
     }
+
     const accessToken = jwt.sign(
       { _id, status, role },
       jwtSecret,
