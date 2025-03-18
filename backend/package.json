@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node -r dotenv/config src/index.ts",
-    "dev": "nodemon --exec ts-node -r dotenv/config src/index.ts"
+    "dev": "nodemon --exec ts-node -r dotenv/config src/index.ts",
+     "build": "tsc",
+  "start:prod": "node dist/index.js"
   },
   "author": "",
   "license": "ISC",
