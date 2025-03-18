@@ -8,26 +8,32 @@ import bcrypt from "bcryptjs";
 const generateAccessAndRefreshToken = async ({ _id, status, role }: { _id: number, status: string, role: string }) => {
 
   try {
-    const jwtSecret = process.env.JWT_SECRET!;
+    const jwtSecret =  process.env.JWT_SECRET!;
 
     if (!jwtSecret || jwtSecret===null) {
       throw new ApiError(500, "Something went wrong while generating access and refresh token.")
     }
 
+    const accessTokenExpiry = process.env.ACCESS_TOKEN_EXPIRY!;
+    const refreshTokenExpiry =  process.env.REFRESH_TOKEN_EXPIRY!;
+
+    if(!refreshTokenExpiry || !accessTokenExpiry ){
+      throw new ApiError(500, "Something went wrong while generating access and refresh token.")
+    }
     const accessToken = jwt.sign(
       { _id, status, role },
       jwtSecret,
-      { expiresIn: process.env.ACCESS_TOKEN_EXPIRY || '1d' }
+      { expiresIn:  accessTokenExpiry }
     );
 
     const refreshToken = jwt.sign(
       { _id },
       jwtSecret,
-      { expiresIn: process.env.REFRESH_TOKEN_EXPIRY || '30d' }
+      { expiresIn: refreshTokenExpiry }
     );
 
     await client.query(
-      'UPDATE "user" SET refresh_token = $1 WHERE id = $2;', [refreshToken, _id]
+      'UPDATE "user" SET refresh_token = $1 WHERE _id = $2;', [refreshToken, _id]
     );
 
     return { accessToken, refreshToken };
