@@ -3,6 +3,10 @@ node_modules/
 
 *.pem
 
+# pm2 ecosystem file
+*.ecosystem.config.js
+ecosystem.config.js
+
 # Logs
 logs
 *.log
