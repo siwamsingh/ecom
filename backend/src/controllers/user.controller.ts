@@ -1,39 +1,40 @@
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/apiError";
 import { client } from "../db/db.connect";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt from "jsonwebtoken"
 import { ApiResponse } from "../utils/apiResponse";
 import bcrypt from "bcryptjs";
 
 const generateAccessAndRefreshToken = async ({ _id, status, role }: { _id: number, status: string, role: string }) => {
-  try {
-    const jwtSecret: Secret = process.env.JWT_SECRET || "";
 
-    if (!jwtSecret) {
-      throw new ApiError(500, "Something went wrong while generating access and refresh token.");
+  try {
+    const jwtSecret = process.env.JWT_SECRET!;
+
+    if (!jwtSecret || jwtSecret===null) {
+      throw new ApiError(500, "Something went wrong while generating access and refresh token.")
     }
 
     const accessToken = jwt.sign(
       { _id, status, role },
       jwtSecret,
-      { expiresIn: String(process.env.ACCESS_TOKEN_EXPIRY) || '1d' } // Cast to string
+      { expiresIn: process.env.ACCESS_TOKEN_EXPIRY || '1d' }
     );
 
     const refreshToken = jwt.sign(
       { _id },
       jwtSecret,
-      { expiresIn: String(process.env.REFRESH_TOKEN_EXPIRY) || '30d' } // Cast to string
+      { expiresIn: process.env.REFRESH_TOKEN_EXPIRY || '30d' }
     );
 
     await client.query(
-      'UPDATE "user" SET refresh_token = $1 WHERE id = $2;', [refreshToken, _id] // Add WHERE clause to update only the intended user
+      'UPDATE "user" SET refresh_token = $1 ;', [refreshToken]
     );
 
     return { accessToken, refreshToken };
   } catch (error) {
-    throw new ApiError(500, "Something went wrong while generating access and refresh token.");
+    throw new ApiError(500, "Something went wrong while generating access and refresh token.")
   }
-};
+}
 
 // TODO: insted of using .trim() every where use once like in loginUser
 const registerUser = asyncHandler(async (req, res) => {
