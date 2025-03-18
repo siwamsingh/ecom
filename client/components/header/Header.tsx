@@ -136,8 +136,8 @@ export const Header = forwardRef<HTMLDivElement>(({}, ref) => {
         )}
       </div>
       {mounted && (
-        <DynamicBottomNavigation navLinks={navLinks} collections={[]} />
-      )} 
+        <DynamicBottomNavigation navLinks={navLinks} collections={collections} />
+      )}
     </header>
   );
 });

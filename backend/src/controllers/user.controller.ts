@@ -5,6 +5,10 @@ import jwt from "jsonwebtoken"
 import { ApiResponse } from "../utils/apiResponse";
 import bcrypt from "bcryptjs";
 
+
+const accessTokenExpiry = process.env.ACCESS_TOKEN_EXPIRY ?? "1d";  
+const refreshTokenExpiry = process.env.REFRESH_TOKEN_EXPIRY ?? "30d"; 
+
 const generateAccessAndRefreshToken = async ({ _id, status, role }: { _id: number, status: string, role: string }) => {
 
   try {
@@ -14,9 +18,6 @@ const generateAccessAndRefreshToken = async ({ _id, status, role }: { _id: numbe
       throw new ApiError(500, "Something went wrong while generating access and refresh token.")
     }
 
-    const accessTokenExpiry = process.env.ACCESS_TOKEN_EXPIRY ?? "1d";  
-    const refreshTokenExpiry = process.env.REFRESH_TOKEN_EXPIRY ?? "30d"; 
-    
     // const accessTokenExpiry = "10s";
     // const refreshTokenExpiry =  "10d";
     
@@ -28,13 +29,13 @@ const generateAccessAndRefreshToken = async ({ _id, status, role }: { _id: numbe
     const accessToken = jwt.sign(
       { _id, status, role },
       jwtSecret,
-      { expiresIn:  accessTokenExpiry }
+      { expiresIn: accessTokenExpiry } as jwt.SignOptions
     );
 
     const refreshToken = jwt.sign(
       { _id },
       jwtSecret,
-      { expiresIn: refreshTokenExpiry }
+      { expiresIn: refreshTokenExpiry } as jwt.SignOptions
     );
 
     await client.query(

@@ -7,9 +7,9 @@ import { cookies } from 'next/headers';
 
 const serverUrl = process.env.NEXT_SERVER_URL || 'http://localhost:8000';
 
-async function addToCart(cookieHeader: string, cartData: any) {
+async function deleteCart(cookieHeader: string, cartData: any) {
   try {
-    const response = await axios.post(`${serverUrl}/cart/add-to-cart`, cartData, {
+    const response = await axios.post(`${serverUrl}/cart/delete-from-cart`, cartData, {
       headers: {
         Cookie: cookieHeader,
         'Content-Type': 'application/json'
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
      cartData = await request.json();
     
     // Send the address data to the backend with cookies
-    const result = await addToCart(cookieHeader, cartData);
+    const result = await deleteCart(cookieHeader, cartData);
     
     // Return successful response
     return NextResponse.json(result, { status: 200 });
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
 
           console.log("🔄 Retrying request with refreshed tokens...");
           
-          const result = await addToCart(cookieHeader, cartData);
+          const result = await deleteCart(cookieHeader, cartData);
           
           return NextResponse.json(result, { status: 200 });
         }
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { 
             success: false, 
-            message: getErrorMsg(refreshError, null, "adding to cart")
+            message: getErrorMsg(refreshError, null, "deleting from cart")
           },
           { status: refreshError?.response?.status || 401 }
         );

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { CheckCircle, ShoppingCart } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface AddToCartButtonProps {
   productId: string;
@@ -16,8 +17,8 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({ productId, className 
   const handleAddToCart = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post("/api/cart/add", {
-        productId,
+      const response = await axios.post("/api/cart/add-to-cart", {
+        product_id: productId,
         quantity: 1,
       });
 
@@ -25,6 +26,8 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({ productId, className 
         setIsAdded(true);
         setTimeout(() => setIsAdded(false), 2000);
       }
+
+      toast.success("One item added to cart.")
     } catch (error) {
       console.error("Error adding item to cart:", error);
     } finally {
@@ -37,7 +40,7 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({ productId, className 
       type="button"
       onClick={handleAddToCart}
       disabled={isLoading}
-      className={`${className} relative flex items-center justify-center  py-3 rounded-lg text-sm lg:text-base font-semibold text-indigo-600 bg-indigo-100 border border-indigo-700 shadow-md hover:bg-indigo-400 hover:text-white transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+      className={`${className} relative flex items-center justify-center py-2 sm:py-3 rounded-lg text-sm lg:text-base font-semibold text-indigo-600 bg-indigo-100 border border-indigo-700 shadow-md hover:bg-indigo-400 hover:text-white transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
         isLoading || isAdded ? "opacity-75 cursor-not-allowed" : ""
       }`}
     >

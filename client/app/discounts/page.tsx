@@ -31,6 +31,7 @@ async function fetchDiscounts(): Promise<Discount[]> {
       {
         limit: 1000000000,
         expired: false,
+        status: "active"
       }
     );
     return response.data.data.discounts;

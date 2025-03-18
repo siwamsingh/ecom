@@ -4,6 +4,7 @@ import { Link, ShoppingCart, Tag } from "lucide-react";
 import NextLink from "next/link";
 import Button from "../common/Button";
 import { DiscountBadgeProvider } from "./DiscountBadge";
+import AddToCartButton from "../cart/AddToCartButton";
 
 const ProductCard = (product: Product) => {
   return (
@@ -50,18 +51,12 @@ const ProductCard = (product: Product) => {
         )}
 
         {/* Add to Cart Button */}
-        <Button
-          disabled={product.stock_quantity === 0}
-          className={`mt-1 sm:mt-3 flex items-center justify-center rounded-md px-1 py-1 text-[12px] sm:px-4 sm:py-2 sm:text-sm font-medium  
+        <AddToCartButton productId={product._id}  className={`mt-1 sm:mt-3 flex items-center justify-center rounded-md px-1 py-1 text-[12px] sm:px-4 sm:py-2 sm:text-sm lg:text-sm font-medium  
             ${
               product.stock_quantity > 0
-                ? "text-indigo-600 bg-indigo-100 hover:text-white hover:bg-indigo-700"
+                ? "text-indigo-600 bg-indigo-100 hover:text-white border-none hover:bg-indigo-700"
                 : "text-white bg-gray-400 cursor-not-allowed"
-            }`}
-        >
-          <ShoppingCart className="w-4 h-4 mr-1 sm:mr-2" />
-          <span>Add to Cart</span>
-        </Button>
+            }`}/>
       </div>
     </NextLink>
   );

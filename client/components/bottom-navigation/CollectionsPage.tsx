@@ -10,8 +10,6 @@ interface Props {
 }
 
 export default function CollectionsPage({ navLinks, collections, onPageClose }: Props) {
-
-  console.log(collections);
   
   return (
     <div className="fixed bottom-0 left-0 top-0 z-50 h-full w-full overflow-y-auto bg-white px-5 pt-5">

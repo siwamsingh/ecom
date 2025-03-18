@@ -129,11 +129,11 @@ const ProductDetailPage: FC<ProductDetailPageProps> = async ({
               {/* Button Wrapper */}
               <div className="flex w-full mt-4 gap-2">
                 <AddToCartButton
-                  productId="2"
+                  productId={product._id}
                   className="w-1/2 py-3 text-center bg-indigo-200 text-black rounded-lg font-semibold transition-all duration-200"
                 />
                 <BuyNowButton
-                  productId="2"
+                  productId={product._id}
                   className="w-1/2 py-3 text-center rounded-lg font-semibold transition-all duration-200"
                 />
               </div>
