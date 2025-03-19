@@ -23,7 +23,7 @@ function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  
+  console.log("API URL:", import.meta.env.VITE_API_URL);
 
   let loadedOnce = false
 
