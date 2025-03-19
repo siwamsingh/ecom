@@ -1,4 +1,4 @@
-import React from 'react'
+
 import GetUserComp from '../components/user/GetUserComp'
 
 function GetUser() {
