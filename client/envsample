@@ -1,0 +1,8 @@
+NEXT_PUBLIC_BASE_URL=""
+NEXT_SERVER_URL="/api/v1"
+NODE_ENV=development
+COOKIE_DOMAIN=  # Leave empty in development, set in production
+COOKIE_SECURE=false  # false in development, true in production
+COOKIE_SAMESITE=lax  # "lax" in development, "none" in production
+COOKIE_MAX_AGE=2592000000  # 30 days in milliseconds (30 * 24 * 60 * 60 * 1000)
+RAZORPAY_KEY=""

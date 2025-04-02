@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import axios from 'axios';
 import getErrorMsg from '@/utils/getErrorMsg';
 
@@ -19,7 +19,7 @@ try {
 }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST() {
 if (!serverUrl) {
     return NextResponse.json(
     { success: false, message: "Server URL is not defined" },

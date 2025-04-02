@@ -1,13 +1,13 @@
-"use client"
+"use client";
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { useForm, FieldValues } from "react-hook-form";
-// import { toast } from "react-toastify";
 
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 import Button from "../../../components/common/Button";
 import Image from "next/image";
-import { Eye, EyeOff } from "lucide-react"; 
+import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface FormInputs extends FieldValues {
   phone_number: string;
@@ -15,20 +15,19 @@ interface FormInputs extends FieldValues {
 }
 
 export default function LoginPage() {
-  
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<FormInputs>();
 
-  const phone = watch("phone");
+  const router = useRouter();
 
   const handleLogin = async (data: FormInputs) => {
     try {
+
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -40,28 +39,35 @@ export default function LoginPage() {
 
       const responseData = await res.json();
       if (responseData.success) {
-        toast.success("Logged in successfully!",{duration: 4000});
-        // router.push("/candidate/profile");
+        toast.success("Logged in successfully!", { duration: 4000 });
+        router.push("/user-profile");
       } else {
-        toast.error(responseData.message||"Something went wrong.",{duration: 4000});
+        toast.error(responseData.message || "Something went wrong.", {
+          duration: 4000,
+        });
       }
-    } catch (error) {
+    } catch {
       toast.error("Login failed! Please try again.");
     }
   };
 
   useEffect(() => {
-    if (errors.phone?.message) {
-      toast.error(errors.phone.message as string);
+    if (errors.agreeToTerms?.message) {
+      toast.error(errors.agreeToTerms.message as string);
     }
     if (errors.password?.message) {
       toast.error(errors.password.message as string);
     }
+    if (errors.phone?.message) {
+      toast.error(errors.phone.message as string);
+    }
+    
+
   }, [errors]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 custom-shadow bg-opacity-90 bg-[#fbfbfb94] p-8 md:w-3/4 lg:w-2/4 rounded-2xl">
+      <div className="w-full max-w-md space-y-8 custom-shadow bg-opacity-90 bg-[#fbfbfb94] p-2 sm:p-8 md:w-3/4 lg:w-2/4 rounded-2xl">
         <div>
           <div className="border flex justify-center w-full opacity-30">
             <Link href="/">
@@ -81,9 +87,9 @@ export default function LoginPage() {
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleLogin)}>
-          <div className="rounded-md shadow-sm -space-y-px">
+          <div className="rounded-md space-y-8">
             {/* Phone Number Input with +91 */}
-            <div className="mb-8">
+            <div className="">
               <label htmlFor="phone" className="block text-sm font-medium mb-2">
                 Phone Number
               </label>
@@ -118,52 +124,95 @@ export default function LoginPage() {
             </div>
 
             {/* Password Input */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-2">
+            <div className="">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium mb-2"
+              >
                 Password
               </label>
               <div className="flex pr-2 bg-gray-50 border border-gray-300 rounded focus-within:ring-blue-500 focus-within:border-blue-500">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter password"
+                  className="bg-transparent  outline-none w-full py-3 pl-4  text-gray-600 text-sm sm:text-sm"
+                  {...register("password", {
+                    required: "Password is required",
+                    minLength: {
+                      value: 8,
+                      message: "Password must be at least 8 characters",
+                    },
+                  })}
+                />
+                <button
+                  type="button"
+                  className="  text-gray-500 hover:text-gray-700"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Privacy Policy & Terms Agreement */}
+            <div className="flex items-center space-x-2">
               <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter password"
-                className="bg-transparent  outline-none w-full py-3 pl-4  text-gray-600 text-lg sm:text-sm"
-                {...register("password", {
-                  required: "Password is required",
-                  minLength: {
-                    value: 8,
-                    message: "Password must be at least 8 characters",
-                  },
+                type="checkbox"
+                id="terms"
+                className="h-4 w-4 text-blue-600 rounded focus:border-blue-500"
+                {...register("agreeToTerms", {
+                  required: "Read and Agree Terms and Conditions",
                 })}
               />
-              <button
-                type="button"
-                className="  text-gray-500 hover:text-gray-700"
-                onClick={() => setShowPassword(!showPassword)}
+              <label
+                htmlFor="terms"
+                className="text-xs sm:text-sm text-gray-600"
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-              </div>
+                I agree to the{" "}
+                <Link
+                  href="/privacy-policy"
+                  className="text-blue-600 underline"
+                >
+                  Privacy Policy
+                </Link>{" "}
+                and{" "}
+                <Link
+                  href="/terms-and-conditions"
+                  className="text-blue-600 underline"
+                >
+                  Terms & Conditions
+                </Link>
+                .
+              </label>
             </div>
           </div>
 
           <div className="text-sm text-center mb-4">
-            <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link
+              href="/help"
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
               Forgot your password?
-            </a>
+            </Link>
           </div>
 
           {/* Submit Button */}
           <div>
-            <Button type="submit" className="bg-blue-600 text-white">Sign in</Button>
+            <Button type="submit" className="bg-blue-600 text-white">
+              Sign in
+            </Button>
           </div>
         </form>
 
-        {/* Register Link */}
+        {/* Register */}
         <div className="text-center text-sm">
           <p>
             Don&apos;t have an account?{" "}
-            <Link href="/auth/register" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link
+              href="/auth/register"
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
               Register now
             </Link>
           </p>

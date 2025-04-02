@@ -43,23 +43,19 @@ export async function POST(request: NextRequest) {
     
     
     const response = NextResponse.json({ success: true, data }, { status: 200 });
-    
-    response.cookies.set('accessToken', data.tokens.accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 2592000000
-    });
 
-    response.cookies.set('refreshToken', data.tokens.refreshToken, {
+    const options = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 2592000000
-    });
+      secure: process.env.COOKIE_SECURE === "true", 
+      sameSite: process.env.COOKIE_SAMESITE as "lax" | "none",
+      domain: process.env.COOKIE_DOMAIN || undefined,
+      maxAge: parseInt(process.env.COOKIE_MAX_AGE || "2592000000"),
+      path: "/"
+    }
     
+    response.cookies.set('accessToken', data.tokens.accessToken, options);
+
+    response.cookies.set('refreshToken', data.tokens.refreshToken, options);
 
     return response;
 

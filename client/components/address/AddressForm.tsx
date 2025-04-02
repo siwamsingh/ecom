@@ -237,7 +237,7 @@ export default function AddressForm({ onSubmit, loading }: AddressFormProps) {
 
       <div className="flex items-center justify-between pt-4">
         <Link
-          href="/address"
+          href="/address/my-addresses"
           className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
         >
           Cancel

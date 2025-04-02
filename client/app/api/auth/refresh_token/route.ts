@@ -41,7 +41,7 @@ export async function POST(req: Request) {
 
     const data = await response.json();
     
-    let responseData = {
+    const responseData = {
       statusCode: 200,
       data: data.data,
       message: "Tokens Refreshed Successfully.",
@@ -59,23 +59,20 @@ export async function POST(req: Request) {
     // Create the response
     const res = NextResponse.json(responseData);
 
+    const options = {
+      httpOnly: true,
+      secure: process.env.COOKIE_SECURE === "true", 
+      sameSite: process.env.COOKIE_SAMESITE as "lax" | "none",
+      domain: process.env.COOKIE_DOMAIN || undefined,
+      maxAge: parseInt(process.env.COOKIE_MAX_AGE || "2592000000"),
+      path: "/"
+    }
+
     // Set cookies in the response
     if (data.data?.tokens) {
-      res.cookies.set("accessToken", data.data.tokens.accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        path: "/",
-        maxAge: 15 * 24 * 60 * 60, // 15 days
-      });
+      res.cookies.set("accessToken", data.data.tokens.accessToken,options);
 
-      res.cookies.set("refreshToken", data.data.tokens.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        path: "/",
-        maxAge: 15 * 24 * 60 * 60, // 15 days
-      });
+      res.cookies.set("refreshToken", data.data.tokens.refreshToken, options);
     }
 
     return res;

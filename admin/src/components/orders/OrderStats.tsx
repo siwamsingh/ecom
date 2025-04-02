@@ -89,12 +89,12 @@ const OrdersStatsChart = () => {
       </h2>
       {chartData ? (
         <div className="overflow-x-auto w-full">
-          <div className="min-w-[700px]">
+          <div className="min-w-[700px] min-h-[400px]">
             <Bar
               data={chartData}
               options={{
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 plugins: {
                   legend: {
                     position: "top",

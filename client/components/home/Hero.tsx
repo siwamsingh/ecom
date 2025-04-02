@@ -19,17 +19,17 @@ export const Hero = () => {
             data-aos-delay="300"
             className="mb-5 text-center text-[2.5rem] font-bold leading-tight text-black md:text-left md:text-5xl"
           >
-            Discover the Latest Trends
+            Find the Perfect Book
           </h2>
           <h3
             data-aos="fade-right"
             data-aos-delay="400"
             className="font-regular mb-5 text-center text-lg leading-tight text-neutral-700 md:mb-10 md:text-left"
           >
-            Shop the newest arrivals and stay ahead of the fashion curve.
+            Shop the latest arrivals and stay ahead of the masses.
           </h3>
           <Link
-            href="/shop"
+            href="/products/all-products?category_id=&category=&search=&page=1"
             data-aos="fade-up"
             data-aos-delay="500"
             className="mb-10 flex items-center rounded bg-zinc-900 px-8 py-2.5 text-base font-normal text-white shadow-sm shadow-zinc-500"
@@ -38,29 +38,22 @@ export const Hero = () => {
             <span className="ml-2">Start Shopping</span>
           </Link>
           <div
-            className="mb-5 flex w-full flex-wrap justify-center md:justify-between"
+            className="mb-5 flex gap-4 w-full flex-wrap justify-center md:justify-between"
             data-aos-delay="600"
             data-aos="fade"
           >
-            {["bazaar", "bustle", "versace", "instyle"].map((brand, index) => (
-              <Image
-                priority
-                key={index}
-                src={`/assets/${brand}.svg`}
-                alt={`${brand} brand`}
-                width={100}
-                height={50}
-                className="mx-4 my-1"
-              />
-            ))}
+           
+      <span className="text-gray-500 text-[1.7rem] font-serif tracking-widest opacity-50">BestBooks</span>
+      <span className="text-gray-500 text-[1.7rem] font-bold italic opacity-50">UPSC</span>
+      <span className="text-gray-500 text-[1.7rem] font-serif tracking-wide opacity-50">CBSE</span>
+      <span className="text-gray-500 text-[1.7rem] font-semibold opacity-50">NewArrivals</span>
           </div>
         </div>
-        <div className="flex flex-1 items-end justify-start">
+        <div className="flex flex-1 items-center justify-start">
           <Image
             priority
-            src="/assets/hero.webp"
+            src="/assets/hero1.png"
             alt="hero"
-            quality={100}
             width={550}
             height={550}
             data-aos="fade-up"

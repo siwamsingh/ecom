@@ -2,6 +2,7 @@
 
 import { Copy, CheckCheck } from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 interface CopyButtonProps {
   couponCode: string;
@@ -11,11 +12,22 @@ export default function CopyButton({ couponCode }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(couponCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (!navigator.clipboard) {
+      toast("Failed to copy.")
+      console.log("Clipboard API not supported in this environment.");
+      return;
+    }
+  
+    try {
+      await navigator.clipboard.writeText(couponCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+      console.log("Copied:", couponCode);
+    } catch (error) {
+      console.error("Failed to copy:", error);
+    }
   };
-
+  
   return (
     <button
       className="ml-2 p-2 text-blue-600 hover:bg-blue-50 active:bg-green-200 transition-all duration-200 rounded-full transition-colors"

@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import ProductCard from "./ProductCard";
@@ -40,7 +39,7 @@ const ProductCarouselClient: React.FC<ProductCarouselClientProps> = ({
   products,
 }) => {
   return (
-    <div className="container mx-auto py-6 px-2 sm:p-4 max-w-screen-lg">
+    <div className="container mx-auto py-6 px-2 sm:p-4 w-full">
    <h2 className="text-xl sm:text-2xl italic mb-4 text-gray-800 font-[var(--font-dancing-script)]">
   {title}
 </h2>

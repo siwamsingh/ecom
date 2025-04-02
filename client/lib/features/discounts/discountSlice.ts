@@ -40,13 +40,16 @@ interface ApiResponse {
   // Add other fields from your API response if needed
 }
 
+const serverUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
+
 // Create an async thunk for fetching categories
 export const fetchDiscounts = createAsyncThunk(
   "discounts/fetchDiscounts",
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.post<ApiResponse>(
-        "/api/discounts/get-discounts",
+        `${serverUrl}/api/discounts/get-discounts`,
         {
             limit: 1000000000
         }

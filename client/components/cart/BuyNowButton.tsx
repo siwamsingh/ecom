@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 
 interface BuyNowButtonProps {
@@ -16,14 +15,7 @@ const BuyNowButton: React.FC<BuyNowButtonProps> = ({ productId, className }) => 
   const handleBuyNow = async () => {
     setIsLoading(true);
     try {
-      // First add to cart
-      await axios.post("/api/cart/add", {
-        productId,
-        quantity: 1,
-      });
-
-      // Then redirect to checkout
-      router.push("/checkout");
+      router.push(`/order/confirm?products=${productId}:1`);
     } catch (error) {
       console.error("Error processing buy now:", error);
       setIsLoading(false);

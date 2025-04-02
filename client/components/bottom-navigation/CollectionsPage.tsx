@@ -1,16 +1,13 @@
-import Link from "next/link";
-import { NavLink } from "../header/Header";
 import { Accordion } from "../ui";
 import CloseButton from "../common/CloseButton"; // Import the client close button
 
 interface Props {
-  navLinks: NavLink[];
   collections: any;
   onPageClose: () => void; // Accept function from the client wrapper
 }
 
-export default function CollectionsPage({ navLinks, collections, onPageClose }: Props) {
-  
+export default function CollectionsPage({ collections, onPageClose }: Props) {
+
   return (
     <div className="fixed bottom-0 left-0 top-0 z-50 h-full w-full overflow-y-auto bg-white px-5 pt-5">
       <div className="flex justify-between">
@@ -19,9 +16,9 @@ export default function CollectionsPage({ navLinks, collections, onPageClose }: 
         <CloseButton onClick={onPageClose} />
       </div>
       <ul className="mt-5 flex flex-col px-2">
-        {collections.map((item:any, index:number) => (
+        {collections.map((item: any, index: number) => (
           <li
-            key={"collection"+index}
+            key={"collection" + index}
             className="border-b border-solid border-neutral-100 font-medium text-neutral-800"
           >
             {item && (
@@ -32,15 +29,16 @@ export default function CollectionsPage({ navLinks, collections, onPageClose }: 
                     {item &&
                       item.children.map((gernre: any) => (
                         <li
-                          key={"genre"+gernre.id}
+                          key={"genre" + gernre.id}
                           className="block border-b border-solid border-neutral-100"
                         >
                           <Accordion.Body>
-                          <Link
-                                   className="block border-b border-solid border-neutral-100 py-2"     href={`/products/${item.name}/${gernre.slug}`}
-                                      >
-                                        <h3>{gernre.name}</h3>
-                                      </Link>
+                            <a
+                              className="block border-b border-solid border-neutral-100 py-2"
+                              href={`/products/all-products?category_id=${gernre.id}&category=${gernre.slug}&search=&page=1`}
+                            >
+                              <h3>{gernre.name}</h3>
+                            </a>
                           </Accordion.Body>
                         </li>
                       ))}

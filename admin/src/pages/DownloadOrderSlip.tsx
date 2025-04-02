@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   page: {
     padding: 30,
     fontSize: 12,
-    fontFamily: 'NotoSans' 
+    fontFamily: 'NotoSans',
   },
   addressTop: {
     fontSize: 10,
@@ -82,12 +82,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 500,
   },
-  acknowledgement:{
+  acknowledgement: {
     alignSelf: "center",
-    fontSize: 12,
-    marginTop: 15,
+    fontSize: 9, // Reduced
+    marginTop: 10,
     marginHorizontal: 20,
-    textAlign: "center"
+    textAlign: "center",
   },
   dashedLine: {
     borderBottom: 1,
@@ -95,9 +95,9 @@ const styles = StyleSheet.create({
     borderColor: "#000",
     marginVertical: 10,
   },
-  dateFormat:{
+  dateFormat: {
     fontSize: 6,
-    fontWeight: 100
+    fontWeight: 100,
   },
   header: {
     marginBottom: 20,
@@ -120,8 +120,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   tab: {
-    alignSelf: "flex-end", // Moves the text to the right
-    textAlign: "left", // Keeps the text left-aligned within the right side
+    alignSelf: "flex-end",
+    textAlign: "left",
     width: "40%",
   },
   table: {
@@ -137,9 +137,16 @@ const styles = StyleSheet.create({
   tableHeader: {
     backgroundColor: "#e3e3e3",
   },
-  tableCell: {
-    flex: 1,
+  tableCellItem: {
+    flex: 2, // More width for item name
     padding: 5,
+    fontSize: 9, // Smaller text
+  },
+  tableCellSmall: {
+    flex: 0.7, // Narrow columns
+    padding: 5,
+    fontSize: 9,
+    textAlign: "center",
   },
   total: {
     alignSelf: "flex-end",
@@ -160,8 +167,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 40,
   },
-  barcodePath: {
-  }
+  barcodePath: {},
 });
 
 const generateBarcodeData = (orderId: string) => {
@@ -207,16 +213,14 @@ const OrderPage = ({ order }: { order: OrderWithUser }) => {
 
   return (
     <Page size="A4" style={styles.page}>
-       <View style={styles.barcodeContainer}>
+      <View style={styles.barcodeContainer}>
         {barcodeData && <Image src={barcodeData} />}
       </View>
 
       <View style={styles.header}>
         <Text style={styles.addressTop}>Ship to :</Text>
         <Text style={styles.addressBody}>{order?.userDetails?.user?.username}</Text>
-        <Text style={styles.addressBody}>
-          {shippingAddress?.specific_location}
-        </Text>
+        <Text style={styles.addressBody}>{shippingAddress?.specific_location}</Text>
         <Text style={styles.addressBody}>{shippingAddress?.area}</Text>
         <Text style={styles.addressBody}>{shippingAddress?.landmark}</Text>
         <Text
@@ -226,7 +230,10 @@ const OrderPage = ({ order }: { order: OrderWithUser }) => {
       </View>
 
       <View style={styles.section}>
-        <Text>Date: {new Date(order?.created_at).toLocaleDateString('en-GB')} <Text style={styles.dateFormat}>DD/MM/YYYY</Text></Text>
+        <Text>
+          Date: {new Date(order?.created_at).toLocaleDateString('en-GB')}{" "}
+          <Text style={styles.dateFormat}>DD/MM/YYYY</Text>
+        </Text>
         <Text>Order ID: {order?._id}</Text>
         <Text>Order Number: {order?.order_number}</Text>
       </View>
@@ -237,19 +244,19 @@ const OrderPage = ({ order }: { order: OrderWithUser }) => {
         <Text style={styles.sectionTitle}>Order Items</Text>
         <View style={styles.table}>
           <View style={[styles.tableRow, styles.tableHeader]}>
-            <Text style={styles.tableCell}>Item</Text>
-            <Text style={styles.tableCell}>Quantity</Text>
-            <Text style={styles.tableCell}>Price</Text>
-            <Text style={styles.tableCell}>Total</Text>
+            <Text style={styles.tableCellItem}>Item</Text>
+            <Text style={styles.tableCellSmall}>Qty</Text>
+            <Text style={styles.tableCellSmall}>Price</Text>
+            <Text style={styles.tableCellSmall}>Total</Text>
           </View>
           {order.order_items.map((item) => (
             <View key={item?.order_item_id} style={styles.tableRow}>
-              <Text style={styles.tableCell}>
+              <Text style={styles.tableCellItem}>
                 {item?.product_details.product_name}
               </Text>
-              <Text style={styles.tableCell}>{item?.quantity}</Text>
-              <Text style={styles.tableCell}>₹{item?.price}</Text>
-              <Text style={styles.tableCell}>₹{item?.total_amount}</Text>
+              <Text style={styles.tableCellSmall}>{item?.quantity}</Text>
+              <Text style={styles.tableCellSmall}>₹{item?.price}</Text>
+              <Text style={styles.tableCellSmall}>₹{item?.total_amount}</Text>
             </View>
           ))}
         </View>
@@ -266,12 +273,12 @@ const OrderPage = ({ order }: { order: OrderWithUser }) => {
       <Text style={styles.acknowledgement}>
         Thanks for buying on Apni Dukan. To provide feedback for the
         seller please visit giveUsFeedback.com . To contact the seller, go to
-        Your Orders in Your Account and Click "Contact the Seller" .
+        Your Orders in Your Account and Click "Contact the Seller".
       </Text>
-
     </Page>
   );
 };
+
 
 // Multi-page PDF Document component
 const OrdersPDF = ({ orders }: { orders: Order[] }) => {

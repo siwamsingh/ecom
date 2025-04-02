@@ -4,11 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiHome, FiUser, FiShoppingBag, FiGrid } from "react-icons/fi";
 import { MdOutlineDiscount } from "react-icons/md";
-import { NavLink } from "../header/Header";
 import CollectionsPage from "./CollectionsPage";
 
 interface Props {
-  navLinks: NavLink[];
   collections: any;
 }
 
@@ -19,7 +17,7 @@ interface BottomTab {
   Icon: React.ElementType;
 }
 
-export const BottomNavigation = ({ navLinks, collections }: Props) => {
+export const BottomNavigation = ({ collections }: Props) => {
   const router = useRouter();
   const [currentTab, setCurrentTab] = useState<string | null>(null);
   const [previousPage, setPreviousPage] = useState<string | null>(null);
@@ -61,7 +59,6 @@ export const BottomNavigation = ({ navLinks, collections }: Props) => {
 
       {currentTab === "collections" && (
         <CollectionsPage
-          navLinks={navLinks}
           collections={collections}
           onPageClose={() => {
             setCurrentTab(null);

@@ -23,6 +23,8 @@ const loginApi = async (loginData: loginData) => {
       throw new Error(message || "An unexpected error occurred.");
     }
   } catch (error: any) {
+    console.log(error);
+    
     console.error("Error during login:", error?.message);
     throw error; // Rethrow the error to handle it in the calling code
   }

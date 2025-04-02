@@ -31,7 +31,7 @@ async function fetchDiscounts(): Promise<Discount[]> {
       {
         limit: 1000000000,
         expired: false,
-        status: "active"
+        status: "active",
       }
     );
     return response.data.data.discounts;
@@ -60,11 +60,13 @@ export default async function DiscountsPage() {
             </p>
           </div>
           <div className="bg-yellow-50 rounded-xl p-4 flex items-center mb-6">
-          <Info className="h-6 w-6 text-yellow-600 mr-3 flex-shrink-0" />
-          <p className="text-sm text-yellow-900">
-            To use a coupon code, copy the link given for a product and apply it during order confirmation to get a discount on the <strong>product linked to the coupon</strong>.
-          </p>
-        </div>
+            <Info className="h-6 w-6 text-yellow-600 mr-3 flex-shrink-0" />
+            <p className="text-sm text-yellow-900">
+              To use a coupon code, copy the link given for a product and apply
+              it during order confirmation to get a discount on the{" "}
+              <strong>product linked to the coupon</strong>.
+            </p>
+          </div>
 
           <div className="space-y-3">
             {discounts.length > 0 ? (

@@ -1,8 +1,6 @@
 import Link from 'next/link';
-import { useRef, useState } from 'react';
 import type { IconType } from 'react-icons';
-import { FiGrid, FiPhone } from 'react-icons/fi';
-import { useClickAway } from 'react-use';
+import {  FiPhone } from 'react-icons/fi';
 
 interface TopbarItemProps {
   label: string;
@@ -20,22 +18,18 @@ const TopbarItem = ({ label, url, Icon }: TopbarItemProps) => (
 );
 
 export const TopBar = () => {
-  const [isLocaleSelectorOpen, setIsLocaleSelectorOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useClickAway(ref, () => setIsLocaleSelectorOpen(false));
 
   const topbarItems: TopbarItemProps[] = [
     { label: 'Aboout Us', url: '/about' },
     { label: 'Help', url: '/help' },
-    { label: 'Download App', url: '/download-app', Icon: FiGrid },
+    { label: 'Terms and Conditions', url: '/terms-and-conditions'},
     { label: 'Contact Us', url: '/contact', Icon: FiPhone },
   ];
 
   return (
     <div className="bg-[#232323] text-[10px] text-gray-300 md:text-xs">
       <div className="mx-auto flex flex-col items-center px-4 py-1 xl:container md:flex-row md:py-2.5">
-        <p className="pb-2 md:pb-0">Limited Time Offer: Get 20% Off!</p>
+        <p className="pb-2 md:pb-0">New Offer Every month. Upto 20% Off.</p>
         <ul className="flex flex-wrap justify-center md:ml-auto">
           {topbarItems.map(item => (
             <TopbarItem key={item.label} {...item} />

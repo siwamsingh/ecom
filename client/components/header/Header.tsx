@@ -53,7 +53,11 @@ export const Header = forwardRef<HTMLDivElement>(({}, ref) => {
   const [mounted, setMounted] = useState(true);
   const [hoveredNavLink, setHoveredNavLink] = useState<NavLink | null>();
 
-  const { categories, loading, error } = useSelector(
+  useEffect(()=>{
+    setMounted(true);
+  })
+
+  const { categories } = useSelector(
     (state: RootState) => state.category
   );
 
@@ -97,7 +101,7 @@ export const Header = forwardRef<HTMLDivElement>(({}, ref) => {
             ))}
           </ul>
           <ul className="ml-auto items-center md:flex">
-            {mounted && <DynamicSearch onSearch={value => console.log(value)} />}
+            {mounted && <DynamicSearch />}
             {sideNavLinks.map(([url, Icon]) => (
               <Link key={url} href={url} className="ml-5 hidden md:block">
                 <Icon className="text-neutral-700 transition-colors hover:text-violet-700" size="20px" />
@@ -136,7 +140,7 @@ export const Header = forwardRef<HTMLDivElement>(({}, ref) => {
         )}
       </div>
       {mounted && (
-        <DynamicBottomNavigation navLinks={navLinks} collections={collections} />
+        <DynamicBottomNavigation  collections={collections} />
       )}
     </header>
   );

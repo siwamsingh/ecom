@@ -210,7 +210,6 @@ const verifyPayment = asyncHandler(async (req, res) => {
       return res.status(400).send('Invalid signature');
     }
 
-    console.log('Webhook verified successfully:', req.body);
   } catch (error) {
     console.error('Error verifying webhook:', error);
     throw new ApiError(401, "Webhook not verified");
@@ -272,9 +271,13 @@ const verifyPayment = asyncHandler(async (req, res) => {
 
 
 const getOrdersOfUser= asyncHandler(async (req,res)=>{
-  const {user_id} = req.body;
+  let {user_id} = req.body;
 
   const user = req.user;
+
+  if(!user_id){
+    user_id = user._id;
+  }
 
   if(!user_id){
     throw new ApiError(401,"user_id is required");

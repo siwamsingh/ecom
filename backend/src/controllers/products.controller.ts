@@ -353,8 +353,6 @@ const masterSwitch = asyncHandler(async (req, res) => {
 
 const getProduct = asyncHandler(async (req, res) => {
   const { product_id } = req.body;
-
-  console.log(req.body);
   
   
   if (!product_id) {

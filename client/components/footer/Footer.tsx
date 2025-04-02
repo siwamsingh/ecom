@@ -14,25 +14,23 @@ const footerLinks = [
     label: "Company",
     links: [
       ["About", "/about"],
-      ["Term of Use", "/term-of-use"],
+      ["Terms and Conditions", "/terms-and-conditions"],
       ["Privacy Policy", "/privacy-policy"],
-      ["How it Works", "/how-works"],
-      ["Contact Us", "/contact-us"],
+      ["Contact Us", "/contact"],
     ],
   },
   {
     label: "Support",
     links: [
-      ["Support Career", "/support"],
-      ["24h Service", "/24-service"],
-      ["Quick Chat", "/quick-chat"],
+      ["Help", "/help"],
+      ["Contact Seller", "/contact"],
     ],
   },
   {
     label: "Contact",
     links: [
-      ["Whatsapp", "/whatsapp"],
-      ["Support 24", "/24-service"],
+      ["Whatsapp", "/contact"],
+      ["Phone", "/contact"],
     ],
   },
 ];
@@ -67,7 +65,7 @@ export default function Footer() {
                 <strong className="mb-5 text-sm font-bold text-neutral-600 md:text-base">{label}</strong>
                 <ul className="flex flex-col gap-2 text-xs font-normal text-neutral-500 md:text-sm">
                   {links.map(([text, href]) => (
-                    <Link key={href} href={href} className="transition hover:text-neutral-700">
+                    <Link key={href+text} href={href} className="transition hover:text-neutral-700">
                       {text}
                     </Link>
                   ))}
@@ -82,14 +80,14 @@ export default function Footer() {
       <div className="bg-neutral-100">
         <div className="mx-auto max-w-7xl px-2 py-3">
           <div className="flex flex-col items-center justify-between gap-3 text-xs font-medium text-neutral-700 md:flex-row">
-            <p>Copyright © 2022 KARA Shop</p>
-            <Link href="https://github.com/mehrabmp/kara-shop" target="_blank">
+            <p>Copyright © 2025 Book 4 Value</p>
+            <Link href="https://github.com/siwamsingh/ecom" target="_blank">
               <BsGithub size="1.25rem" />
             </Link>
             <p>
               Created By{" "}
               <strong>
-                <Link href="https://github.com/mehrabmp" target="_blank">Mehrab</Link>
+                <Link href="https://github.com/siwamsingh" target="_blank">Siwam</Link>
               </strong>
               . All Rights Reserved.
             </p>

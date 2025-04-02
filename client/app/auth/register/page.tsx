@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useForm, FieldValues } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import Button from "../../../components/common/Button";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
@@ -23,7 +22,6 @@ export default function Register() {
   const [countdown, setCountdown] = useState<number>(0);
   const [canResend, setCanResend] = useState<boolean>(false);
   const [timer, setTimer] = useState<string>("0:00");
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -195,7 +193,7 @@ export default function Register() {
       } else {
         toast.error(responseData.message, { duration: 6000 });
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to Verify OTP. Try Again.");
     }
     setOtp("");

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import axios from 'axios';
 import refreshToken from '@/utils/refreshToken';
 import getErrorMsg from '@/utils/getErrorMsg';
@@ -7,7 +7,7 @@ import { cookies } from 'next/headers';
 
 const serverUrl = process.env.NEXT_SERVER_URL || 'http://localhost:8000';
 
-async function getCart(cookieHeader: string, cartData: any) {
+async function getCart(cookieHeader: string) {
   try {
     const response = await axios.post(`${serverUrl}/cart/get-cart`, {}, {
       headers: {
@@ -23,7 +23,7 @@ async function getCart(cookieHeader: string, cartData: any) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   if (!serverUrl) {
     return NextResponse.json(
       { success: false, message: "Server URL is not defined" },
@@ -38,13 +38,10 @@ export async function POST(request: NextRequest) {
     .map(({ name, value }) => `${name}=${value}`)
     .join("; ");
   
-    let cartData = null;
   try {
-    // Get request body
-     cartData = await request.json();
     
     // Send the address data to the backend with cookies
-    const result = await getCart(cookieHeader, cartData);
+    const result = await getCart(cookieHeader);
     
     // Return successful response
     return NextResponse.json(result, { status: 200 });
@@ -62,7 +59,7 @@ export async function POST(request: NextRequest) {
 
           console.log("🔄 Retrying request with refreshed tokens...");
           
-          const result = await getCart(cookieHeader, cartData);
+          const result = await getCart(cookieHeader);
           
           return NextResponse.json(result, { status: 200 });
         }

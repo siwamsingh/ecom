@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         success: false, 
-        message: getErrorMsg(error, null, "adding to cart")
+        message: getErrorMsg(error, 401, "adding to cart")
       },
       { status: error?.response?.status || 500 }
     );

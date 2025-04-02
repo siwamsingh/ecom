@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import promobanner1 from '../../public/assets/promo-banner-1.webp';
-import promobanner2 from '../../public/assets/promo-banner-2.webp';
-import promobanner3 from '../../public/assets/promo-banner-3.webp';
-import promobanner4 from '../../public/assets/promo-banner-4.webp';
+import promobanner1 from '../../public/assets/promo-banner-1.png';
+import promobanner2 from '../../public/assets/promo-banner-2.png';
+import promobanner3 from '../../public/assets/promo-banner-3.png';
+import promobanner4 from '../../public/assets/promo-banner-4.png';
 
 export const Promotions = () => {
   return (

@@ -28,8 +28,8 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({ productId, className 
       }
 
       toast.success("One item added to cart.")
-    } catch (error) {
-      console.error("Error adding item to cart:", error);
+    } catch (error: any) {
+      toast.success(error?.response?.data?.message)
     } finally {
       setIsLoading(false);
     }

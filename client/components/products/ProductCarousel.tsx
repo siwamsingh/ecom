@@ -1,6 +1,5 @@
 import React from "react";
 import { Product } from "@/types/product.types";
-import ProductCard from "./ProductCard";
 import ServerErrorPage from "../Error/ServerError";
 import axios from "axios";
 import { cookies } from "next/headers";
@@ -25,8 +24,9 @@ const ProductCarousel: React.FC<ProductCarouselProps> = async ({
 
   async function fetchProducts() {
     try {
+      
       const cookieStore = await cookies();
-      let cookieHeader = cookieStore
+      const cookieHeader = cookieStore
         .getAll()
         .map(({ name, value }) => `${name}=${value}`)
         .join("; ");
@@ -47,6 +47,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = async ({
           withCredentials: true,
         }
       );
+
 
       return response.data;
     } catch (error) {
@@ -70,7 +71,23 @@ const ProductCarousel: React.FC<ProductCarouselProps> = async ({
     return <ProductCarouselClient title={title} products={products} />;
   } catch (error: any) {
     console.error("Error fetching carousel products:", error);
-    return <ServerErrorPage />;
+    return <div className="container mx-auto py-6 px-2 sm:p-4 w-full">
+    <div className="h-6 sm:h-8 w-40 bg-gray-300 rounded-sm animate-pulse mb-4"></div>
+  
+    <div className="relative p-4 bg-gray-200 rounded-lg animate-pulse">
+      <div className="grid h-48 overflow-clip grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {Array(5)
+          .fill(0)
+          .map((_, index) => (
+            <div
+              key={index}
+              className="h-48 max-w-44  bg-gray-300 rounded-md animate-pulse"
+            />
+          ))}
+      </div>
+    </div>
+  </div>
+  
   }
 };
 

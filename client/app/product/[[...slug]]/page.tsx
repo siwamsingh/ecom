@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React from "react";
 import axios from "axios";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
@@ -9,13 +9,13 @@ import AddToCartButton from "@/components/cart/AddToCartButton";
 import BuyNowButton from "@/components/cart/BuyNowButton";
 import { Check, X, BookOpen, Truck, ImageOff } from "lucide-react";
 import { redirect } from 'next/navigation'
+import MainLayout from "@/app/MainLayout";
+import ProductCarousel from "@/components/products/ProductCarousel";
 
-interface ProductDetailPageProps {
-  searchParams: {
-    product_id?: string;
-    product_name?: string;
-  };
-}
+type tParams = Promise<{
+  product_id?: string;
+  product_name?: string;
+}>
 
 const serverUrl = process.env.NEXT_SERVER_URL || "http://localhost:8000";
 
@@ -33,9 +33,9 @@ const extractProductDetails = (description: string) => {
   return details;
 };
 
-const ProductDetailPage: FC<ProductDetailPageProps> = async ({
-  searchParams,
-}) => {
+const ProductDetailPage = async ({
+  searchParams
+}: {searchParams: tParams}) => {
   const productParams = await searchParams;
   const product_id = productParams.product_id;
   const product_name = productParams.product_name;
@@ -49,7 +49,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = async ({
     }
 
     const cookieStore = await cookies();
-    let cookieHeader = cookieStore
+    const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
       .join("; ");
@@ -74,6 +74,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = async ({
       }
 
       const product = response.data.data.product;
+      
       if(product.status!=="active"){
         return notFound();
       }
@@ -102,10 +103,12 @@ const ProductDetailPage: FC<ProductDetailPageProps> = async ({
       const details = extractProductDetails(product.description);
 
       return (
-        <div className="mx-auto px-2 sm:px-4 lg:px-4 py-12 bg-white">
-          <div className="md:flex gap-5">
+        <MainLayout>
+        <div className="mx-auto max-w-screen-xl px-2 sm:px-4 lg:px-4 py-12 bg-white">
+
+          <div className="md:flex gap-5 justify-center items-center  lg:min-h-[60vh]">
             {/* Product Image - Adjusted size */}
-            <div className="col-span-6 sm:px-10 sm:min-w-lg h-fit overflow-hidden">
+            <div className="lg:w-5/12 sm:px-10 md:px-4 lg:px-10 sm:min-w-lg h-fit overflow-hidden">
               {product.image_url ? (
                 <div className="aspect-auto h-fit relative flex items-center justify-center">
                   <Image
@@ -140,10 +143,10 @@ const ProductDetailPage: FC<ProductDetailPageProps> = async ({
             </div>
 
             {/* Product Details - Expanded to balance image size */}
-            <div className="col-span-6 mt-10 lg:mt-0 space-y-8">
+            <div className="lg:w-7/12 mt-10 md:mt-0 space-y-8">
               {/* Title and Price */}
               <div className="space-y-2">
-                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 mb-4">
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 mb-4 max-w-xl">
                   {product.product_name || "Book name"}
                 </h1>
                 <div className="flex ">
@@ -163,7 +166,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = async ({
                   )}
                 </div>
               </div>
-              <div className="">
+              <div className="lg:max-w-xl">
                 <DiscountCodesList
                   discountCodes={discountCodes}
                   currentPrice={product.price}
@@ -240,8 +243,12 @@ const ProductDetailPage: FC<ProductDetailPageProps> = async ({
                 </div>
               </div>
 
-              {/* Stock Availability & Shipping Info */}
-              <div className="bg-indigo-50 rounded-xl p-4 flex items-center">
+             
+            </div>
+          </div>
+
+           {/* Stock Availability & Shipping Info */}
+           <div className="bg-indigo-50 max-w-screen-lg my-8 mx-auto justify-center px-6 rounded-xl p-4 flex items-center">
                 <Truck className="h-6 w-6 text-indigo-600 mr-3 flex-shrink-0" />
                 <p className="text-sm text-indigo-900">
                   {product.stock_quantity > 0
@@ -249,9 +256,17 @@ const ProductDetailPage: FC<ProductDetailPageProps> = async ({
                     : "Currently out of stock. Sign in to get notified when this item becomes available."}
                 </p>
               </div>
-            </div>
-          </div>
+
+          <div className="max-w-[1180px] mx-auto">
+
+          <ProductCarousel 
+        title="Similar Books" 
+        category_id={product.categorie_id || null}
+        />
         </div>
+        </div>
+        
+        </MainLayout>
       );
     } catch (error: any) {
       console.error("Error fetching product data:", error);

@@ -7,6 +7,7 @@ import { MapPin, Trash2, Plus, Check, ChevronDown, ChevronUp } from 'lucide-reac
 import { toast } from 'react-hot-toast';
 import { Dialog } from '@headlessui/react';
 import { useRouter } from 'next/navigation'
+import MainLayout from '@/app/MainLayout';
 
 
 interface Address {
@@ -52,7 +53,13 @@ export default function AddressesPage() {
         } else {
           throw new Error(response.data.message || 'Invalid response format');
         }
-      } catch (err) {
+      } catch (err: any) {
+          if(err?.response?.status === 577 || err?.response?.status === 477){
+                    toast.error("Session Expired. Login to continue.");
+                     setTimeout(()=>{router.push("/auth/login")},3000);
+                     return;
+                    
+                }
         setError('Failed to load addresses.');
       } finally {
         setLoading(false);
@@ -66,7 +73,7 @@ export default function AddressesPage() {
     
     if (selectedAddress === null) return;
     try {
-      const response = await axios.post('/api/address/delete-address', selectedAddress);
+      await axios.post('/api/address/delete-address', selectedAddress);
 
       setAddresses(addresses.filter((address) => address._id !== selectedAddress));
       toast.success('Address deleted successfully');
@@ -92,7 +99,7 @@ export default function AddressesPage() {
 
   const setDefaultAddress = async (id: number) => {
     try {
-      const response = await axios.post('/api/address/change-default-address', id);
+      await axios.post('/api/address/change-default-address', id);
       
       setAddresses(addresses.map(addr => ({ ...addr, is_default: addr._id === id })));
       toast.success('Default address updated');
@@ -101,11 +108,14 @@ export default function AddressesPage() {
     }
   };
 
-  if (loading) return <p className="text-center text-gray-600">Loading addresses...</p>;
+  if (loading) return <div className="flex justify-center items-center h-64">
+  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+</div>  ;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <MainLayout>
+    <div className="p-6 max-w-3xl min-h-[70vh] mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">My Addresses</h1>
         <span className="text-gray-600 text-sm">{addresses.length}/{MAX_ADDRESSES}</span>
@@ -116,15 +126,15 @@ export default function AddressesPage() {
           {addresses.map((address) => (
             <li key={address._id} className="bg-white border border-gray-300 rounded-lg shadow-sm">
               <div className="p-5 flex justify-between items-center cursor-pointer" onClick={() => toggleExpand(address._id)}>
-                <div className="flex items-start space-x-3">
-                  <MapPin className="w-6 h-6 text-gray-500 mt-1" />
-                  <div>
+                <div className="w-11/12 flex items-start space-x-3">
+                  <MapPin className="w-2/12 sm:w-1/12 h-6 text-gray-500 mt-1" />
+                  <div className='w-10/12 sm:w-11/12'>
                     <p className="text-gray-900 font-semibold">{address.specific_location}, {address.area}</p>
                     <p className="text-gray-600 text-sm">{address.town_or_city}, {address.state}, {address.country} - {address.pincode}</p>
                     {address.is_default && <span className="text-blue-600 text-sm font-bold">[Default]</span>}
                   </div>
                 </div>
-                {expandedAddress === address._id ? <ChevronUp className="w-5 h-5 text-gray-500" /> : <ChevronDown className="w-5 h-5 text-gray-500" />}
+                {expandedAddress === address._id ? <ChevronUp className="w-1/12 h-5 text-gray-500" /> : <ChevronDown className="w-1/12 h-5 text-gray-500" />}
               </div>
               {expandedAddress === address._id && (
                 <div className="p-4 bg-gray-100 flex justify-end space-x-3">
@@ -170,12 +180,13 @@ export default function AddressesPage() {
       </Dialog>
 
       <button
-        className={`fixed bottom-6 right-6 rounded-full p-4 shadow-lg transition flex items-center space-x-2
+        className={` mx-auto my-10 rounded-full p-4 shadow-sm transition flex items-center space-x-2
           ${addresses.length >= MAX_ADDRESSES ? 'bg-gray-400 ' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
         onClick={handleAddClick}
       >
         <Plus className="w-6 h-6" />
       </button>
     </div>
+    </MainLayout>
   );
 }

@@ -30,13 +30,15 @@ interface ApiResponse {
   // Add other fields from your API response if needed
 }
 
+const serverUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
 // Create an async thunk for fetching categories
 export const fetchCategories = createAsyncThunk(
   "category/fetchCategories",
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.post<ApiResponse>(
-        "/api/category/get-categories",
+        `${serverUrl}/api/category/get-categories`,
         {}
       );
       return response.data.data.categories; // Assuming your API returns data in this structure

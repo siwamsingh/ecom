@@ -29,6 +29,7 @@ export default function Contact() {
             <p className="text-sm text-indigo-900">
               Please contact us only for necessary inquiries such as missing
               orders, payment issues, bulk orders, or other serious concerns.
+              Users can call us between <strong>9 AM - 6 PM</strong>
             </p>
           </div>
 

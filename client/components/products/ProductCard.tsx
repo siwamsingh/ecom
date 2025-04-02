@@ -1,8 +1,7 @@
 import React from "react";
 import { Product } from "@/types/product.types";
-import { Link, ShoppingCart, Tag } from "lucide-react";
+import { Tag } from "lucide-react";
 import NextLink from "next/link";
-import Button from "../common/Button";
 import { DiscountBadgeProvider } from "./DiscountBadge";
 import AddToCartButton from "../cart/AddToCartButton";
 
@@ -55,7 +54,7 @@ const ProductCard = (product: Product) => {
             ${
               product.stock_quantity > 0
                 ? "text-indigo-600 bg-indigo-100 hover:text-white border-none hover:bg-indigo-700"
-                : "text-white bg-gray-400 cursor-not-allowed"
+                : "text-white bg-gray-500 border-none"
             }`}/>
       </div>
     </NextLink>

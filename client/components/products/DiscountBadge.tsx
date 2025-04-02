@@ -18,7 +18,7 @@ const DiscountBadgeProvider = ({ product_id }: ProductId) => {
 
 const DiscountBadge: React.FC<ProductId> = ({ product_id }) => {
   const [selectedDiscount, setSelectedDiscount] = useState<number>(0);
-  const { discounts, loading, error } = useSelector(
+  const { discounts } = useSelector(
     (state: RootState) => state.discount // ✅ FIXED: Corrected Redux selector
   );
 

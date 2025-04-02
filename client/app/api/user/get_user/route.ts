@@ -3,7 +3,6 @@ import axios from "axios";
 import { cookies } from "next/headers";
 import refreshToken from "@/utils/refreshToken";
 import setRefreshedTokens from "@/utils/setRefreshedTokens";
-import { redirect } from "next/navigation";
 
 const serverUrl = process.env.NEXT_SERVER_URL;
 

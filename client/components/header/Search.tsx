@@ -3,11 +3,8 @@ import { useRouter } from 'next/navigation';
 import { useState, useRef } from 'react';
 import { FiSearch, FiX } from 'react-icons/fi';
 
-interface Props {
-  onSearch: (value: string) => void;
-}
 
-export const Search = ({ onSearch }: Props) => {
+export const Search = () => {
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();

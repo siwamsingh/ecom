@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Search } from "lucide-react";
@@ -18,27 +19,25 @@ const SearchFilterComponent: React.FC<SearchProps> = ({
   searchParam,
   currentCategory,
 }) => {
-  const { categories } = useSelector((state: RootState) => state.category);
   const router = useRouter();
+  
+  // Use useState with a function to initialize state only on client
+  const [isClient, setIsClient] = useState(false);
+  const { categories } = useSelector((state: RootState) => state.category);
 
-  const [searchQuery, setSearchQuery] = useState<string>(searchParam || "");
-  const [selectedCategory, setSelectedCategory] = useState<Category>( {
-      _id: 0, 
-      category_name: "",
-      parent_categorie_id: 0, 
-      status: "",
-      url_slug: "",
-    }
-  );
-  
-  
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
 
-
-  // Set the initial selected category based on the currentCategory prop
+  // Mark component as hydrated after mount
   useEffect(() => {
-    if (currentCategory && categories.length > 0) {
-      // Find the category in the categories list that matches currentCategory
+    setIsClient(true);
+    setSearchQuery(searchParam || "");
+  }, [searchParam]);
+
+  // Set the selected category after client-side hydration
+  useEffect(() => {
+    if (isClient && currentCategory && categories.length > 0) {
       const foundCategory = categories.find(
         (cat: any) => cat.url_slug === currentCategory
       );
@@ -47,7 +46,7 @@ const SearchFilterComponent: React.FC<SearchProps> = ({
         setSelectedCategory(foundCategory);
       }
     }
-  }, [currentCategory, categories]);
+  }, [currentCategory, categories, isClient]);
 
   // Handle search submission
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -88,7 +87,7 @@ const SearchFilterComponent: React.FC<SearchProps> = ({
       <div className="bg-white rounded-lg p-4 sm:flex space-y-4 justify-start items-start gap-6">
 
         {/* Search Form */}
-        <form onSubmit={handleSearchSubmit} className=" sm:min-w-[400px]">
+        <form onSubmit={handleSearchSubmit} className="sm:min-w-[400px]">
           <div className="relative max-w-lg">
             <input
               type="text"
@@ -125,38 +124,40 @@ const SearchFilterComponent: React.FC<SearchProps> = ({
             </button>
           </div>
 
-          {/* Category List */}
-          <div
-            className={`${
-              filterOpen ? "block" : "hidden"
-            } flex flex-wrap gap-2`}
-          >
-            <button
-              onClick={() =>
-                handleCategoryChange({ _id: "", url_slug: "" })
-              }
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                !currentCategory
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-              }`}
+          {/* Only render category list when client-side hydration is complete */}
+          {isClient && (
+            <div
+              className={`${
+                filterOpen ? "block" : "hidden"
+              } flex flex-wrap gap-2`}
             >
-              All Genre
-            </button>
-            {categories.map((category: any) => (
               <button
-                key={category._id}
-                onClick={() => handleCategoryChange(category)}
+                onClick={() =>
+                  handleCategoryChange({ _id: "", url_slug: "" })
+                }
                 className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                  isCategorySelected(category)
+                  !selectedCategory || !selectedCategory._id
                     ? "bg-indigo-600 text-white"
                     : "bg-gray-100 text-gray-800 hover:bg-gray-200"
                 }`}
               >
-                {category.category_name}
+                All Genre
               </button>
-            ))}
-          </div>
+              {categories.map((category: any) => (
+                <button
+                  key={category._id}
+                  onClick={() => handleCategoryChange(category)}
+                  className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                    isCategorySelected(category)
+                      ? "bg-indigo-600 text-white"
+                      : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                  }`}
+                >
+                  {category.category_name}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

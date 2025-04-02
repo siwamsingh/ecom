@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React from "react";
 import axios from "axios";
 import { cookies } from "next/headers";
 import ServerErrorPage from "@/components/Error/ServerError";
@@ -7,20 +7,23 @@ import SearchFilterProvider from "@/components/products/SearchFilterProvider";
 import Pagination from "@/components/products/Pagination";
 import MainLayout from "@/app/MainLayout";
 
-interface ProductsPageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
-}
+
+type tParams = Promise<{
+  category?: string;
+  search?: string;
+  category_id: number;
+  page: number;
+}>
 
 const serverUrl = process.env.NEXT_SERVER_URL || "http://localhost:8000";
 
-const AllProducts: FC<ProductsPageProps> = async ({ searchParams }) => {
+const AllProducts = async ({ searchParams }: {searchParams: tParams}) => {
+
   const params = await searchParams;
   const category = params.category || ""; // Default to "All" if not provided
   const search = params.search || ""; // Default empty string if not provided
   const category_id = params.category_id || null;
   let page = Number(params.page) || 1;
-
-  console.log(category, " ", search, " ", category_id, " ", page);
 
   const pageLimit = 4;
 
@@ -56,7 +59,7 @@ const AllProducts: FC<ProductsPageProps> = async ({ searchParams }) => {
     }
 
     const cookieStore = await cookies();
-    let cookieHeader = cookieStore
+    const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
       .join("; ");
@@ -92,7 +95,7 @@ const AllProducts: FC<ProductsPageProps> = async ({ searchParams }) => {
           <Pagination
             searchParam={Array.isArray(search) ? search?.[0] : search || ""}
             currentCategory={Array.isArray(category) ? category[0] : category|| ""}
-            currentCategoryId={Number(category_id?.[0])}
+            currentCategoryId={Number(category_id)}
             currentPage={page || 1}
             totalPages={totalPages}
           />
@@ -100,7 +103,7 @@ const AllProducts: FC<ProductsPageProps> = async ({ searchParams }) => {
         </MainLayout>
       );
 
-    } catch (error: any) {
+    } catch {
       return <ServerErrorPage />;
     }
   }

@@ -1,6 +1,5 @@
 "use client";
-import React, { useState , Fragment } from "react";
-import Link from "next/link";
+import React, { useState, Fragment } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -62,133 +61,136 @@ function Profile({ userData }: { userData: UserData }) {
       router.push('/auth/login');
     }
   };
+  
   return (
-    <div className="sm:py-16 bg-gray-50 p-4 md:p-8">
-      <div className="max-w-screen-lg  mx-auto space-y-8">
-
-        {/* Profile Details Card */}
-        <div className="bg-white rounded-lg shadow-sm p-6 md:p-8">
-          <div className="flex items-start gap-4  sm:items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
-            {/* Left Section - Profile Icon & Username */}
-            <div className=" w-1/3 text-center pt-10 sm:pt-0 md:text-left flex flex-col items-center justify-center">
-              <div className="bg-gray-100 h-16 w-16  sm:w-24 sm:h-24 flex items-center justify-center rounded-full mx-auto md:mx-0">
-                <UserCircle className="w-12 h-12 text-gray-600" />
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-6xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+          {/* Header Section */}
+          <div className="bg-[#232323] sm:bg-slate-100 px-3 sm:px-6 py-8">
+            <div className="flex flex-row items-center justify-between">
+              <div className="flex items-center ">
+                <div className="bg-[#2c2c2c] sm:bg-white p-2 rounded-full shadow-md">
+                  <UserCircle className="w-8 h-8 sm:w-16 sm:h-16 sm:text-black text-white " />
+                </div>
+                <div className="ml-4 sm:text-black text-white ">
+                  <h1 className="text-xl sm:text-2xl font-bold sm:text-black text-white">{userData.username}</h1>
+                  <div className="flex items-center mt-1">
+                    <Shield className="w-4 h-4 mr-1" />
+                    <span className="">{userData.role}</span>
+                  </div>
+                </div>
               </div>
-              <h2 className="text-base md:text-2xl font-semibold text-gray-900 mt-4">
-                {userData.username}
-              </h2>
-              <p className="text-gray-500 text-xs sm:text-sm">{userData.role}</p>
+              <div className="flex items-center">
+                <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#181818] text-white text-xs sm:text-sm">
+                  <span className={`mr-2 h-2 w-2 rounded-full ${userData.status === "active" ? "bg-green-400" : "bg-gray-400"}`}></span>
+                  {userData.status}
+                </span>
+              </div>
             </div>
+          </div>
 
-            {/* Right Section - Profile Details */}
-            <div className="w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* User Details Section */}
+          <div className="px-6 py-8">
+            <h2 className="text-lg font-semibold text-gray-800 mb-6">Account Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* User ID */}
-              <div className="flex items-center space-x-3">
-                <User className="w-5 h-5 text-blue-600" />
+              <div className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
+                <User className="w-5 h-5 text-blue-600 mt-1" />
                 <div>
-                  <p className="text-sm text-gray-500">User ID</p>
+                  <p className="text-xs text-gray-500 font-medium uppercase">User ID</p>
                   <p className="font-medium text-gray-900">{userData._id}</p>
                 </div>
               </div>
 
               {/* Phone Number */}
-              <div className="flex items-center space-x-3">
-                <Phone className="w-5 h-5 text-blue-600" />
+              <div className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
+                <Phone className="w-5 h-5 text-blue-600 mt-1" />
                 <div>
-                  <p className="text-sm text-gray-500">Phone Number</p>
-                  <p className="font-medium text-gray-900">
-                    {userData.phone_number}
-                  </p>
-                </div>
-              </div>
-
-              {/* Role */}
-              <div className="flex items-center space-x-3">
-                <Shield className="w-5 h-5 text-blue-600" />
-                <div>
-                  <p className="text-sm text-gray-500">Role</p>
-                  <p className="font-medium text-gray-900">{userData.role}</p>
+                  <p className="text-xs text-gray-500 font-medium uppercase">Phone Number</p>
+                  <p className="font-medium text-gray-900">{userData.phone_number}</p>
                 </div>
               </div>
 
               {/* Last Login */}
-              <div className="flex items-center space-x-3">
-                <LogIn className="w-5 h-5 text-blue-600" />
+              <div className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
+                <LogIn className="w-5 h-5 text-blue-600 mt-1" />
                 <div>
-                  <p className="text-sm text-gray-500">Last Login</p>
-                  <p className="font-medium text-gray-900">
-                    {formatDateTime(userData.last_login_time)}
-                  </p>
+                  <p className="text-xs text-gray-500 font-medium uppercase">Last Login</p>
+                  <p className="font-medium text-gray-900">{formatDateTime(userData.last_login_time)}</p>
                 </div>
               </div>
 
               {/* Created At */}
-              <div className="flex items-center space-x-3">
-                <Calendar className="w-5 h-5 text-blue-600" />
+              <div className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
+                <Calendar className="w-5 h-5 text-blue-600 mt-1" />
                 <div>
-                  <p className="text-sm text-gray-500">Member Since</p>
-                  <p className="font-medium text-gray-900">
-                    {formatDateTime(userData.created_at)}
-                  </p>
+                  <p className="text-xs text-gray-500 font-medium uppercase">Member Since</p>
+                  <p className="font-medium text-gray-900">{formatDateTime(userData.created_at)}</p>
                 </div>
               </div>
 
-              {/* Status */}
-              <div className="flex items-center space-x-3">
-                <Shield className="w-5 h-5 text-gray-600" />
+              {/* Role */}
+              <div className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
+                <Shield className="w-5 h-5 text-blue-600 mt-1" />
                 <div>
-                  <p className="text-sm text-gray-500">Status</p>
-                  <p className="font-medium text-gray-700">{userData.status}</p>
+                  <p className="text-xs text-gray-500 font-medium uppercase">Role</p>
+                  <p className="font-medium text-gray-900">{userData.role}</p>
                 </div>
               </div>
-
             </div>
           </div>
-          {/* Quick Actions */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-10 sm:mt-20 mx-auto">
-            <Link
-              href="/cart"
-              className="bg-transparent py-4 sm:py-6 text-xs sm:text-base text-center border-2 border-gray-200 flex flex-col items-center justify-center hover:border-gray-400 rounded-lg"
-            >
-              <ShoppingCart className="w-8 h-8 text-blue-500" />
-              <span className="text-sm text-black">My Cart</span>
-            </Link>
 
-            <Link
-              href="/orders"
-              className="bg-transparent py-4 sm:py-6 text-xs sm:text-base text-center border-2 border-gray-200 flex flex-col items-center justify-center hover:border-gray-400 rounded-lg"
-            >
-              <Package className="w-8 h-8 text-blue-500" />
-              <span className="text-sm text-black">My Orders</span>
-            </Link>
+          {/* Quick Actions Section */}
+          <div className="px-6 py-8 border-t border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-800 mb-6">Quick Actions</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+              <a
+                href="/cart"
+                className="flex flex-col items-center justify-center p-4 bg-white border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors duration-200"
+              >
+                <ShoppingCart className="w-6 h-6 text-blue-600 mb-2" />
+                <span className="text-sm font-medium text-gray-700">My Cart</span>
+              </a>
 
-            <Link
-              href="/addresses"
-              className="bg-transparent py-4 sm:py-6 text-xs sm:text-base text-center border-2 border-gray-200 flex flex-col items-center justify-center hover:border-gray-400 rounded-lg"
-            >
-              <MapPin className="w-8 h-8 text-blue-500" />
-              <span className="text-sm text-black">My Addresses</span>
-            </Link>
+              <a
+                href="/order/my-orders"
+                className="flex flex-col items-center justify-center p-4 bg-white border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors duration-200"
+              >
+                <Package className="w-6 h-6 text-blue-600 mb-2" />
+                <span className="text-sm font-medium text-gray-700">My Orders</span>
+              </a>
 
-            <Link
-              href="/order-history"
-              className="bg-transparent py-4 sm:py-6 text-xs sm:text-base text-center border-2 border-gray-200 flex flex-col items-center justify-center hover:border-gray-400 rounded-lg"
-            >
-              <History className="w-8 h-8 text-blue-500" />
-              <span className="text-sm text-black">Order History</span>
-            </Link>
-            <button
-              onClick={() => setIsOpen(true)}
-              className="bg-transparent py-4 sm:py-6 text-xs sm:text-base text-center border-2 border-gray-200 flex flex-col items-center justify-center hover:border-red-400 hover:text-red-500 rounded-lg"
-            >
-              <LogOut className="w-8 h-8 text-red-500" />
-              <span className="text-sm text-black">Logout</span>
-            </button>
+              <a
+                href="/address/my-addresses"
+                className="flex flex-col items-center justify-center p-4 bg-white border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors duration-200"
+              >
+                <MapPin className="w-6 h-6 text-blue-600 mb-2" />
+                <span className="text-sm font-medium text-gray-700">My Addresses</span>
+              </a>
+
+              <a
+                href="/order/history"
+                className="flex flex-col items-center justify-center p-4 bg-white border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors duration-200"
+              >
+                <History className="w-6 h-6 text-blue-600 mb-2" />
+                <span className="text-sm font-medium text-gray-700">Order History</span>
+              </a>
+              
+              <button
+                onClick={() => setIsOpen(true)}
+                className="flex flex-col items-center justify-center p-4 bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-300 transition-colors duration-200"
+              >
+                <LogOut className="w-6 h-6 text-red-600 mb-2" />
+                <span className="text-sm font-medium text-gray-700">Logout</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
-       {/* Logout Confirmation Dialog */}
-       <Transition appear show={isOpen} as={Fragment}>
+
+      {/* Logout Confirmation Dialog */}
+      <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={() => setIsOpen(false)}>
           <Transition.Child
             as={Fragment}
@@ -203,12 +205,22 @@ function Profile({ userData }: { userData: UserData }) {
           </Transition.Child>
 
           <div className="fixed inset-0 flex items-center justify-center p-4">
-            <Dialog.Panel className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-              <Dialog.Title className="text-lg font-semibold">Confirm Logout</Dialog.Title>
-              <p className="text-sm text-gray-600 mt-2">Are you sure you want to log out?</p>
-              <div className="mt-4 flex justify-end space-x-2">
-                <button className="px-4 py-2 text-gray-600" onClick={() => setIsOpen(false)}>Cancel</button>
-                <button className="px-4 py-2 bg-red-600 text-white rounded-md" onClick={handleLogout}>Logout</button>
+            <Dialog.Panel className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+              <Dialog.Title className="text-xl font-semibold text-gray-900">Confirm Logout</Dialog.Title>
+              <p className="mt-3 text-gray-600">Are you sure you want to log out of your account?</p>
+              <div className="mt-6 flex justify-end space-x-3">
+                <button 
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200" 
+                  onClick={() => setIsOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700" 
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
               </div>
             </Dialog.Panel>
           </div>
