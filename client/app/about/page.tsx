@@ -2,6 +2,12 @@
 import Link from "next/link";
 import { Dancing_Script, Geist } from "next/font/google";
 import MainLayout from "../MainLayout";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About Us",
+  description: "Information about our goal, services and location",
+};
 
 const dancingScript = Dancing_Script({
   variable: "--font-dancing-script",

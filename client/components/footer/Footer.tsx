@@ -80,7 +80,7 @@ export default function Footer() {
       <div className="bg-neutral-100">
         <div className="mx-auto max-w-7xl px-2 py-3">
           <div className="flex flex-col items-center justify-between gap-3 text-xs font-medium text-neutral-700 md:flex-row">
-            <p>Copyright © 2025 Book 4 Value</p>
+            <p>Copyright © 2025 Siwam Singh</p>
             <Link href="https://github.com/siwamsingh/ecom" target="_blank">
               <BsGithub size="1.25rem" />
             </Link>

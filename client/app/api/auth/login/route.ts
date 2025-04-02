@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       secure: process.env.COOKIE_SECURE === "true", 
       sameSite: process.env.COOKIE_SAMESITE as "lax" | "none",
       domain: process.env.COOKIE_DOMAIN || undefined,
-      maxAge: parseInt(process.env.COOKIE_MAX_AGE || "2592000000"),
+      maxAge: parseInt(process.env.COOKIE_MAX_AGE || "2592000"),
       path: "/"
     }
     

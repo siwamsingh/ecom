@@ -2,6 +2,12 @@ import Image from "next/image";
 import { Mail, Phone, MapPin, Info } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import MainLayout from "../MainLayout";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Contact Us",
+  description: "Our Contact Information",
+};
 
 export default function Contact() {
   return (

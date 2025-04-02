@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Dancing_Script, Geist } from "next/font/google";
+import { Metadata } from "next";
 
 const dancingScript = Dancing_Script({
   variable: "--font-dancing-script",
@@ -11,6 +12,11 @@ const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
+
+export const metadata: Metadata = {
+  title: "Terms and Conditions",
+  description: "Terms and Conditions related to the service provided by Book4Value.com",
+};
 
 
 export default function TermsAndConditions() {

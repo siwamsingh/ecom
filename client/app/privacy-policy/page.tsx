@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Dancing_Script, Geist, Geist_Mono } from "next/font/google";
+import { Metadata } from "next";
 
 const dancingScript = Dancing_Script({
   variable: "--font-dancing-script",
@@ -16,6 +17,12 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "Privacy Policy related to the services provided by us.",
+};
+
 
 export default function PrivacyPolicy() {
   return (

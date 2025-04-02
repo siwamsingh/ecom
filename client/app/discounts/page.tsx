@@ -2,6 +2,7 @@ import CopyButton from "@/components/common/CopyButton";
 import axios from "axios";
 import { BadgePercent, Clock, Tag, Info, ExternalLink } from "lucide-react";
 import MainLayout from "../MainLayout";
+import { Metadata } from "next";
 
 export interface Discount {
   coupon_code: string;
@@ -40,6 +41,11 @@ async function fetchDiscounts(): Promise<Discount[]> {
     return [];
   }
 }
+export const metadata: Metadata = {
+  title: "Discounts",
+  description: "A list of all discounts available for the users",
+};
+
 
 export default async function DiscountsPage() {
   const discounts = await fetchDiscounts();

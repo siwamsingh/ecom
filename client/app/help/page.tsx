@@ -1,6 +1,7 @@
 import Link from "next/link";
 import MainLayout from "../MainLayout";
 import { Info } from "lucide-react";
+import { Metadata } from "next";
 
 const faqs = [
   {
@@ -61,6 +62,12 @@ const faqs = [
       "Yes, we have social media accounts. Visit the Contact Page for more details.",
   },
 ];
+
+export const metadata: Metadata = {
+  title: "Help",
+  description: "A list of popular questions to help the users",
+};
+
 
 export default function HelpPage() {
   return (
