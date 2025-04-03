@@ -1,11 +1,11 @@
 import React from "react";
 import axios from "axios";
-import { cookies } from "next/headers";
 import ServerErrorPage from "@/components/Error/ServerError";
 import ProductLayout from "@/components/products/ProductLayout";
 import SearchFilterProvider from "@/components/products/SearchFilterProvider";
 import Pagination from "@/components/products/Pagination";
 import MainLayout from "@/app/MainLayout";
+import { Metadata } from "next";
 
 
 type tParams = Promise<{
@@ -17,6 +17,27 @@ type tParams = Promise<{
 
 const serverUrl = process.env.NEXT_SERVER_URL || "http://localhost:8000";
 
+export async function generateMetadata({
+  searchParams
+}: {searchParams: tParams}):Promise<Metadata> {
+  const params = await searchParams;
+  const category = params.category || ""; 
+  const search = params.search || ""; 
+  const page = Number(params.page) || 1;
+
+  let categoryName = category;
+
+  if(category===""){
+    categoryName = "All"
+  }
+  
+  return{
+    title: "Category : "+categoryName+", Searched Text : "+search+", Page : "+page,
+    description: "Page "+page+" of Products with Category "+categoryName+" and searched text : '"+search+"'",
+  }
+}
+
+
 const AllProducts = async ({ searchParams }: {searchParams: tParams}) => {
 
   const params = await searchParams;
@@ -27,7 +48,7 @@ const AllProducts = async ({ searchParams }: {searchParams: tParams}) => {
 
   const pageLimit = 4;
 
-  async function fetchProducts(cookieHeader: string) {
+  async function fetchProducts() {
     try {
       const response = await axios.post(
         `${serverUrl}/product/get-product`,
@@ -40,7 +61,6 @@ const AllProducts = async ({ searchParams }: {searchParams: tParams}) => {
         },
         {
           headers: {
-            Cookie: cookieHeader,
             "Content-Type": "application/json",
           },
           withCredentials: true,
@@ -58,14 +78,9 @@ const AllProducts = async ({ searchParams }: {searchParams: tParams}) => {
       return <ServerErrorPage />;
     }
 
-    const cookieStore = await cookies();
-    const cookieHeader = cookieStore
-      .getAll()
-      .map(({ name, value }) => `${name}=${value}`)
-      .join("; ");
 
     try {
-      const result = await fetchProducts(cookieHeader);
+      const result = await fetchProducts();
 
       const totalCount = result.data.totalCount;
       let totalPages = 1;

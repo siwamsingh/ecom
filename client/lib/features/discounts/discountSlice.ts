@@ -51,12 +51,11 @@ export const fetchDiscounts = createAsyncThunk(
       const response = await axios.post<ApiResponse>(
         `${serverUrl}/api/discounts/get-discounts`,
         {
-            limit: 1000000000
+            limit: null
         }
       );
       return response.data.data.discounts; // Assuming your API returns data in this structure
-    } catch (error) {
-      console.error(error);
+    } catch  {
       return rejectWithValue("Failed to fetch categories");
     }
   }

@@ -42,8 +42,7 @@ export const fetchCategories = createAsyncThunk(
         {}
       );
       return response.data.data.categories; // Assuming your API returns data in this structure
-    } catch (error) {
-      console.error(error);
+    } catch {
       return rejectWithValue("Failed to fetch categories");
     }
   }

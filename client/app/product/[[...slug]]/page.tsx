@@ -1,6 +1,5 @@
-import React from "react";
+import React, { cache } from "react";
 import axios from "axios";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import ServerErrorPage from "@/components/Error/ServerError";
@@ -11,6 +10,7 @@ import { Check, X, BookOpen, Truck, ImageOff } from "lucide-react";
 import { redirect } from 'next/navigation'
 import MainLayout from "@/app/MainLayout";
 import ProductCarousel from "@/components/products/ProductCarousel";
+import { Metadata } from "next";
 
 type tParams = Promise<{
   product_id?: string;
@@ -18,6 +18,63 @@ type tParams = Promise<{
 }>
 
 const serverUrl = process.env.NEXT_SERVER_URL || "http://localhost:8000";
+
+const getProduct = cache(async (product_id: string)=>{
+  const response = await axios.post(
+    `${serverUrl}/product/get-one-product`,
+    {
+      product_id: Number(product_id),
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    }
+  );
+
+  if (!response.data.success) {
+    return notFound();
+  }
+
+  const product = response.data.data.product;
+
+  return product;
+})
+
+
+export async function generateMetadata({
+  searchParams
+}: {searchParams: tParams}):Promise<Metadata> {
+  const productParams = await searchParams;
+  const product_id = productParams.product_id;
+
+  if(!product_id){
+    return {
+      title: "Failed to fetch product"
+    }
+  }
+const product = await getProduct(product_id);
+
+  let description = product.description;
+  description = description.replace("\r\n",", ");
+
+  
+  return{
+    title: product.product_name,
+    description: description,
+    openGraph:{
+      images:[
+        {
+          url: product.image_url,
+          width: 1200,
+          height: 630,
+        alt: product.product_name
+        }
+      ]
+    }
+  }
+}
 
 const extractProductDetails = (description: string) => {
   const details: { [key: string]: string } = {};
@@ -48,32 +105,8 @@ const ProductDetailPage = async ({
       return notFound();
     }
 
-    const cookieStore = await cookies();
-    const cookieHeader = cookieStore
-      .getAll()
-      .map(({ name, value }) => `${name}=${value}`)
-      .join("; ");
-
     try {
-      const response = await axios.post(
-        `${serverUrl}/product/get-one-product`,
-        {
-          product_id: Number(product_id),
-        },
-        {
-          headers: {
-            Cookie: cookieHeader,
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-
-      if (!response.data.success) {
-        return notFound();
-      }
-
-      const product = response.data.data.product;
+      const product = await getProduct(product_id);
       
       if(product.status!=="active"){
         return notFound();
@@ -91,7 +124,6 @@ const ProductDetailPage = async ({
         },
         {
           headers: {
-            Cookie: cookieHeader,
             "Content-Type": "application/json",
           },
           withCredentials: true,
