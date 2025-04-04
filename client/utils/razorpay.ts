@@ -1,3 +1,4 @@
+
 // utils/razorpay.ts
 export const loadScript = (src: string) => {
     return new Promise<boolean>((resolve) => {
@@ -32,8 +33,10 @@ export const loadScript = (src: string) => {
       return;
     }
   
+    const rp_key = process.env.NEXT_PUBLIC_RAZORPAY_KEY;
+    
     const paymentOptions = {
-      key: process.env.RAZORPAY_KEY ,
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY || rp_key ,
       amount: options.amount,
       currency: "INR",
       order_id: options.orderId,
