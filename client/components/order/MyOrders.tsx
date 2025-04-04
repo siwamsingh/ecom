@@ -115,6 +115,7 @@ const MyOrders = () => {
     if(!once) return;
     const fetchUserOrders = async () => {
         try {
+
           const response = await axios.post("/api/order/fetch-history", {
             userId: null,
           });
@@ -178,12 +179,12 @@ const MyOrders = () => {
           </a>.
                 </p>
               </div>
-      {orders && orders.length > 0 ? (
-  !loading ? (
+      {!loading  ? (
+  orders && orders.length > 0 ? (
     orders.map((order, index) => (
       <div
         key={index}
-        className="rounded-lg p-4 mb-6 shadow-md bg-gray-100 text-black"
+        className="rounded-lg p-4 mb-6 shadow-md bg-slate-50 text-black"
       >
         <div className="mb-4">
           <span className="text-lg font-bold mb-4 flex justify-between items-center">
@@ -263,15 +264,14 @@ const MyOrders = () => {
       </div>
     ))
   ) : (
-    <div className="p-4 border border-gray-200 rounded shadow animate-pulse bg-gray-200 text-black">
-      <p className="h-6 w-32 bg-gray-300 rounded mb-2"></p>
-      <p className="h-4 w-48 bg-gray-300 rounded"></p>
-    </div>
-  )
-) : <div className="">
+    <div className="">
     <p className="text-center p-4">No new orders in last 30 days.</p>
     <p className="text-center p-4">Click to see <a href="/order/history" className="text-blue-600 underline">Order History</a></p>
-  </div>}
+  </div>
+  )
+) : <div className="flex justify-center items-center h-64">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+  </div> }
 
     </div>
     </MainLayout>
