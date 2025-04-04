@@ -251,10 +251,9 @@ const MyOrders = () => {
                 className="w-16 h-16 object-cover rounded-md mr-4"
               />
               <div>
-                <h3 className="text-lg font-semibold flex items-center gap-2">
+                <h3 className="text-sm sm:text-lg font-semibold flex items-center gap-2">
                   <FaProductHunt /> {item.product_details.product_name}
                 </h3>
-                <p className="text-sm text-gray-600">{item.product_details.description}</p>
                 <p className="text-sm">Price: ₹{item.price}</p>
               </div>
             </div>
