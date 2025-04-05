@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     template: "%s | Book4Value",
   },
   description:
-    "Buy high-quality books at the most affordable prices in India. From academic to competitive exam books, Book4Value is your trusted online bookstore.",
+    "Buy high-quality books at the most affordable prices in India. From academic to competitive exam books, Book4Value is your trusted and fastest online bookstore.",
   keywords: [
     "Book4Value",
     "buy books online India",
