@@ -12,7 +12,7 @@ export const Hero = () => {
             data-aos-delay="200"
             className="mb-2.5 rounded-md bg-violet-100 px-4 py-1 text-sm font-semibold text-violet-600 md:mb-5"
           >
-            Limited Time Offer!
+            Limited Time Offer! 
           </span>
           <h1
             data-aos="fade-right"

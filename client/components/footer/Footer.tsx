@@ -124,9 +124,9 @@ export default function Footer() {
 
       <div className="px-4 py-10 max-w-screen-xl mx-auto">
         <hr className="mb-6 border-gray-300" />
-        <h1 className=" text-base sm:text-lg  font-bold text-gray-700 mb-3">
+        <h2 className=" text-base sm:text-lg  font-bold text-gray-700 mb-3">
           Book4Value: Your Trusted Online Bookstore in India
-        </h1>
+        </h2>
         <h2 className="text-sm sm:text-base font-semibold text-gray-600 mb-4">
           Affordable, Fast, and Reliable Book Shopping for Students and Readers
         </h2>

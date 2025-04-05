@@ -26,7 +26,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Book4Value - Affordable Books for Everyone, Buy high-quality books at the most affordable prices in India.",
+    default: "Book4Value - Affordable and High-Quality Books in India",
     template: "%s | Book4Value",
   },
   description:
@@ -47,6 +47,9 @@ export const metadata: Metadata = {
   creator: "Siwam Kumar Singh",
   publisher: "Book4Value",
   metadataBase: new URL("https://book4value.com"),
+  alternates: {
+    canonical: "https://book4value.com",
+  },
   openGraph: {
     title: "Book4Value - Affordable Books for Everyone",
     description:
@@ -59,6 +62,7 @@ export const metadata: Metadata = {
         width: 1200,
         height: 630,
         alt: "Book4Value - Affordable Books for Everyone",
+        type: "image/png",
       },
     ],
     locale: "en_IN",
@@ -75,9 +79,13 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    apple: "/logo-b.png",
   },
   category: "Books",
+  viewport:
+    "width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes",
+  robots: "index, follow",
+  themeColor: "#1e293b", // Tailwind slate-800 for mobile browser tab color
 };
 
 export default function RootLayout({

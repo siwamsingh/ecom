@@ -42,7 +42,7 @@ export const openRazorpay = async (options: RazorpayOptions) => {
     order_id: options.orderId,
     name: options.name || "Book4Value",
     description: options.description || "Payment to Book4Value",
-    image: options.image || "/logo-t2.png",
+    image: options.image || "/logo-b.png",
     prefill: options.prefill || {
       name: "Siwam Singh",
       email: "siwamsingh2003@gmail.com",
