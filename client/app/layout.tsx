@@ -84,13 +84,12 @@ export const metadata: Metadata = {
   robots: "index, follow", // ✅ This is okay inside metadata
 };
 
-// ✅ MOVE THESE OUTSIDE OF metadata
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: "#1e293b", // Tailwind's slate-800
+  themeColor: "#1e293b",
 };
 
 export default function RootLayout({

@@ -126,7 +126,8 @@ function Index() {
           great read, we’ve got you covered. Our catalog features a wide range
           of categories, including academic books, fiction, non-fiction, UPSC,
           JEE, NEET, school textbooks, and more — all at prices that won’t burn
-          a hole in your wallet.
+          a hole in your wallet. We help you discover the most Affordable Books
+          which every reader wants.
         </p>
         <p className="text-xs text-gray-600 mb-6">
           We believe every learner deserves access to quality books. That’s why

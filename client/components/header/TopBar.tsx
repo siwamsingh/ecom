@@ -29,7 +29,7 @@ export const TopBar = () => {
   return (
     <div className="bg-[#232323] text-[10px] text-gray-300 md:text-xs">
       <div className="mx-auto flex flex-col items-center px-4 py-1 xl:container md:flex-row md:py-2.5">
-        <p className="pb-2 md:pb-0">New Offer Every month. Upto 20% Off.</p>
+        <p className="pb-2 md:pb-0">New Offer Every month. Up to 20% Off.</p>
         <ul className="flex flex-wrap justify-center md:ml-auto">
           {topbarItems.map(item => (
             <TopbarItem key={item.label} {...item} />
