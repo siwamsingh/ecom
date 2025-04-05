@@ -71,8 +71,8 @@ const renderShippingAddress = (input: string) => {
     if (input !== "UNKNOWN") {
       shippingAdd = JSON.parse(input);
     }
-  } catch (error) {
-    console.log("Invalid JSON input:", error);
+  } catch {
+    toast.error("Unknown address format")
   }
 
   if (!shippingAdd) {
@@ -136,7 +136,6 @@ const MyOrders = () => {
             return orderDate >= thirtyDaysAgo;
           });
 
-          console.log(recentOrders);
           
       
           setOrders(recentOrders);
@@ -153,7 +152,6 @@ const MyOrders = () => {
             return;
           }
       
-          console.error("Failed to fetch order history", err);
           toast.error("Failed to load your order history");
         } finally {
           setLoading(false);

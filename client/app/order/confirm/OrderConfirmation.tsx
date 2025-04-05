@@ -162,7 +162,6 @@ function OrderConfirmation() {
 
       setOrderItems(updatedOrderItems);
     } catch (err: any) {
-      console.log(err);
 
       setError(err.message || "Failed to fetch product details");
       toast.error(err.message || "Failed to fetch product details");
@@ -214,7 +213,6 @@ function OrderConfirmation() {
              return;
             
         }
-      console.error("Failed to fetch addresses", err);
       toast.error("Failed to load your saved addresses");
     }
   };
@@ -341,8 +339,7 @@ function OrderConfirmation() {
         },
       });
       
-    } catch (err: any) {
-      console.log(err);
+    } catch {
       
       toast.error("Failed to process payment");
     }

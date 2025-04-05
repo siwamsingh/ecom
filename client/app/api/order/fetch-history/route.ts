@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
           await setRefreshedTokens(refreshedTokens, cookieStore);
           cookieHeader = `accessToken=${refreshedTokens.accessToken}; refreshToken=${refreshedTokens.refreshToken}`;
 
-          console.log("🔄 Retrying request with refreshed tokens...");
+          //console.log("🔄 Retrying request with refreshed tokens...");
           
           const result = await getUserHistory(cookieHeader, userData);
           

@@ -71,8 +71,8 @@ const renderShippingAddress = (input: string) => {
     if (input !== "UNKNOWN") {
       shippingAdd = JSON.parse(input);
     }
-  } catch (error) {
-    console.log("Invalid JSON input:", error);
+  } catch {
+    toast.error("Invalid address format");
   }
 
   if (!shippingAdd) {
@@ -143,7 +143,6 @@ const UserHistory = () => {
           return;
         }
 
-        console.error("Failed to fetch order history", err);
         toast.error("Failed to load your order history");
       } finally {
         setLoading(false);

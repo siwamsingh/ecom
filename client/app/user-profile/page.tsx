@@ -49,7 +49,6 @@ const UserProfile = () => {
 
         setUserData(result.data.user);
       } catch (error: any) {
-        console.log(error);
 
         if (error.status === 577) {
           toast.error("Session Expired Login to Continue.");
@@ -99,46 +98,3 @@ const UserProfile = () => {
 
 export default UserProfile;
 
-//   const { id } = await params;
-
-//   const cookieStore = await cookies();
-
-//   const cookieHeader = cookieStore
-//     .getAll()
-//     .map(({ name, value }) => `${name}=${value}`)
-//     .join("; ");
-
-//   // await checkAuth(cookieHeader);
-
-//   try {
-//     const userData = await getUserApi(
-//       {
-//         user_id: Number(id),
-//         user_phone_number: null,
-//       },
-//       cookieHeader
-//     );
-
-//     return (
-//       <div>
-//         <Profile userData={userData.user} />
-//       </div>
-//     );
-//   } catch (error: any) {
-//     console.error(
-//       "Error during getting user data",
-//       error?.response?.data?.message || error.message
-//     );
-
-//     return (
-//       <div className="text-2xl h-screen font-bold flex justify-center items-center">
-//         <div className="space-y-8">
-//           <FaRegSadTear className="mx-auto" size={60} />
-//           <div className="text-center max-w-xl">
-//             Error loading user profile. Please try again later.
-//           </div>
-//         </div>
-//       </div>
-//     );
-//   }
-// };

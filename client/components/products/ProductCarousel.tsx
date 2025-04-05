@@ -61,8 +61,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = async ({
 
     // Pass data to the client component
     return <ProductCarouselClient title={title} products={products} />;
-  } catch (error: any) {
-    console.error("Error fetching carousel products:", error);
+  } catch  {
     return <div className="container mx-auto py-6 px-2 sm:p-4 w-full">
     <div className="h-6 sm:h-8 w-40 bg-gray-300 rounded-sm animate-pulse mb-4"></div>
   

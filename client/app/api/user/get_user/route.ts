@@ -31,7 +31,6 @@ export async function POST(req: NextRequest) {
 
     return await fetchUser(userData, cookieHeader);
   } catch (error: any) {
-    console.error(error)
     if (error?.response?.status === 577) {
       try {
         const refreshedTokens = await refreshToken(cookieHeader);
@@ -40,7 +39,7 @@ export async function POST(req: NextRequest) {
           await setRefreshedTokens(refreshedTokens, cookieStore);
           cookieHeader = `accessToken=${refreshedTokens.accessToken}; refreshToken=${refreshedTokens.refreshToken}`;
 
-          console.log("🔄 Retrying request with refreshed tokens...");
+          //console.log("🔄 Retrying request with refreshed tokens...");
           return await fetchUser(userData, cookieHeader);
         }
       } catch (refreshError: any) {

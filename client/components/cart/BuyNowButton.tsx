@@ -16,8 +16,7 @@ const BuyNowButton: React.FC<BuyNowButtonProps> = ({ productId, className }) => 
     setIsLoading(true);
     try {
       router.push(`/order/confirm?products=${productId}:1`);
-    } catch (error) {
-      console.error("Error processing buy now:", error);
+    } catch  {
       setIsLoading(false);
     }
   };

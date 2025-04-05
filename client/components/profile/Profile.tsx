@@ -55,9 +55,7 @@ function Profile({ userData }: { userData: UserData }) {
       });
       toast.success("User logged out.")
       router.push('/auth/login');
-    } catch (error) {
-      console.error("Error logging out:", error);
-      // Still redirect to login page even if there's an error
+    } catch  {
       router.push('/auth/login');
     }
   };

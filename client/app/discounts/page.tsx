@@ -36,8 +36,7 @@ async function fetchDiscounts(): Promise<Discount[]> {
       }
     );
     return response.data.data.discounts;
-  } catch (error) {
-    console.error("Error fetching discounts:", error);
+  } catch {
     return [];
   }
 }

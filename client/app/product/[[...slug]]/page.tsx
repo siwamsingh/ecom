@@ -301,7 +301,6 @@ const ProductDetailPage = async ({
         </MainLayout>
       );
     } catch (error: any) {
-      console.error("Error fetching product data:", error);
       if (error.message && error.message.startsWith('NEXT_REDIRECT')) {
         throw error
       }

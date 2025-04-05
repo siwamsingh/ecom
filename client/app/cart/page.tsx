@@ -46,7 +46,6 @@ export default function CartPage() {
           }, 3000);
           return;
         }
-        console.error("Error fetching cart:", error);
         setError("Failed to load your cart. Please try again.");
       } finally {
         setIsLoading(false);
@@ -75,8 +74,7 @@ export default function CartPage() {
       setCartItems((prev) =>
         prev.filter((item) => item.product_id !== confirmDelete)
       );
-    } catch (error) {
-      console.error("Error deleting item:", error);
+    } catch{
       setError("Failed to remove item. Please try again.");
     } finally {
       setConfirmDelete(null);
@@ -106,8 +104,7 @@ export default function CartPage() {
               : item
           )
         );
-      } catch (error) {
-        console.error("Error updating quantity:", error);
+      } catch {
         setError("Failed to update quantity. Please try again.");
       }
     }

@@ -119,20 +119,15 @@ export default function Register() {
         const minutes = Math.floor(300 / 60);
         const seconds = 300 % 60;
         setTimer(`${minutes}:${seconds.toString().padStart(2, "0")}`);
-        console.log(responseData);
       } else {
-        console.log(responseData);
         toast.error(responseData.message, { duration: 6000 });
       }
-    } catch (error) {
-      console.error(error);
+    } catch  {
       toast.error("Failed to Generate OTP. Try Again.");
     }
   };
 
   const handleRegister = async (data: FormInputs): Promise<void> => {
-    console.log(data);
-
     const username = data.firstName + " " + data.lastName;
     const phone_number = "+91" + data.contactNo;
     const password = data.password;
@@ -151,9 +146,7 @@ export default function Register() {
       const responseData = await res.json();
       if (responseData.success) {
         toast.success("Account Created Successfully!");
-        console.log(responseData);
       } else {
-        console.log(responseData);
         toast.error(responseData.message, { duration: 6000 });
       }
     } catch (error) {

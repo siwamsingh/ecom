@@ -3,8 +3,8 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(req: NextRequest) {
   // Extract tokens from cookies
-  const accessToken = req.cookies.get('accessToken')?.value;
-  const refreshToken = req.cookies.get('refreshToken')?.value;
+  // const accessToken = req.cookies.get('accessToken')?.value;
+  // const refreshToken = req.cookies.get('refreshToken')?.value;
 
   // Extract tokens from Authorization header (if applicable)
   const authHeader = req.headers.get('authorization');
@@ -13,8 +13,8 @@ export function middleware(req: NextRequest) {
     bearerToken = authHeader.split(' ')[1];
   }
 
-  console.log('Access Token:', accessToken || bearerToken || 'Not Found');
-  console.log('Refresh Token:', refreshToken || 'Not Found');
+  // console.log('Access Token:', accessToken || bearerToken || 'Not Found');
+  // console.log('Refresh Token:', refreshToken || 'Not Found');
 
   return NextResponse.next();
 }

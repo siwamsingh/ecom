@@ -6,17 +6,9 @@ export async function POST(req: NextRequest) {
   try {
     // Parse the JSON body
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = await req.json();
-    
-    // Log the received parameters for debugging
-    console.log("Verifying payment:", {
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature
-    });
-
+ 
     // Check if all required parameters are present
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-      console.error("Missing required parameters");
       return NextResponse.json(
         { success: false, message: "Missing required parameters" },
         { status: 400 }
@@ -40,8 +32,6 @@ export async function POST(req: NextRequest) {
       .update(razorpay_order_id + "|" + razorpay_payment_id)
       .digest("hex");
     
-    console.log("Generated signature:", generated_signature);
-    console.log("Received signature:", razorpay_signature);
 
     // Compare signatures
     if (generated_signature === razorpay_signature) {

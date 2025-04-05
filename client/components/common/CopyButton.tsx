@@ -14,7 +14,6 @@ export default function CopyButton({ couponCode }: CopyButtonProps) {
   const handleCopy = async () => {
     if (!navigator.clipboard) {
       toast("Failed to copy.")
-      console.log("Clipboard API not supported in this environment.");
       return;
     }
   
@@ -22,9 +21,8 @@ export default function CopyButton({ couponCode }: CopyButtonProps) {
       await navigator.clipboard.writeText(couponCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-      console.log("Copied:", couponCode);
-    } catch (error) {
-      console.error("Failed to copy:", error);
+    } catch {
+      toast("Failed to copy.")
     }
   };
   

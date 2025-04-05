@@ -59,7 +59,7 @@ export async function POST() {
           await setRefreshedTokens(refreshedTokens, cookieStore);
           cookieHeader = `accessToken=${refreshedTokens.accessToken}; refreshToken=${refreshedTokens.refreshToken}`;
 
-          console.log("🔄 Retrying request with refreshed tokens...");
+          //console.log("🔄 Retrying request with refreshed tokens...");
 
           const result = await getAddress(cookieHeader);
 

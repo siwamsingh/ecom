@@ -15,7 +15,6 @@ const getErrorMsg = (error: any, status: number | null = null, task: string) => 
     try {
       let preElement = null;
 
-      console.log(typeof window);
 
       if (typeof window !== "undefined") {
         // Use DOMParser in the browser

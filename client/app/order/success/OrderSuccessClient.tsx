@@ -33,8 +33,7 @@ export default function OrderSuccessClient() {
         } else {
           setStatus("failed");
         }
-      } catch (err) {
-        console.error(err);
+      } catch {
         setStatus("failed");
       }
     };
