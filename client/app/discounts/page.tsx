@@ -25,8 +25,13 @@ export interface Discounts {
 
 const serverUrl = process.env.NEXT_SERVER_URL || "http://localhost:8000";
 
+
 async function fetchDiscounts(): Promise<Discount[]> {
   try {
+    
+if(!serverUrl){
+  throw new Error("Server url problem");
+}
     const response = await axios.post<{ data: { discounts: Discount[] } }>(
       `${serverUrl}/discount/get-discounts`,
       {
