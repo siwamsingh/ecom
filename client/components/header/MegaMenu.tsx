@@ -13,7 +13,7 @@ interface Props {
 const newItems = [
   { label: 'New Arrivals', href: '/' },
   { label: 'Best Sellers', href: '/' },
-  { label: 'Only at Kara', href: '/' },
+  { label: 'Only at Book4Value', href: '/' },
   { label: 'Members Exclusives', href: '/' },
   { label: 'Release Dates', href: '/' },
 ];

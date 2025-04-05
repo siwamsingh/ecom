@@ -2,7 +2,6 @@ import React from "react";
 import { Product } from "@/types/product.types";
 import ServerErrorPage from "../Error/ServerError";
 import axios from "axios";
-import { cookies } from "next/headers";
 import ProductCarouselClient from "./ProductCarouselClient";
 
 interface ProductCarouselProps {
@@ -25,12 +24,6 @@ const ProductCarousel: React.FC<ProductCarouselProps> = async ({
   async function fetchProducts() {
     try {
       
-      const cookieStore = await cookies();
-      const cookieHeader = cookieStore
-        .getAll()
-        .map(({ name, value }) => `${name}=${value}`)
-        .join("; ");
-
       const response = await axios.post(
         `${serverUrl}/product/get-product`,
         {
@@ -41,7 +34,6 @@ const ProductCarousel: React.FC<ProductCarouselProps> = async ({
         },
         {
           headers: {
-            Cookie: cookieHeader,
             "Content-Type": "application/json",
           },
           withCredentials: true,

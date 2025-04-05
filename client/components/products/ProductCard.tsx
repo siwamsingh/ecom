@@ -4,6 +4,7 @@ import { Tag } from "lucide-react";
 import NextLink from "next/link";
 import { DiscountBadgeProvider } from "./DiscountBadge";
 import AddToCartButton from "../cart/AddToCartButton";
+import Image from "next/image";
 
 const ProductCard = (product: Product) => {
   return (
@@ -14,10 +15,12 @@ const ProductCard = (product: Product) => {
       className="group relative flex flex-col h-full rounded-lg overflow-hidden transition-all duration-300 hover:border-b-indigo-600 border-b-white border-b-2"
     >
       <div className="relative bg-slate-50 sm:p-4 flex justify-center">
-        <img
+        <Image
           src={product.image_url}
           alt={product.product_name}
           loading="lazy"
+          width={190}
+          height={190}
           className="h-48 object-contain transition-transform duration-300 group-hover:scale-105"
         />
 

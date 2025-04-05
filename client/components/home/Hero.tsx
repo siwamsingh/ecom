@@ -14,20 +14,21 @@ export const Hero = () => {
           >
             Limited Time Offer!
           </span>
-          <h2
+          <h1
             data-aos="fade-right"
             data-aos-delay="300"
-            className="mb-5 text-center text-[2.5rem] font-bold leading-tight text-black md:text-left md:text-5xl"
+            className="mb-5 text-center text-[2.5rem] font-bold leading-tight text-black md:text-left md:text-4xl"
           >
-            Find the Perfect Book
-          </h2>
-          <h3
+            Discover Affordable Books for Every Reader
+          </h1>
+          <h2
             data-aos="fade-right"
             data-aos-delay="400"
-            className="font-regular mb-5 text-center text-lg leading-tight text-neutral-700 md:mb-10 md:text-left"
+            className="font-regular mb-5 text-center text-base leading-tight text-neutral-600 md:mb-10 md:text-left"
           >
-            Shop the latest arrivals and stay ahead of the masses.
-          </h3>
+            At Book4Value.com, we bring you handpicked titles for all your academic and leisure needs. We have something for everyone <strong>—delivered right to your doorstep.</strong>
+      
+          </h2>
           <Link
             href="/products/all-products?category_id=&category=&search=&page=1"
             data-aos="fade-up"
@@ -50,13 +51,14 @@ export const Hero = () => {
           </div>
         </div>
         <div className="flex flex-1 items-center justify-start">
-          <Image
-            priority
-            src="/assets/hero1.png"
-            alt="hero"
+        <Image
+            src="/assets/hero1.webp"
+            alt="Books flying in the air and opening knowledge"
             width={550}
             height={550}
-            data-aos="fade-up"
+            priority
+            sizes="(max-width: 768px) 100vw, 550px"
+            className="w-full h-auto max-w-[550px]"
           />
         </div>
       </div>

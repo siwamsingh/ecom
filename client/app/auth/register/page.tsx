@@ -208,7 +208,7 @@ export default function Register() {
               <Image
                 priority
                 src="/logo-b.png"
-                alt="kara shop logo"
+                alt="Book4Value logo"
                 width={80}
                 height={35}
                 quality={100}

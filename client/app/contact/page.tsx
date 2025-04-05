@@ -16,10 +16,11 @@ export default function Contact() {
         {/* Seller Image */}
         <div className="aspect-auto h-36 w-36 md:w-1/3 md:h-[80vh] relative rounded-full md:rounded-xl overflow-hidden border bg-white border-green-500">
           <Image
-            src="/assets/seller.jpg"
+            src="/assets/seller.webp"
             alt="Seller"
-            layout="fill"
-            objectFit="cover"
+            fill 
+            style={{ objectFit: "cover" }}
+            loading="lazy"
           />
         </div>
 

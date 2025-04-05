@@ -9,6 +9,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import MainLayout from "@/app/MainLayout";
 import { Info } from "lucide-react";
+import Image from "next/image";
 
 interface Product {
   product_id: number;
@@ -245,10 +246,13 @@ const MyOrders = () => {
         {order.order_items.map((item, idx) => (
           <div key={idx} className="flex items-center justify-between border-t py-2">
             <div className="flex items-start">
-              <img
+              <Image
                 src={item.product_details.image_url}
                 alt={item.product_details.product_name}
-                className="w-16 h-16 object-cover rounded-md mr-4"
+                loading="lazy"
+                width={100}
+                height={100}
+                className="w-16 h-16 object-contain rounded-md mr-4"
               />
               <div>
                 <h3 className="text-sm sm:text-lg font-semibold flex items-center gap-2">

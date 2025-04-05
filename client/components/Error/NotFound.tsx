@@ -6,7 +6,7 @@ export default function NotFoundPage() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
       <div className="text-center">
         <Image
-          src="/assets/not-found.jpg"
+          src="/assets/not-found.webp"
           alt="Not Found"
           width={300}
           height={300}

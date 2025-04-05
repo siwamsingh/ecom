@@ -74,7 +74,7 @@ export default function LoginPage() {
               <Image
                 priority
                 src="/logo-b.png"
-                alt="kara shop logo"
+                alt="book4value.com logo"
                 width={80}
                 height={35}
                 quality={100}

@@ -8,6 +8,7 @@ import { Fragment } from "react";
 import MainLayout from "../MainLayout";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface CartItem {
   cart_id: number;
@@ -171,9 +172,12 @@ export default function CartPage() {
                         <div className="flex items-center space-x-4 mb-4">
                           <div className="h-16 w-16  bg-gray-100 rounded-md flex-shrink-0">
                             {item.image_url ? (
-                              <img
+                              <Image
                                 src={item.image_url}
                                 alt={item.product_name}
+                                width={100}
+                                height={100}
+                                loading="lazy"
                                 className="w-full h-full object-contain"
                               />
                             ) : (
@@ -270,9 +274,12 @@ export default function CartPage() {
                         <div className="col-span-7 flex items-center space-x-4">
                           <div className="h-20 w-20 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
                             {item.image_url ? (
-                              <img
+                              <Image
                                 src={item.image_url}
                                 alt={item.product_name}
+                                loading="lazy"
+                                width={100}
+                                height={100}
                                 className="h-full w-full object-contain"
                               />
                             ) : (

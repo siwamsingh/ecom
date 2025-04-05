@@ -12,9 +12,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
     <>
       <StoreProvider>
         <Header />
-        <main>{children}</main>
-        <Footer />
       </StoreProvider>
+      <main>{children}</main>
+      <Footer />
     </>
   );
 }

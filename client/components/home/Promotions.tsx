@@ -1,9 +1,9 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import promobanner1 from '../../public/assets/promo-banner-1.png';
-import promobanner2 from '../../public/assets/promo-banner-2.png';
-import promobanner3 from '../../public/assets/promo-banner-3.png';
-import promobanner4 from '../../public/assets/promo-banner-4.png';
+import Link from "next/link";
+import Image from "next/image";
+import promobanner1 from "../../public/assets/promo-banner-1.webp";
+import promobanner2 from "../../public/assets/promo-banner-2.webp";
+import promobanner3 from "../../public/assets/promo-banner-3.webp";
+import promobanner4 from "../../public/assets/promo-banner-4.webp";
 
 export const Promotions = () => {
   return (
@@ -17,16 +17,47 @@ export const Promotions = () => {
         </h2>
         <div className="grid w-full max-w-[1150px] gap-3 md:grid-cols-4">
           <Link href="/" className="col-span-2">
-            <Image src={promobanner1} alt="promo banner 1 image" />
+            <Image
+              src={promobanner1}
+              alt="Promo banner 1 image"
+              loading="lazy"
+              quality={20} // or lower if acceptable
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="w-full h-auto"
+            />
           </Link>
+
           <Link href="/" className="row-span-2">
-            <Image src={promobanner2} alt="promo banner 2 image" />
+            <Image
+              src={promobanner2}
+              alt="Promo banner 2 image"
+              loading="lazy"
+              quality={20}
+              sizes="(max-width: 768px) 100vw, 25vw"
+              className="w-full h-auto"
+            />
           </Link>
+
           <Link href="/" className="row-span-2">
-            <Image src={promobanner3} alt="promo banner 3 image" />
+            <Image
+              src={promobanner3}
+              alt="Promo banner 3 image"
+              loading="lazy"
+              quality={20}
+              sizes="(max-width: 768px) 100vw, 25vw"
+              className="w-full h-auto"
+            />
           </Link>
+
           <Link href="/" className="col-span-2">
-            <Image src={promobanner4} alt="promo banner 4 image" />
+            <Image
+              src={promobanner4}
+              alt="Promo banner 4 image"
+              loading="lazy"
+              quality={20}
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="w-full h-auto"
+            />
           </Link>
         </div>
       </div>

@@ -6,7 +6,7 @@ export default function ServerErrorPage() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
       <div className="text-center">
         <Image
-          src="/assets/server-error.jpg"
+          src="/assets/server-error.webp"
           alt="Server Error"
           width={300}
           height={300}
