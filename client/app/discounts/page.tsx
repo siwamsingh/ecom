@@ -3,6 +3,7 @@ import axios from "axios";
 import { BadgePercent, Clock, Tag, Info, ExternalLink } from "lucide-react";
 import MainLayout from "../MainLayout";
 import { Metadata } from "next";
+import ServerErrorPage from "@/components/Error/ServerError";
 
 export interface Discount {
   coupon_code: string;
@@ -28,10 +29,7 @@ const serverUrl = process.env.NEXT_SERVER_URL || "http://localhost:8000";
 
 async function fetchDiscounts(): Promise<Discount[]> {
   try {
-    
-if(!serverUrl){
-  throw new Error("Server url problem");
-}
+
     const response = await axios.post<{ data: { discounts: Discount[] } }>(
       `${serverUrl}/discount/get-discounts`,
       {
@@ -52,6 +50,9 @@ export const metadata: Metadata = {
 
 
 export default async function DiscountsPage() {
+  if(!serverUrl){
+    return <ServerErrorPage/>
+ }
   const discounts = await fetchDiscounts();
 
   return (
