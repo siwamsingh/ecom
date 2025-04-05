@@ -74,7 +74,7 @@ export  function MegaMenu({  collections, onShowMenu, onCloseMenu }: Props) {
                 {collection.children
                   .map(subCollection => (
                     <li key={subCollection.id}>
-                      <Link href={`/products/all-products?category_id=${subCollection.id}&category=${subCollection.slug}&search=`} className="mb-1.5 text-xs font-normal text-neutral-700 hover:underline" onClick={onCloseMenu}>
+                      <Link href={`/products/all-products?category-id=${subCollection.id}&category=${subCollection.slug}&search=`} className="mb-1.5 text-xs font-normal text-neutral-700 hover:underline" onClick={onCloseMenu}>
                         {subCollection.name}
                       </Link>
                     </li>
@@ -93,9 +93,9 @@ export  function MegaMenu({  collections, onShowMenu, onCloseMenu }: Props) {
           </div>
           <div className="flex flex-[3] items-center">
             {[
-              {name:'Top Selling',url:"/products/all-products?category_id=59&category=top-selling&search="},
-            { name:'New Arrival',url:"/products/all-products?category_id=58&category=new-books&search="},
-             {name:'Best books',url:"/products/all-products?category_id=57&category=best-books&search="}].map((item, index) => (
+              {name:'Top Selling',url:"/products/all-products?category-id=59&category=top-selling&search="},
+            { name:'New Arrival',url:"/products/all-products?category-id=58&category=new-books&search="},
+             {name:'Best books',url:"/products/all-products?category-id=57&category=best-books&search="}].map((item, index) => (
               <Link key={index} href={item.url} className="ml-4 w-full max-w-[150px] py-3 text-xs font-bold text-neutral-800 hover:underline" onClick={onCloseMenu}>
                 {item.name}
               </Link>

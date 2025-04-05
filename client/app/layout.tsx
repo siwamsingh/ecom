@@ -1,5 +1,4 @@
-// app/layout.tsx or app/root-layout.tsx
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
@@ -82,10 +81,16 @@ export const metadata: Metadata = {
     apple: "/logo-b.png",
   },
   category: "Books",
-  viewport:
-    "width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes",
-  robots: "index, follow",
-  themeColor: "#1e293b", // Tailwind slate-800 for mobile browser tab color
+  robots: "index, follow", // ✅ This is okay inside metadata
+};
+
+// ✅ MOVE THESE OUTSIDE OF metadata
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: "#1e293b", // Tailwind's slate-800
 };
 
 export default function RootLayout({

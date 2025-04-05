@@ -9,7 +9,7 @@ import Image from "next/image";
 const ProductCard = (product: Product) => {
   return (
     <NextLink
-    href={`/product?product_id=${product._id}&product_name=${product.url_slug}`}
+    href={`/product?product-id=${product._id}&product-name=${product.url_slug}`}
 
       key={product._id}
       className="group relative flex flex-col h-full rounded-lg overflow-hidden transition-all duration-300 hover:border-b-indigo-600 border-b-white border-b-2"

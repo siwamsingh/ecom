@@ -35,7 +35,7 @@ export default function CollectionsPage({ collections, onPageClose }: Props) {
                           <Accordion.Body>
                             <a
                               className="block border-b border-solid border-neutral-100 py-2"
-                              href={`/products/all-products?category_id=${gernre.id}&category=${gernre.slug}&search=&page=1`}
+                              href={`/products/all-products?category-id=${gernre.id}&category=${gernre.slug}&search=&page=1`}
                             >
                               <h3>{gernre.name}</h3>
                             </a>

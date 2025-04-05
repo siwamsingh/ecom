@@ -109,7 +109,7 @@ export default async function DiscountsPage() {
                         Save {discount.discount_value}%
                       </p>
                       <a
-                        href={`/product?product_id=${discount.product_id}`}
+                        href={`/product?product-id=${discount.product_id}`}
                         className="inline-flex items-center font-medium text-blue-400 hover:text-blue-800 text-[9px] sm:text-xs  gap-1"
                       >
                         See Product <ExternalLink size={12} />

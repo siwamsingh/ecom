@@ -28,7 +28,7 @@ export default function CopyButton({ couponCode }: CopyButtonProps) {
   
   return (
     <button
-      className="ml-2 p-2 text-blue-600 hover:bg-blue-50 active:bg-green-200 transition-all duration-200 rounded-full transition-colors"
+      className="ml-2 p-2 text-blue-600 hover:bg-blue-50 active:bg-green-200  duration-200 rounded-full transition-colors"
       onClick={handleCopy}
       aria-label="Copy coupon code"
     >

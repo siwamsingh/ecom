@@ -14,7 +14,7 @@ export const Search = () => {
     if (!value) return;
 
     e.preventDefault();
-    const newUrl = `/products/all-products?category_id=&category=&search=${value}&page=1`;
+    const newUrl = `/products/all-products?category-id=&category=&search=${value}&page=1`;
     router.push(newUrl);
   };
 

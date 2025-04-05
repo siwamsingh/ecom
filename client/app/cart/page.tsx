@@ -184,7 +184,7 @@ export default function CartPage() {
                             )}
                           </div>
                           <div>
-                            <a  href={`/product?product_id=${item.product_id}&product_name=${item.product_name}`}  className="font-medium text-gray-900">
+                            <a  href={`/product?product-id=${item.product_id}&product-name=${item.product_name}`}  className="font-medium text-gray-900">
                               {item.product_name}
                             </a>
                             <p
@@ -286,7 +286,7 @@ export default function CartPage() {
                             )}
                           </div>
                           <div>
-                            <a href={`/product?product_id=${item.product_id}&product_name=${item.product_name}`} className="font-medium text-gray-900 hover:underline">
+                            <a href={`/product?product-id=${item.product_id}&product-name=${item.product_name}`} className="font-medium text-gray-900 hover:underline">
                               {item.product_name}
                             </a>
                             <p
@@ -376,7 +376,7 @@ export default function CartPage() {
                     Proceed to Checkout
                   </a>
                   <a
-                    href="/products/all-products?category_id=&category=&search=&page=1"
+                    href="/products/all-products?category-id=&category=&search=&page=1"
                     className="w-full text-center py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     Continue Shopping

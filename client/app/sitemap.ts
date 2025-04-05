@@ -55,7 +55,7 @@ export default async function sitemap():Promise<MetadataRoute.Sitemap> {
 
         const categoryEntries:MetadataRoute.Sitemap = categories.map((category)=>{
             return{
-                url:`${baseUrl}/products/all-products?category_id=${category._id}&amp;category=${category.url_slug}&amp;search=`
+                url:`${baseUrl}/products/all-products?category-id=${category._id}&amp;category=${category.url_slug}&amp;search=`
             }
           })
 
@@ -65,7 +65,7 @@ export default async function sitemap():Promise<MetadataRoute.Sitemap> {
 
       const productEntries:MetadataRoute.Sitemap = products.map((product)=>{
         return{
-            url:`${baseUrl}/product?product_id=${product._id}&amp;product_name=${product.url_slug}`
+            url:`${baseUrl}/product?product-id=${product._id}&amp;product-name=${product.url_slug}`
         }
       })
 
@@ -90,7 +90,7 @@ export default async function sitemap():Promise<MetadataRoute.Sitemap> {
         },
         ...productEntries,
         {
-            url: `${baseUrl}/products/all-products?category_id=&amp;category=&amp;search=`
+            url: `${baseUrl}/products/all-products?category-id=&amp;category=&amp;search=`
         },
         ...categoryEntries
     ]

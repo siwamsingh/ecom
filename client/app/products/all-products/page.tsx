@@ -11,7 +11,7 @@ import { Metadata } from "next";
 type tParams = Promise<{
   category?: string;
   search?: string;
-  category_id: number;
+  "category-id": number;
   page: number;
 }>
 
@@ -43,7 +43,7 @@ const AllProducts = async ({ searchParams }: {searchParams: tParams}) => {
   const params = await searchParams;
   const category = params.category || ""; // Default to "All" if not provided
   const search = params.search || ""; // Default empty string if not provided
-  const category_id = params.category_id || null;
+  const category_id = params["category-id"] || null;
   let page = Number(params.page) || 1;
 
   const pageLimit = 4;

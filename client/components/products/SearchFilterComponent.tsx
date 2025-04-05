@@ -51,7 +51,7 @@ const SearchFilterComponent: React.FC<SearchProps> = ({
   // Handle search submission
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newUrl = `/products/all-products?category_id=${
+    const newUrl = `/products/all-products?category-id=${
       selectedCategory?._id || ""
     }&category=${
       selectedCategory?.url_slug || ""
@@ -62,7 +62,7 @@ const SearchFilterComponent: React.FC<SearchProps> = ({
   // Handle category change
   const handleCategoryChange = (category: any) => {
     setSelectedCategory(category);
-    const newUrl = `/products/all-products?category_id=${
+    const newUrl = `/products/all-products?category-id=${
       category?._id || ""
     }&category=${category?.url_slug || ""}&search=${searchQuery}`;
     router.push(newUrl);

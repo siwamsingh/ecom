@@ -22,10 +22,10 @@ export interface NavLink {
 }
 
 export const navLinks: NavLink[] = [
-  { name: 'educational', href: '/products/all-products?category_id=34&category=educational&search=', collapsible: true },
-  { name: 'fiction', href: '/products/all-products?category_id=43&category=fiction&search=', collapsible: true },
-  { name: 'top selling', href: '/products/all-products?category_id=59&category=top-selling&search=' , collapsible: true},
-  { name: 'new', href: '/products/all-products?category_id=58&category=new-books&search=' , collapsible: true},
+  { name: 'educational', href: '/products/all-products?category-id=34&category=educational&search=', collapsible: true },
+  { name: 'fiction', href: '/products/all-products?category-id=43&category=fiction&search=', collapsible: true },
+  { name: 'top selling', href: '/products/all-products?category-id=59&category=top-selling&search=' , collapsible: true},
+  { name: 'new', href: '/products/all-products?category-id=58&category=new-books&search=' , collapsible: true},
   { name: 'discounts', href: '/discounts', collapsible: true },
 ];
 

@@ -122,67 +122,6 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="px-4 py-10 max-w-screen-xl mx-auto">
-        <hr className="mb-6 border-gray-300" />
-        <h2 className=" text-base sm:text-lg  font-bold text-gray-700 mb-3">
-          Book4Value: Your Trusted Online Bookstore in India
-        </h2>
-        <h2 className="text-sm sm:text-base font-semibold text-gray-600 mb-4">
-          Affordable, Fast, and Reliable Book Shopping for Students and Readers
-        </h2>
-        <p className="text-xs text-gray-600 mb-3">
-          At <strong>Book4Value.com</strong>, we make finding and buying books
-          easier, faster, and more affordable. Whether you’re a student
-          preparing for competitive exams or a book lover looking for your next
-          great read, we’ve got you covered. Our catalog features a wide range
-          of categories, including academic books, fiction, non-fiction, UPSC,
-          JEE, NEET, school textbooks, and more — all at prices that won’t burn
-          a hole in your wallet.
-        </p>
-        <p className="text-xs text-gray-600 mb-6">
-          We believe every learner deserves access to quality books. That’s why
-          we partner with reliable wholesalers and ensure fast, trackable
-          delivery to your doorstep. With our 7-day return guarantee, you can
-          shop with confidence and peace of mind.
-        </p>
-
-        <h2 className="text-sm sm:text-base font-semibold text-gray-700 mb-2">
-          Why Shop at Book4Value.com?
-        </h2>
-        <ul className="text-xs list-disc pl-6 text-gray-600 space-y-2 mb-6">
-          <li>
-            <strong>Affordable Prices:</strong> We operate on minimal profit
-            margins to offer the best deals possible.
-          </li>
-          <li>
-            <strong>Diverse Collection:</strong> From CBSE & ICSE textbooks to
-            competitive exam preparation and storybooks — all in one place.
-          </li>
-          <li>
-            <strong>Easy Shopping Experience:</strong> Browse, add to cart,
-            choose your address, apply coupons, and pay securely via Razorpay.
-          </li>
-          <li>
-            <strong>Customer-First Support:</strong> Forget bots. Talk to real
-            people when you need help.
-          </li>
-          <li>
-            <strong>Fast Delivery:</strong> Reliable couriers ensure your books
-            arrive on time and in great condition.
-          </li>
-          <li>
-            <strong>Return Policy:</strong> Changed your mind? Return books
-            within 7 days, hassle-free.
-          </li>
-        </ul>
-
-        <p className="text-xs text-gray-600">
-          <strong>Book4Value</strong> is committed to making education and
-          reading more accessible for everyone in India. Whether you&apos;re shopping
-          for school, college, or personal growth, you&apos;ll find the right book at
-          the right price.
-        </p>
-      </div>
     </footer>
   );
 }

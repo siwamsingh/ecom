@@ -30,7 +30,7 @@ export default function Pagination({
   const onPageChange = (pageNumber: number) => {
     // Ensure pageNumber is always an integer
     const intPage = Math.round(pageNumber);
-    const newUrl = `/products/all-products?category_id=${currentCategoryId || ""}&category=${
+    const newUrl = `/products/all-products?category-id=${currentCategoryId || ""}&category=${
       currentCategory || ""
     }&search=${searchParam}&page=${intPage}`;
     router.push(newUrl);

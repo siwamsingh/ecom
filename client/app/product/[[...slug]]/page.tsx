@@ -13,8 +13,8 @@ import ProductCarousel from "@/components/products/ProductCarousel";
 import { Metadata } from "next";
 
 type tParams = Promise<{
-  product_id?: string;
-  product_name?: string;
+  "product-id"?: string;
+  "product-name"?: string;
 }>
 
 const serverUrl = process.env.NEXT_SERVER_URL || "http://localhost:8000";
@@ -47,7 +47,7 @@ export async function generateMetadata({
   searchParams
 }: {searchParams: tParams}):Promise<Metadata> {
   const productParams = await searchParams;
-  const product_id = productParams.product_id;
+  const product_id = productParams["product-id"];
 
   if(!product_id){
     return {
@@ -94,8 +94,8 @@ const ProductDetailPage = async ({
   searchParams
 }: {searchParams: tParams}) => {
   const productParams = await searchParams;
-  const product_id = productParams.product_id;
-  const product_name = productParams.product_name;
+  const product_id = productParams["product-id"];
+  const product_name = productParams["product-name"];
 
     if (!serverUrl) {
       return <ServerErrorPage />;
@@ -112,7 +112,7 @@ const ProductDetailPage = async ({
         return notFound();
       }
       if(!product_name || product_name!=product.url_slug){
-        redirect(`/product?product_id=${product_id}&product_name=${product.url_slug}`)
+        redirect(`/product?product-id=${product_id}&product-name=${product.url_slug}`)
       }
 
       const discountResponse = await axios.post(
