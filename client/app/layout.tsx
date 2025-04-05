@@ -23,6 +23,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const clientUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+// export const metadata: Metadata = {
+//   title: { default: "Book4Value", template: "%s - Book4Value" },
+//   description: "Get the best books at the most affordable price in India",
+//   icons: {
+//     icon: "/favicon.ico",
+//   },
+// }
+
 export const metadata: Metadata = {
   title: {
     default: "Book4Value - Affordable and High-Quality Books in India",
@@ -42,30 +52,12 @@ export const metadata: Metadata = {
     "discount books",
     "exam preparation books",
   ],
-  authors: [{ name: "Siwam Kumar Singh", url: "https://book4value.com" }],
+  authors: [{ name: "Siwam Kumar Singh", url: `${clientUrl}` }],
   creator: "Siwam Kumar Singh",
   publisher: "Book4Value",
-  metadataBase: new URL("https://book4value.com"),
+  metadataBase: new URL(`${clientUrl}`),
   alternates: {
-    canonical: "https://book4value.com",
-  },
-  openGraph: {
-    title: "Book4Value - Affordable Books for Everyone",
-    description:
-      "Discover top-selling books across UPSC, JEE, CBSE, and more. Get unbeatable prices with fast delivery. Book4Value makes reading affordable for all.",
-    url: "https://book4value.com",
-    siteName: "Book4Value",
-    images: [
-      {
-        url: "https://book4value.com/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Book4Value - Affordable Books for Everyone",
-        type: "image/png",
-      },
-    ],
-    locale: "en_IN",
-    type: "website",
+    canonical: `${clientUrl}`,
   },
   twitter: {
     card: "summary_large_image",
@@ -73,7 +65,6 @@ export const metadata: Metadata = {
     description:
       "Get the best books at the most affordable price in India with Book4Value.",
     creator: "@book4value",
-    images: ["https://book4value.com/og-image.png"],
   },
   icons: {
     icon: "/favicon.ico",
@@ -81,7 +72,7 @@ export const metadata: Metadata = {
     apple: "/logo-b.png",
   },
   category: "Books",
-  robots: "index, follow", // ✅ This is okay inside metadata
+  robots: "index, follow",
 };
 
 export const viewport: Viewport = {
