@@ -141,7 +141,7 @@ const getCart = asyncHandler(async (req, res) => {
         products.image_url
       FROM cart
       JOIN products ON cart.product_id = products._id
-      WHERE cart.user_id = $1 AND products.status = 'active';
+      WHERE cart.user_id = $1 ;
     `;
 
     const cartResult = await client.query(cartQuery, [user._id]);

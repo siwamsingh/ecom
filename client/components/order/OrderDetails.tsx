@@ -90,10 +90,16 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
                 </select>
               </div>
             ) : (
+              <div className="space-y-4">
+
               <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
                 <p className="text-yellow-700 text-sm">
                   No saved addresses found. Click here to <a href="/address/add" className="text-blue-500 underline">add address</a>
                 </p>
+              </div>
+              <div>
+              <a href="/address/add" className="text-white bg-blue-400 rounded-sm shadow-sm font-semibold p-1 m-4">Add Address</a>
+              </div>
               </div>
             )}
           </div>

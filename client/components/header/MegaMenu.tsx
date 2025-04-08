@@ -58,7 +58,7 @@ export  function MegaMenu({  collections, onShowMenu, onCloseMenu }: Props) {
                 </li>
               ))}
             </ul>
-            <Link href="/" onClick={onCloseMenu}>
+            <Link href="/discounts" onClick={onCloseMenu}>
               <Image priority src="/assets/offer.webp" alt="offer" width={150} height={100} quality={100} />
             </Link>
           </div>

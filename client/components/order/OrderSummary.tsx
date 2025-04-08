@@ -40,6 +40,8 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
                 <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center">
                   {product.image_url ? (
                     <Image
+                    width={100}
+                    height={100}
                       src={product.image_url}
                       alt={product.product_name}
                       className="w-full h-full object-contain rounded-md"

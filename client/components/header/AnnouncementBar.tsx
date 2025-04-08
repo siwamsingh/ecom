@@ -26,7 +26,7 @@ const AnnouncementBar = () => {
     <AnimateHeight duration={300} height={isBarOpen ? 'auto' : 0}>
       <div className="relative flex h-8 items-center justify-center overflow-hidden bg-[#e91e63] text-[10px] font-normal text-white transition-all duration-300 md:h-9 md:text-sm">
         <Link
-          href={'/off'}
+          href={'/discounts'}
           className="flex h-full w-full items-center justify-center p-2"
           onMouseEnter={() => setIsBarHovered(true)}
           onMouseLeave={() => setIsBarHovered(false)}
