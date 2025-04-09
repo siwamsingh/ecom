@@ -191,7 +191,7 @@ const MyOrders = () => {
         </div>
         {!loading ? (
           orders && orders.length > 0 ? (
-            orders.map((order, index) => (
+            orders.map((order) => (
               <div
                 key={order._id}
                 className="rounded-lg mb-4 sm:mb-6 shadow-md text-black overflow-hidden"
@@ -235,7 +235,7 @@ const MyOrders = () => {
 
                   {/* Order Items Preview - Always Visible */}
                   <div className="mt-3 flex flex-wrap gap-2  border-l border-slate-400 ml-2 pl-2  ">
-                    {order.order_items.map((item, idx) => (
+                    {order.order_items.map((item) => (
                       <div
                         key={"preview"+String(order._id)+String(item.order_item_id)}
                         className="flex items-center bg-slate-50 gap-2 w-full sm:w-fit p-2 rounded-md"
@@ -336,7 +336,7 @@ const MyOrders = () => {
                     <h2 className="text-md font-bold mb-3">
                       Order Items Detail
                     </h2>
-                    {order.order_items.map((item, idx) => (
+                    {order.order_items.map((item) => (
                       <Link
                       key={"order image"+String(order._id)+item.product_details.product_id}
                         href={`/product?product-id=${item.product_details.product_id}&product-name=${item.product_details.url_slug}`}

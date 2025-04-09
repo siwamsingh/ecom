@@ -329,7 +329,7 @@ const UserHistory = () => {
                     <h2 className="text-md font-bold mb-3">
                       Order Items Detail
                     </h2>
-                    {order.order_items.map((item, idx) => (
+                    {order.order_items.map((item) => (
                       <Link
                       key={"order image"+String(order._id)+item.product_details.product_id}
                       href={`/product?product-id=${item.product_details.product_id}&product-name=${item.product_details.url_slug}`}

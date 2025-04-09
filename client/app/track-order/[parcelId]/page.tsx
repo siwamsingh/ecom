@@ -60,7 +60,7 @@ export default async function TrackOrderPage({
                   </h3>
                 </div>
                 <p className="text-sm text-gray-600 mb-4 pl-11">
-                  Click on the "Track Now" button above to open the official
+                  Click on the &quot;Track Now&quot; button above to open the official
                   India Post tracking portal in a new tab.
                 </p>
                 <div className="sm:pl-11 border-2 rounded-lg overflow-hidden">
@@ -114,8 +114,8 @@ export default async function TrackOrderPage({
                   </h3>
                 </div>
                 <p className="text-sm text-gray-600 mb-4 pl-11">
-                  After submitting your tracking number, you'll see detailed
-                  information about your parcel's current status, location, and
+                  After submitting your tracking number, you&apos;ll see detailed
+                  information about your parcel&apos;s current status, location, and
                   delivery progress. The tracking information is updated
                   regularly by India Post as your package moves through their
                   delivery network.
