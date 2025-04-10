@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import CopyButton from "@/components/common/CopyButton";
 import axios from "axios";
 import { BadgePercent, Clock, Tag, Info, ExternalLink } from "lucide-react";
